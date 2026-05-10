@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Reto de Dani - Nivel Experto (85%)</title>
+<style>
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+background-color: #f0f4f8;
+color: #333;
+text-align: center;
+margin: 0;
+padding: 20px;
+}
+.container {
+max-width: 650px;
+margin: 0 auto;
+background: white;
+padding: 30px;
+border-radius: 15px;
+box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+h1 { color: #2c3e50; }
+.score-board {
+font-size: 1.2em;
+font-weight: bold;
+color: #3498db;
+margin-bottom: 10px;
+}
+.live-stats {
+display: flex;
+justify-content: center;
+gap: 20px;
+margin-bottom: 20px;
+font-size: 1.1em;
+font-weight: bold;
+background-color: #f8f9fa;
+padding: 10px;
+border-radius: 8px;
+border: 1px solid #dee2e6;
+}
+.stat-correct { color: #2ecc71; }
+.stat-wrong { color: #e74c3c; }
+
+.question {
+font-size: 1.5em;
+margin-bottom: 30px;
+font-weight: bold;
+}
+.options {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 15px;
+}
+@media (max-width: 500px) {
+.options { grid-template-columns: 1fr; }
+}
+button {
+padding: 15px;
+font-size: 1.1em;
+border: 2px solid #3498db;
+background-color: white;
+color: #3498db;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.3s;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+min-height: 60px;
+}
+button:hover:not(:disabled) {
+background-color: #3498db;
+color: white;
+}
+.btn-correct { background-color: #2ecc71 !important; color: white !important; border-color: #2ecc71 !important; }
+.btn-wrong { background-color: #e74c3c !important; color: white !important; border-color: #e74c3c !important; }
+
+.meaning-hint {
+font-size: 0.85em;
+margin-top: 5px;
+font-style: italic;
+color: #ffdada;
+}
+
+/* ESTILO DEL BOTÓN SIGUIENTE */
+#btn-siguiente {
+display: none; /* Oculto por defecto */
+margin-top: 30px;
+background-color: #34495e;
+color: white;
+border: none;
+width: 100%;
+font-weight: bold;
+font-size: 1.3em;
+padding: 20px;
+}
+#btn-siguiente:hover {
+background-color: #2c3e50;
+}
+
+#pantalla-resultado { display: none; }
+.success { color: #2ecc71; font-size: 2em; }
+.fail { color: #e74c3c; font-size: 2em; }
+.btn-repetir {
+margin-top: 20px;
+background-color: #e67e22;
+color: white;
+border-color: #e67e22;
+font-weight: bold;
+padding: 15px 30px;
+width: 100%;
+}
+.btn-repetir:hover { background-color: #d35400; }
+</style>
+</head>
+<body>
+
+<div class="container" id="pantalla-quiz">
+<h1>🇫🇷 Francés: Nivel Experto</h1>
+<div class="score-board">Pregunta <span id="num-pregunta">1</span> de 30</div>
+
+<div class="live-stats">
+<span class="stat-correct">✅ Correctas: <span id="contador-correctas">0</span></span>
+<span class="stat-wrong">❌ Incorrectas: <span id="contador-incorrectas">0</span></span>
+</div>
+
+<div class="question" id="texto-pregunta">Cargando pregunta...</div>
+
+<div class="options" id="contenedor-opciones"></div>
+
+<button id="btn-siguiente" onclick="pasarPregunta()">Siguiente Pregunta ➔</button>
+</div>
+
+<div class="container" id="pantalla-resultado">
+<h1 id="titulo-resultado">¡Test Terminado!</h1>
+<h2 id="mensaje-resultado"></h2>
+<p>Has acertado <strong id="aciertos">0</strong> de 30 preguntas.</p>
+<p>Porcentaje: <strong id="porcentaje">0%</strong></p>
+<p>Objetivo para aprobar: <strong style="color: #e74c3c;">85%</strong></p>
+<button class="btn-repetir" onclick="iniciarTest()">Repetir Test</button>
+</div>
+
+<script>
+const miLista = [
+{ es: "yo soy / estoy", fr: "je suis" },
+{ es: "tú eres / estás", fr: "tu es" },
+{ es: "él es / está", fr: "il est" },
+{ es: "nosotros somos / estamos", fr: "nous sommes" },
+{ es: "vosotros sois / estáis", fr: "vous êtes" },
+{ es: "ellos son / están", fr: "ils sont" },
+{ es: "yo tengo", fr: "j'ai" },
+{ es: "tú tienes", fr: "tu as" },
+{ es: "él tiene", fr: "il a" },
+{ es: "nosotros tenemos", fr: "nous avons" },
+{ es: "vosotros tenéis", fr: "vous avez" },
+{ es: "ellos tienen", fr: "ils ont" },
+{ es: "mi / mío (masculino)", fr: "mon" },
+{ es: "mi / mía (femenino)", fr: "ma" },
+{ es: "mis / míos (plural)", fr: "mes" },
+{ es: "tu / tuyo (masculino)", fr: "ton" },
+{ es: "tu / tuya (femenino)", fr: "ta" },
+{ es: "tus / tuyos (plural)", fr: "tes" },
+{ es: "su / suyo (de él/ella, masc)", fr: "son" },
+{ es: "su / suya (de él/ella, fem)", fr: "sa" },
+{ es: "nuestro", fr: "notre" },
+{ es: "nuestros", fr: "nos" },
+{ es: "vuestro", fr: "votre" },
+{ es: "sus / suyos (de ellos)", fr: "leur" }
+];
+
+let poolPreguntas = [];
+let indicePregunta = 0;
+let aciertos = 0;
+let errores = 0; 
+const TOTAL_PREGUNTAS = 30;
+
+function shuffle(array) {
+return array.sort(() => Math.random() - 0.5);
+}
+
+function actualizarMarcadorVivo() {
+document.getElementById("contador-correctas").innerText = aciertos;
+document.getElementById("contador-incorrectas").innerText = errores;
+}
+
+function iniciarTest() {
+document.getElementById("pantalla-resultado").style.display = "none";
+document.getElementById("pantalla-quiz").style.display = "block";
+aciertos = 0;
+errores = 0;
+indicePregunta = 0;
+poolPreguntas = [];
+actualizarMarcadorVivo();
+
+let indices = Array.from({length: miLista.length}, (_, i) => i);
+let indicesEspAFr = shuffle([...indices]);
+let indicesFrAEsp = shuffle([...indices]);
+
+let seleccionadasEspAFr = indicesEspAFr.slice(0, 15);
+let seleccionadasFrAEsp = indicesFrAEsp.slice(0, 15);
+
+for(let i = 0; i < 15; i++) {
+poolPreguntas.push({ dato: miLista[seleccionadasEspAFr[i]], direccion: 0 });
+poolPreguntas.push({ dato: miLista[seleccionadasFrAEsp[i]], direccion: 1 });
+}
+mostrarPregunta();
+}
+
+function mostrarPregunta() {
+// Escondemos el botón de siguiente al empezar
+document.getElementById("btn-siguiente").style.display = "none";
+document.getElementById("num-pregunta").innerText = indicePregunta + 1;
+
+let preguntaActual = poolPreguntas[indicePregunta];
+let datoCorrecto = preguntaActual.dato;
+let contenedorOpciones = document.getElementById("contenedor-opciones");
+contenedorOpciones.innerHTML = "";
+
+let pregunta, respuestaCorrecta, claveIncorrectas;
+
+if (preguntaActual.direccion === 0) {
+pregunta = `¿Cómo se dice: "${datoCorrecto.es}"?`;
+respuestaCorrecta = datoCorrecto.fr;
+claveIncorrectas = "fr";
+} else {
+pregunta = `¿Qué significa: "${datoCorrecto.fr}"?`;
+respuestaCorrecta = datoCorrecto.es;
+claveIncorrectas = "es";
+}
+
+document.getElementById("texto-pregunta").innerText = pregunta;
+
+let opciones = [respuestaCorrecta];
+let listaSinCorrecta = miLista.filter(item => item[claveIncorrectas] !== respuestaCorrecta);
+let trampasUnicas = [...new Set(listaSinCorrecta.map(item => item[claveIncorrectas]))];
+trampasUnicas = shuffle(trampasUnicas);
+
+for(let i=0; i<5; i++) {
+if(trampasUnicas[i]) opciones.push(trampasUnicas[i]);
+}
+
+opciones = shuffle(opciones);
+
+opciones.forEach(opcion => {
+let btn = document.createElement("button");
+btn.innerText = opcion;
+btn.onclick = () => comprobarRespuesta(btn, opcion, respuestaCorrecta, preguntaActual.direccion);
+contenedorOpciones.appendChild(btn);
+});
+}
+
+function comprobarRespuesta(botonSelecionado, respuestaElegida, respuestaCorrecta, direccion) {
+let botones = document.getElementById("contenedor-opciones").getElementsByTagName("button");
+
+for (let btn of botones) {
+btn.disabled = true;
+if (btn.innerText === respuestaCorrecta) {
+btn.classList.add("btn-correct"); 
+}
+}
+
+if (respuestaElegida === respuestaCorrecta) {
+aciertos++;
+} else {
+botonSelecionado.classList.add("btn-wrong"); 
+errores++;
+
+let significadoReal = "";
+if (direccion === 0) {
+let item = miLista.find(i => i.fr === respuestaElegida);
+if (item) significadoReal = item.es;
+} else {
+let item = miLista.find(i => i.es === respuestaElegida);
+if (item) significadoReal = item.fr;
+}
+
+if (significadoReal !== "") {
+botonSelecionado.innerHTML = `<span>${respuestaElegida}</span><span class="meaning-hint">Es: ${significadoReal}</span>`;
+}
+}
+
+actualizarMarcadorVivo();
+// MOSTRAMOS EL BOTÓN PARA PASAR
+document.getElementById("btn-siguiente").style.display = "block";
+}
+
+function pasarPregunta() {
+indicePregunta++;
+if (indicePregunta < TOTAL_PREGUNTAS) {
+mostrarPregunta();
+} else {
+mostrarResultado();
+}
+}
+
+function mostrarResultado() {
+document.getElementById("pantalla-quiz").style.display = "none";
+document.getElementById("pantalla-resultado").style.display = "block";
+let porcentaje = Math.round((aciertos / TOTAL_PREGUNTAS) * 100);
+document.getElementById("aciertos").innerText = aciertos;
+document.getElementById("porcentaje").innerText = porcentaje + "%";
+
+let titulo = document.getElementById("titulo-resultado");
+if (porcentaje >= 85) {
+titulo.innerText = "🏆 ¡Excelencia Absoluta! 🏆";
+titulo.className = "success";
+} else {
+titulo.innerText = "❌ No es suficiente";
+titulo.className = "fail";
+}
+}
+
+iniciarTest();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dani: English Verbs Challenge (Lists 1, 2 & 3)</title>
+<style>
+body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; text-align: center; padding: 20px; }
+.container { max-width: 650px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+h1 { color: #8e44ad; }
+.score-board { font-size: 1.2em; font-weight: bold; color: #8e44ad; margin-bottom: 10px; }
+.live-stats { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; font-weight: bold; background: #fafafa; padding: 10px; border-radius: 8px; border: 1px solid #eee; }
+.stat-correct { color: #27ae60; } .stat-wrong { color: #c0392b; }
+.question { font-size: 1.4em; margin-bottom: 30px; font-weight: bold; color: #2c3e50; min-height: 60px; }
+.options { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+button { padding: 15px; font-size: 1.1em; border: 2px solid #8e44ad; background: white; color: #8e44ad; border-radius: 8px; cursor: pointer; transition: 0.3s; min-height: 65px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+button:hover:not(:disabled) { background: #8e44ad; color: white; }
+.btn-correct { background: #27ae60 !important; color: white !important; border-color: #27ae60 !important; }
+.btn-wrong { background: #c0392b !important; color: white !important; border-color: #c0392b !important; }
+.meaning-hint { font-size: 0.8em; margin-top: 5px; font-style: italic; opacity: 0.9; }
+#btn-siguiente { display: none; margin-top: 30px; background: #2c3e50; color: white; border: none; width: 100%; font-weight: bold; font-size: 1.2em; padding: 15px; border-radius: 8px; cursor: pointer; }
+#pantalla-resultado { display: none; }
+.btn-repetir { margin-top: 20px; background: #8e44ad; color: white; width: 100%; padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-size: 1.1em; }
+</style>
+</head>
+<body>
+<div class="container" id="pantalla-quiz">
+<h1>Irregular Verbs Master</h1>
+<div class="score-board">Verb <span id="num-pregunta">1</span> of 30</div>
+<div class="live-stats">
+<span class="stat-correct">✅ Correct: <span id="contador-correctas">0</span></span>
+<span class="stat-wrong">❌ Wrong: <span id="contador-incorrectas">0</span></span>
+</div>
+<div class="question" id="texto-pregunta">Loading...</div>
+<div class="options" id="contenedor-opciones"></div>
+<button id="btn-siguiente" onclick="pasarPregunta()">Next Verb ➔</button>
+</div>
+<div class="container" id="pantalla-resultado">
+<h1>Test Result</h1>
+<p>Correct verbs: <strong id="aciertos">0</strong> / 30</p>
+<p>Accuracy: <strong id="porcentaje">0%</strong> (Goal: 85%)</p>
+<h2 id="mensaje-resultado"></h2>
+<button class="btn-repetir" onclick="iniciarTest()">Restart Challenge</button>
+</div>
+
+<script>
+// ==========================================
+// LISTAS 1, 2 Y 3 COMPLETAS
+// ==========================================
+const miLista = [
+// LISTA 1
+{ inf: "be", past: "was / were", es: "ser / estar" },
+{ inf: "become", past: "became", es: "llegar a ser / convertirse" },
+{ inf: "begin", past: "began", es: "empezar" },
+{ inf: "break", past: "broke", es: "romper" },
+{ inf: "build", past: "built", es: "construir" },
+{ inf: "buy", past: "bought", es: "comprar" },
+{ inf: "cost", past: "cost", es: "costar" },
+{ inf: "cut", past: "cut", es: "cortar" },
+{ inf: "do", past: "did", es: "hacer" },
+{ inf: "drink", past: "drank", es: "beber" },
+{ inf: "drive", past: "drove", es: "conducir" },
+{ inf: "eat", past: "ate", es: "comer" },
+{ inf: "feel", past: "felt", es: "sentirse" },
+{ inf: "find", past: "found", es: "encontrar" },
+{ inf: "fly", past: "flew", es: "volar" },
+{ inf: "forget", past: "forgot", es: "olvidar" },
+{ inf: "get", past: "got", es: "conseguir" },
+{ inf: "give", past: "gave", es: "dar" },
+{ inf: "have", past: "had", es: "tener" },
+{ inf: "hurt", past: "hurt", es: "herir" },
+{ inf: "know", past: "knew", es: "saber" },
+{ inf: "learn", past: "learnt / learned", es: "aprender" },
+
+// LISTA 2
+{ inf: "beat", past: "beat", es: "golpear" },
+{ inf: "bend", past: "bent", es: "doblar" },
+{ inf: "bet", past: "bet", es: "apostar" },
+{ inf: "bite", past: "bit", es: "morder" },
+{ inf: "bleed", past: "bled", es: "sangrar" },
+{ inf: "blow", past: "blew", es: "soplar" },
+{ inf: "bring", past: "brought", es: "traer" },
+{ inf: "catch", past: "caught", es: "coger / atrapar" },
+{ inf: "choose", past: "chose", es: "elegir" },
+{ inf: "come", past: "came", es: "venir" },
+{ inf: "dig", past: "dug", es: "cavar" },
+{ inf: "draw", past: "drew", es: "dibujar" },
+{ inf: "dream", past: "dreamt", es: "soñar" },
+{ inf: "fall", past: "fell", es: "caer" },
+{ inf: "feed", past: "fed", es: "alimentar" },
+{ inf: "fight", past: "fought", es: "luchar" },
+{ inf: "forgive", past: "forgave", es: "perdonar" },
+{ inf: "freeze", past: "froze", es: "congelar" },
+{ inf: "go", past: "went", es: "ir" },
+{ inf: "grow", past: "grew", es: "crecer" },
+{ inf: "hang", past: "hung / hanged", es: "colgar" },
+{ inf: "hear", past: "heard", es: "oír" },
+{ inf: "hide", past: "hid", es: "esconderse" },
+{ inf: "hit", past: "hit", es: "golpear (hit)" },
+{ inf: "keep", past: "kept", es: "guardar" },
+{ inf: "lay", past: "laid", es: "dejar / poner" },
+{ inf: "leave", past: "left", es: "dejar / irse" },
+
+// LISTA 3
+{ inf: "lend", past: "lent", es: "prestar" },
+{ inf: "let", past: "let", es: "permitir" },
+{ inf: "lie", past: "lay", es: "tumbarse" },
+{ inf: "lie", past: "lied", es: "mentir" },
+{ inf: "light", past: "lit", es: "encender" },
+{ inf: "lose", past: "lost", es: "perder" },
+{ inf: "make", past: "made", es: "hacer / fabricar" },
+{ inf: "mean", past: "meant", es: "significar" },
+{ inf: "meet", past: "met", es: "conocer / quedar" },
+{ inf: "overcome", past: "overcame", es: "superar" },
+{ inf: "pay", past: "paid", es: "pagar" },
+{ inf: "put", past: "put", es: "poner" },
+{ inf: "quit", past: "quit", es: "dejar / abandonar" },
+{ inf: "read", past: "read", es: "leer" },
+{ inf: "ride", past: "rode", es: "montar" },
+{ inf: "ring", past: "rang", es: "llamar (timbre)" },
+{ inf: "rise", past: "rose", es: "elevarse / subir" },
+{ inf: "run", past: "ran", es: "correr" },
+{ inf: "say", past: "said", es: "decir" },
+{ inf: "see", past: "saw", es: "ver" },
+{ inf: "sell", past: "sold", es: "vender" },
+{ inf: "send", past: "sent", es: "enviar" },
+{ inf: "set", past: "set", es: "colocar" },
+{ inf: "shake", past: "shook", es: "agitar" },
+{ inf: "shine", past: "shone", es: "brillar" },
+{ inf: "shoot", past: "shot", es: "disparar" },
+{ inf: "show", past: "showed", es: "mostrar" }
+];
+
+let pool = [], idx = 0, ok = 0, fail = 0;
+const TOTAL = 30; // 30 preguntas por partida
+const shuffle = (a) => a.sort(() => Math.random() - 0.5);
+
+function iniciarTest() {
+document.getElementById("pantalla-resultado").style.display = "none";
+document.getElementById("pantalla-quiz").style.display = "block";
+ok = 0; fail = 0; idx = 0; pool = [];
+actualizarStats();
+
+// Barajamos toda la lista inmensa y cogemos solo 30
+let base = shuffle([...miLista]).slice(0, TOTAL);
+base.forEach(v => {
+pool.push({ v, modo: Math.floor(Math.random() * 3) });
+});
+mostrarPregunta();
+}
+
+function mostrarPregunta() {
+document.getElementById("btn-siguiente").style.display = "none";
+document.getElementById("num-pregunta").innerText = idx + 1;
+let p = pool[idx];
+let txt = "", corr = "", key = "";
+
+if(p.modo === 0) { txt = `Past Simple of: "${p.v.inf}"?`; corr = p.v.past; key = "past"; }
+else if(p.modo === 1) { txt = `Meaning of: "${p.v.past}"?`; corr = p.v.es; key = "es"; }
+else { txt = `Infinitive of: "${p.v.es}"?`; corr = p.v.inf; key = "inf"; }
+
+document.getElementById("texto-pregunta").innerText = txt;
+
+// Generamos las opciones trampa buscando en la lista completa
+let opcionesFiltradas = miLista.filter(i => i[key] !== corr).map(i => i[key]);
+let opcionesUnicas = [...new Set(opcionesFiltradas)];
+let opts = shuffle([corr, ...shuffle(opcionesUnicas).slice(0, 5)]);
+
+let cont = document.getElementById("contenedor-opciones");
+cont.innerHTML = "";
+opts.forEach(o => {
+let b = document.createElement("button"); b.innerText = o;
+b.onclick = () => {
+Array.from(cont.children).forEach(btn => {
+btn.disabled = true;
+if(btn.innerText === corr) btn.classList.add("btn-correct");
+});
+if(o === corr) ok++;
+else {
+b.classList.add("btn-wrong"); fail++;
+let item = miLista.find(i => i[key] === o);
+if(item) b.innerHTML = `<span>${o}</span><span class="meaning-hint">Era: ${item.inf} | ${item.past} | ${item.es}</span>`;
+}
+actualizarStats();
+document.getElementById("btn-siguiente").style.display = "block";
+};
+cont.appendChild(b);
+});
+}
+
+const actualizarStats = () => { document.getElementById("contador-correctas").innerText = ok; document.getElementById("contador-incorrectas").innerText = fail; };
+const pasarPregunta = () => { idx++; if(idx < TOTAL) mostrarPregunta(); else mostrarResult(); };
+function mostrarResult() {
+document.getElementById("pantalla-quiz").style.display = "none";
+document.getElementById("pantalla-resultado").style.display = "block";
+let pct = Math.round((ok/TOTAL)*100);
+document.getElementById("aciertos").innerText = ok;
+document.getElementById("porcentaje").innerText = pct + "%";
+document.getElementById("mensaje-resultado").innerText = pct >= 85 ? "Excellent! You passed the barrier!" : "Try again to beat the 85% goal.";
+}
+
+iniciarTest();
+</script>
+</body>
+</html>
