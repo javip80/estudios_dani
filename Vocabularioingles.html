@@ -4,206 +4,457 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dani: English Vocabulary Master</title>
+
 <style>
-body { font-family: 'Segoe UI', sans-serif; background-color: #eef2f7; text-align: center; padding: 20px; }
-.container { max-width: 650px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-h1 { color: #2980b9; }
-.score-board { font-size: 1.2em; font-weight: bold; color: #2980b9; margin-bottom: 10px; }
-.live-stats { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; font-weight: bold; background: #fdfdfd; padding: 10px; border-radius: 8px; border: 1px solid #eee; }
-.stat-correct { color: #27ae60; } .stat-wrong { color: #c0392b; }
-.question { font-size: 1.5em; margin-bottom: 30px; font-weight: bold; color: #2c3e50; min-height: 60px; }
-.options { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-button { padding: 15px; font-size: 1.1em; border: 2px solid #2980b9; background: white; color: #2980b9; border-radius: 8px; cursor: pointer; transition: 0.3s; min-height: 65px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-button:hover:not(:disabled) { background: #2980b9; color: white; }
-.btn-correct { background: #27ae60 !important; color: white !important; border-color: #27ae60 !important; }
-.btn-wrong { background: #c0392b !important; color: white !important; border-color: #c0392b !important; }
-.meaning-hint { font-size: 0.8em; margin-top: 5px; font-style: italic; color: #ffdada; opacity: 0.9; }
-#btn-siguiente { display: none; margin-top: 30px; background: #34495e; color: white; border: none; width: 100%; font-weight: bold; font-size: 1.2em; padding: 15px; border-radius: 8px; cursor: pointer; }
-#pantalla-resultado { display: none; }
-.success { color: #27ae60; } .fail { color: #c0392b; }
-.btn-repetir { margin-top: 20px; background: #d35400; color: white; width: 100%; padding: 15px; font-size: 1.1em; border: none; border-radius: 8px; cursor: pointer; }
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #eef2f7;
+    text-align: center;
+    padding: 20px;
+}
+
+.container {
+    max-width: 650px;
+    margin: 0 auto;
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+h1 {
+    color: #2980b9;
+}
+
+.score-board {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #2980b9;
+    margin-bottom: 10px;
+}
+
+.live-stats {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    background: #fdfdfd;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+
+.stat-correct { color: #27ae60; }
+.stat-wrong { color: #c0392b; }
+
+.question {
+    font-size: 1.5em;
+    margin-bottom: 30px;
+    font-weight: bold;
+    color: #2c3e50;
+    min-height: 60px;
+}
+
+.options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+button {
+    padding: 15px;
+    font-size: 1.1em;
+    border: 2px solid #2980b9;
+    background: white;
+    color: #2980b9;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+    min-height: 65px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+button:hover:not(:disabled) {
+    background: #2980b9;
+    color: white;
+}
+
+.btn-correct {
+    background: #27ae60 !important;
+    color: white !important;
+    border-color: #27ae60 !important;
+}
+
+.btn-wrong {
+    background: #c0392b !important;
+    color: white !important;
+    border-color: #c0392b !important;
+}
+
+.meaning-hint {
+    font-size: 0.8em;
+    margin-top: 5px;
+    font-style: italic;
+    color: #ffdada;
+    opacity: 0.9;
+}
+
+#btn-siguiente {
+    display: none;
+    margin-top: 30px;
+    background: #34495e;
+    color: white;
+    border: none;
+    width: 100%;
+    font-weight: bold;
+    font-size: 1.2em;
+    padding: 15px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+#pantalla-resultado {
+    display: none;
+}
+
+.success { color: #27ae60; }
+.fail { color: #c0392b; }
+
+.btn-repetir {
+    margin-top: 20px;
+    background: #d35400;
+    color: white;
+    width: 100%;
+    padding: 15px;
+    font-size: 1.1em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
 </style>
 </head>
+
 <body>
+
 <div class="container" id="pantalla-quiz">
+
 <h1>🇬🇧 English Vocabulary</h1>
-<div class="score-board">Question <span id="num-pregunta">1</span> of 30</div>
+
+<div class="score-board">
+Question <span id="num-pregunta">1</span> of 30
+</div>
+
 <div class="live-stats">
-<span class="stat-correct">✅ Correct: <span id="contador-correctas">0</span></span>
-<span class="stat-wrong">❌ Wrong: <span id="contador-incorrectas">0</span></span>
+<span class="stat-correct">
+✅ Correct: <span id="contador-correctas">0</span>
+</span>
+
+<span class="stat-wrong">
+❌ Wrong: <span id="contador-incorrectas">0</span>
+</span>
 </div>
-<div class="question" id="texto-pregunta">Loading...</div>
+
+<div class="question" id="texto-pregunta">
+Loading...
+</div>
+
 <div class="options" id="contenedor-opciones"></div>
-<button id="btn-siguiente" onclick="pasarPregunta()">Next Question ➔</button>
+
+<button id="btn-siguiente" onclick="pasarPregunta()">
+Next Question ➔
+</button>
+
 </div>
+
 <div class="container" id="pantalla-resultado">
+
 <h1 id="titulo-resultado">Finish!</h1>
-<p>Score: <strong id="aciertos">0</strong> / 30</p>
-<p>Percentage: <strong id="porcentaje">0%</strong> (Goal: 85%)</p>
+
+<p>
+Score: <strong id="aciertos">0</strong> / 30
+</p>
+
+<p>
+Percentage: <strong id="porcentaje">0%</strong> (Goal: 85%)
+</p>
+
 <h2 id="mensaje-resultado"></h2>
-<button class="btn-repetir" onclick="iniciarTest()">Try Again</button>
+
+<button class="btn-repetir" onclick="iniciarTest()">
+Try Again
+</button>
+
 </div>
 
 <script>
+
 // ==========================================
-// LISTA DE VOCABULARIO (Módulos 5, 4, Review 2 y 3)
+// LISTA DE VOCABULARIO
 // ==========================================
+
 const miLista = [
-// MÓDULO 5 (Prioridad)
-{ es: "arrastrar", en: "drag" },
-{ es: "poner en peligro", en: "endanger" },
-{ es: "en peligro de extinción", en: "endangered" },
-{ es: "esperar", en: "expect" },
-{ es: "más al norte", en: "further north" },
-{ es: "etiqueta", en: "hashtag" },
-{ es: "manada", en: "herd" },
-{ es: "permitir, dejar", en: "let" },
-{ es: "premio", en: "prize" },
-{ es: "al poco tiempo", en: "soon" },
-{ es: "conseguir, lograr", en: "succeed" },
-{ es: "supervivencia", en: "survival" },
-{ es: "vista", en: "view" },
-{ es: "pesar", en: "weigh" },
 
-// MÓDULO 4
-{ es: "ganar a", en: "beat" },
-{ es: "campeonato", en: "championship" },
-{ es: "payaso", en: "clown" },
-{ es: "concurso", en: "contest" },
-{ es: "plato", en: "course" },
-{ es: "cancha, pista", en: "court" },
-{ es: "cliente/a", en: "customer" },
-{ es: "sin duda", en: "definitely" },
-{ es: "sabor", en: "flavour" },
-{ es: "gastroneta", en: "food truck" },
-{ es: "fútbol", en: "football" },
-{ es: "griego/a", en: "Greek" },
-{ es: "disfrazado/a", en: "in costume" },
-{ es: "en vivo / directo", en: "live" },
-{ es: "de larga duración", en: "long-life" },
-{ es: "partido", en: "match" },
-{ es: "medianoche", en: "midnight" },
-{ es: "carrera", en: "race" },
-{ es: "recordar a", en: "remind of" },
-{ es: "pantalla", en: "screen" },
-{ es: "acompañamiento, guarnición", en: "side dish" },
-{ es: "entrada", en: "starter" },
-{ es: "sabroso/a", en: "tasty" },
+    // MÓDULO 5
+    { es: "arrastrar", en: "drag" },
+    { es: "poner en peligro", en: "endanger" },
+    { es: "en peligro de extinción", en: "endangered" },
+    { es: "esperar", en: "expect" },
+    { es: "más al norte", en: "further north" },
+    { es: "etiqueta", en: "hashtag" },
+    { es: "manada", en: "herd" },
+    { es: "permitir, dejar", en: "let" },
+    { es: "premio", en: "prize" },
+    { es: "al poco tiempo", en: "soon" },
+    { es: "conseguir, lograr", en: "succeed" },
+    { es: "supervivencia", en: "survival" },
+    { es: "vista", en: "view" },
+    { es: "pesar", en: "weigh" },
 
-// REVIEW 2
-{ es: "manta", en: "blanket" },
-{ es: "muñeca", en: "doll" },
-{ es: "dejar caer", en: "drop" },
-{ es: "tierra firme", en: "dry land" },
-{ es: "granjero/a", en: "farmer" },
-{ es: "campo, prado", en: "field" },
-{ es: "paso", en: "footstep" },
-{ es: "bolsillo", en: "pocket" },
-{ es: "mujer, esposa", en: "wife" },
+    // MÓDULO 4
+    { es: "ganar a", en: "beat" },
+    { es: "campeonato", en: "championship" },
+    { es: "payaso", en: "clown" },
+    { es: "concurso", en: "contest" },
+    { es: "plato", en: "course" },
+    { es: "cancha, pista", en: "court" },
+    { es: "cliente/a", en: "customer" },
+    { es: "sin duda", en: "definitely" },
+    { es: "sabor", en: "flavour" },
+    { es: "gastroneta", en: "food truck" },
+    { es: "fútbol", en: "football" },
+    { es: "griego/a", en: "Greek" },
+    { es: "disfrazado/a", en: "in costume" },
+    { es: "en vivo / directo", en: "live" },
+    { es: "de larga duración", en: "long-life" },
+    { es: "partido", en: "match" },
+    { es: "medianoche", en: "midnight" },
+    { es: "carrera", en: "race" },
+    { es: "recordar a", en: "remind of" },
+    { es: "pantalla", en: "screen" },
+    { es: "acompañamiento, guarnición", en: "side dish" },
+    { es: "entrada", en: "starter" },
+    { es: "sabroso/a", en: "tasty" },
 
-// MÓDULO 3 (Para redondear a 50)
-{ es: "chicle", en: "chewing gum" },
-{ es: "cómodo/a", en: "comfortable" },
-{ es: "suciedad", en: "dirt" },
-{ es: "tierra", en: "earth" }
+    // REVIEW 2
+    { es: "manta", en: "blanket" },
+    { es: "muñeca", en: "doll" },
+    { es: "dejar caer", en: "drop" },
+    { es: "tierra firme", en: "dry land" },
+    { es: "granjero/a", en: "farmer" },
+    { es: "campo, prado", en: "field" },
+    { es: "paso", en: "footstep" },
+    { es: "bolsillo", en: "pocket" },
+    { es: "mujer, esposa", en: "wife" },
+
+    // MÓDULO 3
+    { es: "chicle", en: "chewing gum" },
+    { es: "cómodo/a", en: "comfortable" },
+    { es: "suciedad", en: "dirt" },
+    { es: "tierra", en: "earth" },
+
+    // TRANSPORTES
+    { es: "avión", en: "aeroplane" },
+    { es: "barco", en: "boat" },
+    { es: "conducir", en: "drive" },
+    { es: "bici eléctrica", en: "electric bike" },
+    { es: "patinete eléctrico", en: "electric scooter" },
+    { es: "ferri", en: "ferry" },
+    { es: "pilotar", en: "fly" },
+    { es: "helicóptero", en: "helicopter" },
+    { es: "todo terreno", en: "jeep" },
+    { es: "camión", en: "lorry" },
+    { es: "minivan", en: "minivan" },
+    { es: "ciclomotor", en: "moped" },
+    { es: "moto", en: "motorbike" },
+    { es: "montar", en: "ride" },
+    { es: "en barco", en: "sail" },
+    { es: "barco", en: "ship" },
+    { es: "llevar", en: "take" },
+    { es: "tren", en: "train" },
+    { es: "tranvía", en: "tram" },
+    { es: "metro", en: "underground" }
+
 ];
 
-let poolPreguntas = [], indicePregunta = 0, aciertos = 0, errores = 0;
+let poolPreguntas = [];
+let indicePregunta = 0;
+let aciertos = 0;
+let errores = 0;
+
 const TOTAL = 30;
+
 const shuffle = (a) => a.sort(() => Math.random() - 0.5);
 
 function iniciarTest() {
-document.getElementById("pantalla-resultado").style.display = "none";
-document.getElementById("pantalla-quiz").style.display = "block";
-aciertos = 0; errores = 0; indicePregunta = 0; poolPreguntas = [];
-actualizarStats();
 
-let ids = Array.from({length: miLista.length}, (_, i) => i);
-let s1 = shuffle([...ids]).slice(0, 15);
-let s2 = shuffle([...ids]).slice(0, 15);
+    document.getElementById("pantalla-resultado").style.display = "none";
+    document.getElementById("pantalla-quiz").style.display = "block";
 
-for(let i=0; i<15; i++) {
-poolPreguntas.push({ d: miLista[s1[i]], dir: 0 }); // ESP -> EN
-poolPreguntas.push({ d: miLista[s2[i]], dir: 1 }); // EN -> ESP
-}
-mostrarPregunta();
+    aciertos = 0;
+    errores = 0;
+    indicePregunta = 0;
+    poolPreguntas = [];
+
+    actualizarStats();
+
+    let ids = Array.from({length: miLista.length}, (_, i) => i);
+
+    let s1 = shuffle([...ids]).slice(0, 15);
+    let s2 = shuffle([...ids]).slice(0, 15);
+
+    for(let i = 0; i < 15; i++) {
+        poolPreguntas.push({ d: miLista[s1[i]], dir: 0 });
+        poolPreguntas.push({ d: miLista[s2[i]], dir: 1 });
+    }
+
+    mostrarPregunta();
 }
 
 function mostrarPregunta() {
-document.getElementById("btn-siguiente").style.display = "none";
-document.getElementById("num-pregunta").innerText = indicePregunta + 1;
 
-let p = poolPreguntas[indicePregunta];
-let corr = p.dir === 0 ? p.d.en : p.d.es;
-let txt = p.dir === 0 ? `How do you say: "${p.d.es}"?` : `What does "${p.d.en}" mean?`;
+    document.getElementById("btn-siguiente").style.display = "none";
 
-document.getElementById("texto-pregunta").innerText = txt;
+    document.getElementById("num-pregunta").innerText =
+        indicePregunta + 1;
 
-let key = p.dir === 0 ? "en" : "es";
-let otrasOpciones = shuffle([...new Set(miLista.filter(i => i[key] !== corr).map(i => i[key]))]).slice(0, 5);
-let opts = shuffle([corr, ...otrasOpciones]);
+    let p = poolPreguntas[indicePregunta];
 
-let cont = document.getElementById("contenedor-opciones");
-cont.innerHTML = "";
+    let corr = p.dir === 0 ? p.d.en : p.d.es;
 
-opts.forEach(o => {
-let b = document.createElement("button"); 
-b.innerText = o;
-b.onclick = () => {
-Array.from(cont.children).forEach(btn => {
-btn.disabled = true;
-if(btn.innerText === corr) btn.classList.add("btn-correct");
-});
+    let txt = p.dir === 0
+        ? `How do you say: "${p.d.es}"?`
+        : `What does "${p.d.en}" mean?`;
 
-if(o === corr) {
-aciertos++;
-} else {
-b.classList.add("btn-wrong"); 
-errores++;
-let item = miLista.find(i => i[key] === o);
-if(item) {
-b.innerHTML = `<span>${o}</span><span class="meaning-hint">Is: ${p.dir === 0 ? item.es : item.en}</span>`;
+    document.getElementById("texto-pregunta").innerText = txt;
+
+    let key = p.dir === 0 ? "en" : "es";
+
+    let otrasOpciones = shuffle([
+        ...new Set(
+            miLista
+            .filter(i => i[key] !== corr)
+            .map(i => i[key])
+        )
+    ]).slice(0, 5);
+
+    let opts = shuffle([corr, ...otrasOpciones]);
+
+    let cont = document.getElementById("contenedor-opciones");
+
+    cont.innerHTML = "";
+
+    opts.forEach(o => {
+
+        let b = document.createElement("button");
+
+        b.innerText = o;
+
+        b.onclick = () => {
+
+            Array.from(cont.children).forEach(btn => {
+
+                btn.disabled = true;
+
+                if(btn.innerText === corr) {
+                    btn.classList.add("btn-correct");
+                }
+            });
+
+            if(o === corr) {
+
+                aciertos++;
+
+            } else {
+
+                b.classList.add("btn-wrong");
+
+                errores++;
+
+                let item = miLista.find(i => i[key] === o);
+
+                if(item) {
+
+                    b.innerHTML =
+                    `<span>${o}</span>
+                    <span class="meaning-hint">
+                    Is: ${p.dir === 0 ? item.es : item.en}
+                    </span>`;
+                }
+            }
+
+            actualizarStats();
+
+            document.getElementById("btn-siguiente").style.display =
+                "block";
+        };
+
+        cont.appendChild(b);
+    });
 }
-}
-actualizarStats();
-document.getElementById("btn-siguiente").style.display = "block";
+
+const actualizarStats = () => {
+
+    document.getElementById("contador-correctas").innerText =
+        aciertos;
+
+    document.getElementById("contador-incorrectas").innerText =
+        errores;
 };
-cont.appendChild(b);
-});
-}
 
-const actualizarStats = () => { 
-document.getElementById("contador-correctas").innerText = aciertos; 
-document.getElementById("contador-incorrectas").innerText = errores; 
-};
+const pasarPregunta = () => {
 
-const pasarPregunta = () => { 
-indicePregunta++; 
-if(indicePregunta < TOTAL) mostrarPregunta(); 
-else mostrarResult(); 
+    indicePregunta++;
+
+    if(indicePregunta < TOTAL) {
+        mostrarPregunta();
+    } else {
+        mostrarResult();
+    }
 };
 
 function mostrarResult() {
-document.getElementById("pantalla-quiz").style.display = "none";
-document.getElementById("pantalla-resultado").style.display = "block";
-let pct = Math.round((aciertos/TOTAL)*100);
-document.getElementById("aciertos").innerText = aciertos;
-document.getElementById("porcentaje").innerText = pct + "%";
 
-let titulo = document.getElementById("titulo-resultado");
-let mensaje = document.getElementById("mensaje-resultado");
-if(pct >= 85) {
-titulo.innerText = "🏆 Well Done! 🏆";
-titulo.className = "success";
-mensaje.innerText = "Excellent! You passed the 85% barrier.";
-} else {
-titulo.innerText = "❌ Keep Training! ❌";
-titulo.className = "fail";
-mensaje.innerText = "You need 85% to pass. Try again!";
-}
+    document.getElementById("pantalla-quiz").style.display = "none";
+
+    document.getElementById("pantalla-resultado").style.display =
+        "block";
+
+    let pct = Math.round((aciertos / TOTAL) * 100);
+
+    document.getElementById("aciertos").innerText = aciertos;
+
+    document.getElementById("porcentaje").innerText =
+        pct + "%";
+
+    let titulo = document.getElementById("titulo-resultado");
+
+    let mensaje = document.getElementById("mensaje-resultado");
+
+    if(pct >= 85) {
+
+        titulo.innerText = "🏆 Well Done! 🏆";
+        titulo.className = "success";
+
+        mensaje.innerText =
+            "Excellent! You passed the 85% barrier.";
+
+    } else {
+
+        titulo.innerText = "❌ Keep Training! ❌";
+        titulo.className = "fail";
+
+        mensaje.innerText =
+            "You need 85% to pass. Try again!";
+    }
 }
 
 iniciarTest();
+
 </script>
+
 </body>
 </html>
