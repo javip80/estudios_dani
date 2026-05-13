@@ -30,7 +30,7 @@ button:hover:not(:disabled) { background: #2980b9; color: white; }
 <body>
 <div class="container" id="pantalla-quiz">
 <h1>🌊 Teoría de Geografía</h1>
-<div class="score-board">Pregunta <span id="num-pregunta">1</span> de 20</div>
+<div class="score-board">Pregunta <span id="num-pregunta">1</span> de 40</div>
 <div class="live-stats">
 <span class="stat-correct">✅ Correctas: <span id="contador-correctas">0</span></span>
 <span class="stat-wrong">❌ Incorrectas: <span id="contador-incorrectas">0</span></span>
@@ -42,7 +42,7 @@ button:hover:not(:disabled) { background: #2980b9; color: white; }
 
 <div class="container" id="pantalla-resultado">
 <h1 id="titulo-resultado">¡Test Terminado!</h1>
-<p>Has acertado <strong id="aciertos">0</strong> de 20 preguntas.</p>
+<p>Has acertado <strong id="aciertos">0</strong> de 40 preguntas.</p>
 <p>Porcentaje: <strong id="porcentaje">0%</strong> (Mínimo para aprobar: 85%)</p>
 <h2 id="mensaje-resultado"></h2>
 <button class="btn-repetir" onclick="iniciarTest()">Repetir Test</button>
@@ -50,10 +50,10 @@ button:hover:not(:disabled) { background: #2980b9; color: white; }
 
 <script>
 // ==========================================
-// 15 PREGUNTAS DE HIDROSFERA + 5 DEL RESTO
+// 15 PREGUNTAS DE HIDROSFERA + 25 DEL RESTO
 // ==========================================
 const miLista = [
-// --- SECCIÓN: LA HIDROSFERA (15 Preguntas) ---
+// --- SECCIÓN 1: LA HIDROSFERA (15 Preguntas) ---
 { q: "¿Cómo llamamos a la parte de la Tierra que está formada por agua? ( 🌊 )", a: "Hidrosfera" },
 { q: "¿Qué tipo de agua tiene una mayor presencia en la hidrosfera, ocupando el 96,5%? ( 🧂 )", a: "Agua salada" },
 { q: "¿Qué porcentaje de todo el agua de la Tierra corresponde al agua dulce? ( 💧 )", a: "3,5%" },
@@ -70,19 +70,41 @@ const miLista = [
 { q: "Según los apuntes, ¿se considera que el agua de la Tierra es infinita? ( ♻️ )", a: "No, porque se va reutilizando" },
 { q: "¿A dónde suele llegar el agua tras el proceso de infiltración bajo la tierra? ( 🪨 )", a: "A un acuífero" },
 
-// --- SECCIÓN: OCÉANOS, MARES Y RÍOS (5 Preguntas) ---
+// --- SECCIÓN 2: OCÉANOS, MARES Y RÍOS (15 Preguntas) ---
 { q: "¿Cuáles son las masas de agua más grandes del planeta de las cuales hay cinco? ( 🌎 )", a: "Océanos" },
-{ q: "¿Qué nombre reciben las ondas en el agua producidas por el viento cuando agita el mar? ( 🌊 )", a: "Olas" },
-{ q: "¿Cómo llamamos a los cambios periódicos del nivel del agua provocados por la Luna y el Sol? ( 🌔 )", a: "Mareas" },
-{ q: "¿En qué parte de un río se produce su nacimiento, generalmente en una montaña? ( ⛰️ )", a: "Curso alto" },
-{ q: "¿Cómo se llama la estructura por la que fluye el agua en el curso medio de un río? ( 📏 )", a: "Caudal" }
+{ q: "¿Cuáles son los cinco océanos de la Tierra? ( 🗺️ )", a: "Pacífico, Atlántico, Índico, Antártico y Ártico" },
+{ q: "¿Cómo se llaman las masas de agua más pequeñas en las que se dividen los océanos? ( 🚤 )", a: "Mares" },
+{ q: "¿Qué nombre reciben los flujos de movimiento continuo bajo el agua que pueden ser frías o calientes? ( 〰️ )", a: "Corrientes marinas" },
+{ q: "¿Qué produce las ondas en el agua conocidas como olas? ( 🌬️ )", a: "El viento al agitar el agua" },
+{ q: "¿Qué astros influyen en los cambios periódicos del nivel del agua llamados mareas? ( 🌒 )", a: "La Luna y el Sol" },
+{ q: "¿Qué son las corrientes de agua dulce que circulan de forma continua por la superficie terrestre? ( 🛶 )", a: "Ríos" },
+{ q: "¿Qué dos formas suelen tener los ríos en su recorrido según los apuntes? ( 🐍 )", a: "Rectilínea o curvilínea" },
+{ q: "¿Dónde suele producirse el nacimiento de un río en su curso alto? ( ⛰️ )", a: "En una montaña" },
+{ q: "¿Qué dos factores suelen originar el agua en el nacimiento de un río? ( 🌧️ )", a: "La acumulación de lluvia o el deshielo" },
+{ q: "¿En qué parte del río se desarrolla la estructura principal por la que fluye, llamada caudal? ( 🏞️ )", a: "Curso medio" },
+{ q: "¿Cómo se llama el río que lleva la misma cantidad de agua todo el año? ( ⚖️ )", a: "De caudal regular" },
+{ q: "¿En qué parte del río se produce su desembocadura? ( 🏁 )", a: "Curso bajo" },
+{ q: "¿Qué formación suele crearse cuando un río desemboca en el mar? ( 🔽 )", a: "Un delta" },
+{ q: "¿Qué nombre recibe un río que desemboca en otro río en lugar del mar? ( 🔀 )", a: "Afluente" },
+
+// --- SECCIÓN 3: CAPAS DE LA TIERRA, MAPAS Y EROSIÓN (10 Preguntas) ---
+{ q: "¿Cuáles son las tres capas principales de la Tierra? ( 🧅 )", a: "Corteza, manto y núcleo" },
+{ q: "¿En qué capa de la Tierra encontramos materiales duros y que ocupa solo un 1%? ( 🪨 )", a: "La corteza" },
+{ q: "¿Qué capa ocupa el 84% de la Tierra y está hecha de materiales semiblandos? ( 🌋 )", a: "El manto" },
+{ q: "¿De qué tipo de materiales está hecho el núcleo de la Tierra? ( 🌡️ )", a: "De materiales blandos" },
+{ q: "¿Cómo se llama la corteza terrestre que es distinta a la corteza acuática u oceánica? ( 🏕️ )", a: "Corteza continental" },
+{ q: "¿Qué fenómeno natural produce movimiento y temblor en la tierra? ( 🫨 )", a: "Terremoto" },
+{ q: "Según tus apuntes, ¿qué fenómeno natural suele producir incendios? ( 🔥 )", a: "El volcán" },
+{ q: "¿Qué tipos de proyecciones usamos en los mapas y la cartografía? ( 🗺️ )", a: "Plana, cilíndrica, de cono y esférica" },
+{ q: "En la erosión del entorno natural, ¿qué elemento corroe las piedras? ( 💧 )", a: "El agua" },
+{ q: "¿Qué elemento de la naturaleza modifica el entorno según su fuerza, como acompañante del agua? ( 🌪️ )", a: "El viento" }
 ];
 
 let poolPreguntas = [];
 let indicePregunta = 0;
 let aciertos = 0;
 let errores = 0;
-const TOTAL_PREGUNTAS = 20;
+const TOTAL_PREGUNTAS = 40;
 
 function shuffle(array) {
 return array.sort(() => Math.random() - 0.5);
@@ -179,7 +201,7 @@ let mensaje = document.getElementById("mensaje-resultado");
 if(porcentaje >= 85) {
 titulo.innerText = "🏆 ¡Experto en Geografía! 🏆";
 titulo.className = "success";
-mensaje.innerText = "¡Enhorabuena! Dominas por completo la teoría del agua en la Tierra.";
+mensaje.innerText = "¡Enhorabuena! Dominas por completo la teoría de Geografía.";
 } else {
 titulo.innerText = "❌ Sigue practicando";
 titulo.className = "fail";
