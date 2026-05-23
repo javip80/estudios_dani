@@ -1,459 +1,644 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dani: English Vocabulary Master</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>Dani: English Vocabulary Trainer</title>
 
 <style>
-body {
-    font-family: 'Segoe UI', sans-serif;
-    background-color: #eef2f7;
-    text-align: center;
-    padding: 20px;
+*{
+    box-sizing:border-box;
 }
 
-.container {
-    max-width: 650px;
-    margin: 0 auto;
-    background: white;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+body{
+    margin:0;
+    padding:20px;
+    font-family:Segoe UI, Arial, sans-serif;
+    background:#eef3f8;
+    color:#2c3e50;
 }
 
-h1 {
-    color: #2980b9;
+.container{
+    max-width:800px;
+    margin:auto;
+    background:white;
+    border-radius:16px;
+    padding:30px;
+    box-shadow:0 4px 18px rgba(0,0,0,0.1);
 }
 
-.score-board {
-    font-size: 1.2em;
-    font-weight: bold;
-    color: #2980b9;
-    margin-bottom: 10px;
+h1{
+    margin-top:0;
+    color:#1f6fb2;
 }
 
-.live-stats {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-bottom: 20px;
-    font-weight: bold;
-    background: #fdfdfd;
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #eee;
+.top-bar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
 }
 
-.stat-correct { color: #27ae60; }
-.stat-wrong { color: #c0392b; }
-
-.question {
-    font-size: 1.5em;
-    margin-bottom: 30px;
-    font-weight: bold;
-    color: #2c3e50;
-    min-height: 60px;
+.stats{
+    display:flex;
+    gap:20px;
+    font-weight:bold;
 }
 
-.options {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
+.correct{
+    color:#1e9b50;
 }
 
-button {
-    padding: 15px;
-    font-size: 1.1em;
-    border: 2px solid #2980b9;
-    background: white;
-    color: #2980b9;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.3s;
-    min-height: 65px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+.wrong{
+    color:#c0392b;
 }
 
-button:hover:not(:disabled) {
-    background: #2980b9;
-    color: white;
+.progress-wrapper{
+    width:100%;
+    background:#dfe6ee;
+    border-radius:999px;
+    overflow:hidden;
+    height:18px;
+    margin:20px 0;
 }
 
-.btn-correct {
-    background: #27ae60 !important;
-    color: white !important;
-    border-color: #27ae60 !important;
+.progress-bar{
+    height:100%;
+    width:0%;
+    background:#1f6fb2;
+    transition:0.3s;
 }
 
-.btn-wrong {
-    background: #c0392b !important;
-    color: white !important;
-    border-color: #c0392b !important;
+.question{
+    font-size:1.5rem;
+    font-weight:bold;
+    margin:30px 0;
+    min-height:70px;
 }
 
-.meaning-hint {
-    font-size: 0.8em;
-    margin-top: 5px;
-    font-style: italic;
-    color: #ffdada;
-    opacity: 0.9;
+.options{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
 }
 
-#btn-siguiente {
-    display: none;
-    margin-top: 30px;
-    background: #34495e;
-    color: white;
-    border: none;
-    width: 100%;
-    font-weight: bold;
-    font-size: 1.2em;
-    padding: 15px;
-    border-radius: 8px;
-    cursor: pointer;
+button{
+    border:none;
+    border-radius:10px;
+    padding:16px;
+    cursor:pointer;
+    font-size:1rem;
+    transition:0.2s;
 }
 
-#pantalla-resultado {
-    display: none;
+.option-btn{
+    background:white;
+    border:2px solid #1f6fb2;
+    color:#1f6fb2;
+    min-height:70px;
+    font-weight:600;
 }
 
-.success { color: #27ae60; }
-.fail { color: #c0392b; }
+.option-btn:hover:not(:disabled){
+    background:#1f6fb2;
+    color:white;
+}
 
-.btn-repetir {
-    margin-top: 20px;
-    background: #d35400;
-    color: white;
-    width: 100%;
-    padding: 15px;
-    font-size: 1.1em;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
+.option-btn:disabled{
+    cursor:default;
+}
+
+.correct-answer{
+    background:#1e9b50 !important;
+    border-color:#1e9b50 !important;
+    color:white !important;
+}
+
+.wrong-answer{
+    background:#c0392b !important;
+    border-color:#c0392b !important;
+    color:white !important;
+}
+
+.hint{
+    display:block;
+    margin-top:6px;
+    font-size:0.85rem;
+    opacity:0.9;
+}
+
+.next-btn,
+.restart-btn,
+.review-btn{
+    margin-top:25px;
+    width:100%;
+    background:#2c3e50;
+    color:white;
+    font-weight:bold;
+    font-size:1rem;
+}
+
+.next-btn:hover,
+.restart-btn:hover,
+.review-btn:hover{
+    opacity:0.9;
+}
+
+.hidden{
+    display:none;
+}
+
+.result-title{
+    font-size:2rem;
+    margin-bottom:10px;
+}
+
+.success{
+    color:#1e9b50;
+}
+
+.fail{
+    color:#c0392b;
+}
+
+.error-list{
+    text-align:left;
+    margin-top:20px;
+    background:#f7f9fc;
+    padding:15px;
+    border-radius:10px;
+}
+
+.error-list li{
+    margin-bottom:8px;
+}
+
+.mode-badge{
+    background:#1f6fb2;
+    color:white;
+    padding:6px 12px;
+    border-radius:999px;
+    font-size:0.9rem;
+    font-weight:bold;
+}
+
+@media(max-width:650px){
+    .options{
+        grid-template-columns:1fr;
+    }
+    .question{
+        font-size:1.25rem;
+    }
+    .top-bar{
+        flex-direction:column;
+        align-items:flex-start;
+    }
 }
 </style>
 </head>
 
 <body>
 
-<div class="container" id="pantalla-quiz">
+<div class="container">
+    <div id="quiz-screen">
+        <div class="top-bar">
+            <h1>🇬🇧 English Vocabulary (Units 1-6)</h1>
+            <div class="mode-badge" id="mode-badge">Main Test</div>
+        </div>
 
-<h1>🇬🇧 English Vocabulary</h1>
+        <div class="top-bar">
+            <div>
+                Question <strong><span id="question-number">1</span> / <span id="question-total">40</span></strong>
+            </div>
+            <div class="stats">
+                <span class="correct">✅ <span id="correct-count">0</span></span>
+                <span class="wrong">❌ <span id="wrong-count">0</span></span>
+            </div>
+        </div>
 
-<div class="score-board">
-Question <span id="num-pregunta">1</span> of 30
-</div>
+        <div class="progress-wrapper">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
 
-<div class="live-stats">
-<span class="stat-correct">
-✅ Correct: <span id="contador-correctas">0</span>
-</span>
+        <div class="question" id="question-text">Loading...</div>
+        <div class="options" id="options-container"></div>
+        <button class="next-btn hidden" id="next-btn">Next Question →</button>
+    </div>
 
-<span class="stat-wrong">
-❌ Wrong: <span id="contador-incorrectas">0</span>
-</span>
-</div>
+    <div id="result-screen" class="hidden">
+        <h2 class="result-title" id="result-title"></h2>
+        <p>Score: <strong id="final-score"></strong></p>
+        <p>Percentage: <strong id="final-percentage"></strong></p>
 
-<div class="question" id="texto-pregunta">
-Loading...
-</div>
-
-<div class="options" id="contenedor-opciones"></div>
-
-<button id="btn-siguiente" onclick="pasarPregunta()">
-Next Question ➔
-</button>
-
-</div>
-
-<div class="container" id="pantalla-resultado">
-
-<h1 id="titulo-resultado">Finish!</h1>
-
-<p>
-Score: <strong id="aciertos">0</strong> / 30
-</p>
-
-<p>
-Percentage: <strong id="porcentaje">0%</strong> (Goal: 85%)
-</p>
-
-<h2 id="mensaje-resultado"></h2>
-
-<button class="btn-repetir" onclick="iniciarTest()">
-Try Again
-</button>
-
+        <div id="mistakes-section" class="hidden">
+            <h3>Words to review:</h3>
+            <ul class="error-list" id="mistakes-list"></ul>
+            <button class="review-btn" id="review-btn">Practice Mistakes</button>
+        </div>
+        <button class="restart-btn" id="restart-btn">Restart Full Test</button>
+    </div>
 </div>
 
 <script>
+// =====================================
+// CONFIGURACIÓN
+// =====================================
+const MAIN_TEST_QUESTIONS = 40;
+const PASS_PERCENTAGE = 85;
 
-// ==========================================
-// LISTA DE VOCABULARIO
-// ==========================================
+// =====================================
+// LISTAS DE VOCABULARIO
+// =====================================
 
-const miLista = [
-
-    // MÓDULO 5
-    { es: "arrastrar", en: "drag" },
-    { es: "poner en peligro", en: "endanger" },
-    { es: "en peligro de extinción", en: "endangered" },
-    { es: "esperar", en: "expect" },
-    { es: "más al norte", en: "further north" },
-    { es: "etiqueta", en: "hashtag" },
-    { es: "manada", en: "herd" },
-    { es: "permitir, dejar", en: "let" },
-    { es: "premio", en: "prize" },
-    { es: "al poco tiempo", en: "soon" },
-    { es: "conseguir, lograr", en: "succeed" },
-    { es: "supervivencia", en: "survival" },
-    { es: "vista", en: "view" },
-    { es: "pesar", en: "weigh" },
-
-    // MÓDULO 4
-    { es: "ganar a", en: "beat" },
-    { es: "campeonato", en: "championship" },
-    { es: "payaso", en: "clown" },
-    { es: "concurso", en: "contest" },
-    { es: "plato", en: "course" },
-    { es: "cancha, pista", en: "court" },
-    { es: "cliente/a", en: "customer" },
-    { es: "sin duda", en: "definitely" },
-    { es: "sabor", en: "flavour" },
-    { es: "gastroneta", en: "food truck" },
-    { es: "fútbol", en: "football" },
-    { es: "griego/a", en: "Greek" },
-    { es: "disfrazado/a", en: "in costume" },
-    { es: "en vivo / directo", en: "live" },
-    { es: "de larga duración", en: "long-life" },
-    { es: "partido", en: "match" },
-    { es: "medianoche", en: "midnight" },
-    { es: "carrera", en: "race" },
-    { es: "recordar a", en: "remind of" },
-    { es: "pantalla", en: "screen" },
-    { es: "acompañamiento, guarnición", en: "side dish" },
-    { es: "entrada", en: "starter" },
-    { es: "sabroso/a", en: "tasty" },
-
-    // REVIEW 2
-    { es: "manta", en: "blanket" },
-    { es: "muñeca", en: "doll" },
-    { es: "dejar caer", en: "drop" },
-    { es: "tierra firme", en: "dry land" },
-    { es: "granjero/a", en: "farmer" },
-    { es: "campo, prado", en: "field" },
-    { es: "paso", en: "footstep" },
-    { es: "bolsillo", en: "pocket" },
-    { es: "mujer, esposa", en: "wife" },
-
-    // MÓDULO 3
-    { es: "chicle", en: "chewing gum" },
-    { es: "cómodo/a", en: "comfortable" },
-    { es: "suciedad", en: "dirt" },
-    { es: "tierra", en: "earth" },
-
-    // TRANSPORTES
-    { es: "avión", en: "aeroplane" },
-    { es: "barco", en: "boat" },
-    { es: "conducir", en: "drive" },
-    { es: "bici eléctrica", en: "electric bike" },
-    { es: "patinete eléctrico", en: "electric scooter" },
-    { es: "ferri", en: "ferry" },
-    { es: "pilotar", en: "fly" },
-    { es: "helicóptero", en: "helicopter" },
-    { es: "todo terreno", en: "jeep" },
-    { es: "camión", en: "lorry" },
-    { es: "minivan", en: "minivan" },
-    { es: "ciclomotor", en: "moped" },
-    { es: "moto", en: "motorbike" },
-    { es: "montar", en: "ride" },
-    { es: "en barco", en: "sail" },
-    { es: "barco", en: "ship" },
-    { es: "llevar", en: "take" },
-    { es: "tren", en: "train" },
-    { es: "tranvía", en: "tram" },
-    { es: "metro", en: "underground" }
-
+// 1. MÓDULO 6
+const vocabM6 = [
+    { es: "normal, corriente", en: "average", category: "M6" },
+    { es: "globo", en: "balloon", category: "M6" },
+    { es: "tiza", en: "chalk", category: "M6" },
+    { es: "cubierta, capa", en: "covering", category: "M6" },
+    { es: "sucio/a", en: "dirty", category: "M6" },
+    { es: "mercadillo", en: "flea market", category: "M6" },
+    { es: "¿Sabes qué?", en: "Guess what!", category: "M6" },
+    { es: "tumbarse", en: "lie down", category: "M6" },
+    { es: "acera", en: "pavement", category: "M6" },
+    { es: "de calidad", en: "quality", category: "M6" },
+    { es: "maleta", en: "suitcase", category: "M6" },
+    { es: "tostada/s", en: "toast", category: "M6" },
+    { es: "más importante", en: "top", category: "M6" },
+    { es: "lavar", en: "wash", category: "M6" },
+    { es: "¡Ñam, ñam!", en: "Yum!", category: "M6" }
 ];
 
-let poolPreguntas = [];
-let indicePregunta = 0;
-let aciertos = 0;
-let errores = 0;
+// 2. MÓDULOS 1-5 + REVIEWS
+const vocabM1to5 = [
+    { es: "asamblea", en: "assembly", category: "school" }, { es: "descanso, pausa", en: "break", category: "school" },
+    { es: "cerrado/a", en: "closed", category: "school" }, { es: "centrarse", en: "focus", category: "school" },
+    { es: "director/a", en: "headteacher", category: "school" }, { es: "aprendizaje", en: "learning", category: "school" },
+    { es: "clase", en: "lesson", category: "school" }, { es: "comida", en: "meal", category: "school" },
+    { es: "echarse una siesta", en: "nap", category: "school" }, { es: "cápsula", en: "pod", category: "school" },
+    { es: "asignatura", en: "subject", category: "school" }, { es: "adolescente", en: "teenager", category: "school" },
+    { es: "horario", en: "timetable", category: "school" }, { es: "cansado/a", en: "tired", category: "school" },
+    { es: "increíble", en: "amazing", category: "adjectives" }, { es: "antiguo/a", en: "ancient", category: "adjectives" },
+    { es: "cita", en: "appointment", category: "events" }, { es: "público", en: "audience", category: "events" },
+    { es: "cuidadoso/a", en: "careful", category: "adjectives" }, { es: "pista", en: "clue", category: "objects" },
+    { es: "coleccionista", en: "collector", category: "people" }, { es: "concurso", en: "competition", category: "events" },
+    { es: "disfraz", en: "costume", category: "objects" }, { es: "criminal", en: "criminal", category: "people" },
+    { es: "peligroso/a", en: "dangerous", category: "adjectives" }, { es: "disfrazado/a", en: "disguise", category: "adjectives" },
+    { es: "exposición (objetos)", en: "exhibit", category: "events" }, { es: "exposición", en: "exhibition", category: "events" },
+    { es: "fiesta de disfraces", en: "fancy-dress party", category: "events" }, { es: "asustar", en: "frighten", category: "verbs" },
+    { es: "asustado/a", en: "frightened", category: "adjectives" }, { es: "género", en: "genre", category: "objects" },
+    { es: "odiar", en: "hate", category: "verbs" }, { es: "divertirse", en: "have fun", category: "verbs" },
+    { es: "esconderse", en: "hide", category: "verbs" }, { es: "enfermo/a", en: "ill", category: "adjectives" },
+    { es: "protagonista", en: "main character", category: "people" }, { es: "ruidoso/a", en: "noisy", category: "adjectives" },
+    { es: "encuesta", en: "poll", category: "school" }, { es: "representación", en: "production", category: "events" },
+    { es: "rico/a", en: "rich", category: "adjectives" }, { es: "nave espacial", en: "spaceship", category: "objects" },
+    { es: "exitoso/a", en: "successful", category: "adjectives" }, { es: "búsqueda del tesoro", en: "treasure hunt", category: "events" },
+    { es: "bruja", en: "witch", category: "people" }, { es: "perder el sentido", en: "become unconscious", category: "verbs" },
+    { es: "rama", en: "branch", category: "nature" }, { es: "trepar", en: "climb", category: "verbs" },
+    { es: "suelo", en: "ground", category: "places" }, { es: "lamer", en: "lick", category: "verbs" },
+    { es: "tumbado/a", en: "lying", category: "adjectives" }, { es: "normal", en: "ordinary", category: "adjectives" },
+    { es: "graznar", en: "squawk", category: "verbs" }, { es: "despertarse", en: "wake up", category: "verbs" },
+    { es: "húmedo/a", en: "wet", category: "adjectives" }, { es: "guiñar el ojo", en: "wink", category: "verbs" },
+    { es: "chicle", en: "chewing gum", category: "food" }, { es: "cómodo/a", en: "comfortable", category: "adjectives" },
+    { es: "suciedad", en: "dirt", category: "nature" }, { es: "tierra", en: "earth", category: "nature" },
+    { es: "recargado/a", en: "elaborate", category: "adjectives" }, { es: "dato", en: "fact", category: "school" },
+    { es: "multa", en: "fine", category: "objects" }, { es: "gótico/a", en: "Gothic", category: "adjectives" },
+    { es: "ecologista", en: "green", category: "adjectives" }, { es: "planta baja", en: "ground floor", category: "places" },
+    { es: "de interior", en: "indoor", category: "places" }, { es: "en vez de", en: "instead of", category: "grammar" },
+    { es: "grande", en: "large", category: "adjectives" }, { es: "encuentro", en: "meeting", category: "events" },
+    { es: "aviso", en: "notice", category: "school" }, { es: "inauguración", en: "opening", category: "events" },
+    { es: "al aire libre", en: "outdoor", category: "places" }, { es: "montón", en: "pile", category: "objects" },
+    { es: "inscripción", en: "registration", category: "school" }, { es: "recorrido", en: "route", category: "places" },
+    { es: "forma", en: "shape", category: "objects" }, { es: "que se hunde", en: "sinking", category: "adjectives" },
+    { es: "patrocinador", en: "sponsor", category: "people" }, { es: "de piedra", en: "stone", category: "nature" },
+    { es: "inusual", en: "unusual", category: "adjectives" }, { es: "de madera", en: "wood", category: "nature" },
+    { es: "ganar a", en: "beat", category: "verbs" }, { es: "campeonato", en: "championship", category: "events" },
+    { es: "payaso", en: "clown", category: "people" }, { es: "concurso", en: "contest", category: "events" },
+    { es: "plato", en: "course", category: "food" }, { es: "cancha", en: "court", category: "places" },
+    { es: "cliente", en: "customer", category: "people" }, { es: "sin duda", en: "definitely", category: "adverbs" },
+    { es: "sabor", en: "flavour", category: "food" }, { es: "gastroneta", en: "food truck", category: "food" },
+    { es: "fútbol", en: "football", category: "events" }, { es: "griego/a", en: "Greek", category: "adjectives" },
+    { es: "en vivo", en: "live", category: "events" }, { es: "de larga duración", en: "long-life", category: "adjectives" },
+    { es: "partido", en: "match", category: "events" }, { es: "medianoche", en: "midnight", category: "events" },
+    { es: "carrera", en: "race", category: "events" }, { es: "recordar a", en: "remind of", category: "verbs" },
+    { es: "pantalla", en: "screen", category: "objects" }, { es: "guarnición", en: "side dish", category: "food" },
+    { es: "entrada (comida)", en: "starter", category: "food" }, { es: "sabroso/a", en: "tasty", category: "food" },
+    { es: "arrastrar", en: "drag", category: "verbs" }, { es: "poner en peligro", en: "endanger", category: "verbs" },
+    { es: "en peligro de extinción", en: "endangered", category: "adjectives" }, { es: "esperar", en: "expect", category: "verbs" },
+    { es: "más al norte", en: "further north", category: "places" }, { es: "etiqueta", en: "hashtag", category: "objects" },
+    { es: "manada", en: "herd", category: "nature" }, { es: "permitir", en: "let", category: "verbs" },
+    { es: "premio", en: "prize", category: "objects" }, { es: "al poco tiempo", en: "soon", category: "adverbs" },
+    { es: "conseguir", en: "succeed", category: "verbs" }, { es: "supervivencia", en: "survival", category: "nature" },
+    { es: "vista", en: "view", category: "nature" }, { es: "pesar", en: "weigh", category: "verbs" },
+    { es: "manta", en: "blanket", category: "objects" }, { es: "muñeca", en: "doll", category: "objects" },
+    { es: "dejar caer", en: "drop", category: "verbs" }, { es: "tierra firme", en: "dry land", category: "nature" },
+    { es: "granjero/a", en: "farmer", category: "people" }, { es: "campo", en: "field", category: "nature" },
+    { es: "paso", en: "footstep", category: "verbs" }, { es: "bolsillo", en: "pocket", category: "objects" },
+    { es: "esposa", en: "wife", category: "family" }, { es: "cuidadosamente", en: "carefully", category: "adverbs" },
+    { es: "valla", en: "fence", category: "objects" }, { es: "¡No es justo!", en: "It's not fair!", category: "grammar" },
+    { es: "mermelada", en: "jam", category: "food" }, { es: "señalar", en: "point to", category: "verbs" },
+    { es: "castigo", en: "punishment", category: "school" }, { es: "huir", en: "run away", category: "verbs" },
+    { es: "sorprendido/a", en: "shocked", category: "adjectives" }
+];
 
-const TOTAL = 30;
+// 3. VOCABULARIO BÁSICO (Colores, Familia, Transportes, etc.)
+const vocabBasics = [
+    { es: "cinturón", en: "belt", category: "clothes" }, { es: "brazalete", en: "bracelet", category: "clothes" },
+    { es: "gorra", en: "cap", category: "clothes" }, { es: "pendientes", en: "earrings", category: "clothes" },
+    { es: "gafas", en: "glasses", category: "clothes" }, { es: "guantes", en: "gloves", category: "clothes" },
+    { es: "cinta de pelo", en: "hairband", category: "clothes" }, { es: "bolso", en: "handbag", category: "clothes" },
+    { es: "joyas", en: "jewellery", category: "clothes" }, { es: "maquillaje", en: "make-up", category: "clothes" },
+    { es: "collar", en: "necklace", category: "clothes" }, { es: "monedero", en: "purse", category: "clothes" },
+    { es: "anillo", en: "ring", category: "clothes" }, { es: "bufanda", en: "scarf", category: "clothes" },
+    { es: "gafas de sol", en: "sunglasses", category: "clothes" }, { es: "paraguas", en: "umbrella", category: "clothes" },
+    { es: "cartera", en: "wallet", category: "clothes" }, { es: "reloj", en: "watch", category: "clothes" },
+    { es: "avión", en: "aeroplane", category: "transport" }, { es: "barco", en: "boat", category: "transport" },
+    { es: "conducir", en: "drive", category: "transport" }, { es: "bici eléctrica", en: "electric bike", category: "transport" },
+    { es: "patinete eléctrico", en: "electric scooter", category: "transport" }, { es: "ferri", en: "ferry", category: "transport" },
+    { es: "pilotar", en: "fly", category: "transport" }, { es: "helicóptero", en: "helicopter", category: "transport" },
+    { es: "todo terreno", en: "jeep", category: "transport" }, { es: "camión", en: "lorry", category: "transport" },
+    { es: "minivan", en: "minivan", category: "transport" }, { es: "ciclomotor", en: "moped", category: "transport" },
+    { es: "moto", en: "motorbike", category: "transport" }, { es: "montar", en: "ride", category: "transport" },
+    { es: "navegar", en: "sail", category: "transport" }, { es: "barco grande", en: "ship", category: "transport" },
+    { es: "llevar", en: "take", category: "transport" }, { es: "tren", en: "train", category: "transport" },
+    { es: "tranvía", en: "tram", category: "transport" }, { es: "metro", en: "underground", category: "transport" },
+    { es: "tía", en: "aunt", category: "family" }, { es: "hermano", en: "brother", category: "family" },
+    { es: "primo/a", en: "cousin", category: "family" }, { es: "papá", en: "dad", category: "family" },
+    { es: "abuelo", en: "grandfather", category: "family" }, { es: "abuela", en: "grandmother", category: "family" },
+    { es: "mamá", en: "mum", category: "family" }, { es: "hermana", en: "sister", category: "family" },
+    { es: "tío", en: "uncle", category: "family" }, { es: "brazo", en: "arm", category: "body" },
+    { es: "oreja", en: "ear", category: "body" }, { es: "ojo", en: "eye", category: "body" },
+    { es: "pie", en: "foot", category: "body" }, { es: "pelo", en: "hair", category: "body" },
+    { es: "mano", en: "hand", category: "body" }, { es: "pierna", en: "leg", category: "body" },
+    { es: "boca", en: "mouth", category: "body" }, { es: "nariz", en: "nose", category: "body" },
+    { es: "dientes", en: "teeth", category: "body" }, { es: "encima de", en: "above", category: "prepositions" },
+    { es: "detrás de", en: "behind", category: "prepositions" }, { es: "entre", en: "between", category: "prepositions" },
+    { es: "dentro de", en: "in", category: "prepositions" }, { es: "delante de", en: "in front of", category: "prepositions" },
+    { es: "al lado de", en: "next to", category: "prepositions" }, { es: "sobre", en: "on", category: "prepositions" },
+    { es: "enfrente de", en: "opposite", category: "prepositions" }, { es: "debajo de", en: "under", category: "prepositions" },
+    { es: "negro", en: "black", category: "colors" }, { es: "azul", en: "blue", category: "colors" },
+    { es: "marrón", en: "brown", category: "colors" }, { es: "verde", en: "green", category: "colors" },
+    { es: "gris", en: "grey", category: "colors" }, { es: "naranja", en: "orange", category: "colors" },
+    { es: "rosa", en: "pink", category: "colors" }, { es: "morado", en: "purple", category: "colors" },
+    { es: "rojo", en: "red", category: "colors" }, { es: "blanco", en: "white", category: "colors" },
+    { es: "amarillo", en: "yellow", category: "colors" }, { es: "lunes", en: "Monday", category: "calendar" },
+    { es: "martes", en: "Tuesday", category: "calendar" }, { es: "miércoles", en: "Wednesday", category: "calendar" },
+    { es: "jueves", en: "Thursday", category: "calendar" }, { es: "viernes", en: "Friday", category: "calendar" },
+    { es: "sábado", en: "Saturday", category: "calendar" }, { es: "domingo", en: "Sunday", category: "calendar" },
+    { es: "enero", en: "January", category: "calendar" }, { es: "febrero", en: "February", category: "calendar" },
+    { es: "marzo", en: "March", category: "calendar" }, { es: "abril", en: "April", category: "calendar" },
+    { es: "mayo", en: "May", category: "calendar" }, { es: "junio", en: "June", category: "calendar" },
+    { es: "julio", en: "July", category: "calendar" }, { es: "agosto", en: "August", category: "calendar" },
+    { es: "septiembre", en: "September", category: "calendar" }, { es: "octubre", en: "October", category: "calendar" },
+    { es: "noviembre", en: "November", category: "calendar" }, { es: "diciembre", en: "December", category: "calendar" },
+    { es: "doce", en: "twelve", category: "numbers" }, { es: "veinte", en: "twenty", category: "numbers" },
+    { es: "treinta", en: "thirty", category: "numbers" }, { es: "cuarenta", en: "forty", category: "numbers" },
+    { es: "cincuenta", en: "fifty", category: "numbers" }, { es: "ochenta", en: "eighty", category: "numbers" },
+    { es: "cien", en: "one hundred", category: "numbers" }, { es: "primero/a", en: "first", category: "numbers" },
+    { es: "segundo/a", en: "second", category: "numbers" }, { es: "tercero/a", en: "third", category: "numbers" }
+];
 
-const shuffle = (a) => a.sort(() => Math.random() - 0.5);
+const fullVocabulary = [...vocabM6, ...vocabM1to5, ...vocabBasics];
 
-function iniciarTest() {
+// =====================================
+// ESTADOS Y VARIABLES
+// =====================================
+let currentQuestions = [];
+let currentIndex = 0;
+let correctAnswers = 0;
+let wrongAnswers = 0;
+let mistakes = [];
+let reviewMode = false;
 
-    document.getElementById("pantalla-resultado").style.display = "none";
-    document.getElementById("pantalla-quiz").style.display = "block";
+// Elementos del DOM
+const questionText = document.getElementById("question-text");
+const optionsContainer = document.getElementById("options-container");
+const nextBtn = document.getElementById("next-btn");
+const correctCount = document.getElementById("correct-count");
+const wrongCount = document.getElementById("wrong-count");
+const questionNumber = document.getElementById("question-number");
+const questionTotal = document.getElementById("question-total");
+const progressBar = document.getElementById("progress-bar");
+const quizScreen = document.getElementById("quiz-screen");
+const resultScreen = document.getElementById("result-screen");
+const resultTitle = document.getElementById("result-title");
+const finalScore = document.getElementById("final-score");
+const finalPercentage = document.getElementById("final-percentage");
+const mistakesSection = document.getElementById("mistakes-section");
+const mistakesList = document.getElementById("mistakes-list");
+const reviewBtn = document.getElementById("review-btn");
+const restartBtn = document.getElementById("restart-btn");
+const modeBadge = document.getElementById("mode-badge");
 
-    aciertos = 0;
-    errores = 0;
-    indicePregunta = 0;
-    poolPreguntas = [];
-
-    actualizarStats();
-
-    let ids = Array.from({length: miLista.length}, (_, i) => i);
-
-    let s1 = shuffle([...ids]).slice(0, 15);
-    let s2 = shuffle([...ids]).slice(0, 15);
-
-    for(let i = 0; i < 15; i++) {
-        poolPreguntas.push({ d: miLista[s1[i]], dir: 0 });
-        poolPreguntas.push({ d: miLista[s2[i]], dir: 1 });
+// =====================================
+// UTILIDADES
+// =====================================
+function shuffle(array){
+    const arr = [...array];
+    for(let i = arr.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
     }
-
-    mostrarPregunta();
+    return arr;
 }
 
-function mostrarPregunta() {
+function getRandomDirection(){
+    return Math.random() < 0.5 ? "ES_EN" : "EN_ES";
+}
 
-    document.getElementById("btn-siguiente").style.display = "none";
+// =====================================
+// GENERACIÓN DE PREGUNTAS Y LÓGICA DE TEMAS
+// =====================================
+function buildMainTest(){
+    // La magia de las proporciones: 10 de M6, 25 del resto, 5 básicas
+    let obligatoriasM6 = shuffle([...vocabM6]).slice(0, 10);
+    let obligatoriasM1to5 = shuffle([...vocabM1to5]).slice(0, 25);
+    let obligatoriasBasics = shuffle([...vocabBasics]).slice(0, 5);
 
-    document.getElementById("num-pregunta").innerText =
-        indicePregunta + 1;
+    let seleccionadas = shuffle([...obligatoriasM6, ...obligatoriasM1to5, ...obligatoriasBasics]);
 
-    let p = poolPreguntas[indicePregunta];
+    currentQuestions = seleccionadas.map(item => ({
+        item,
+        direction: getRandomDirection()
+    }));
+    reviewMode = false;
+}
 
-    let corr = p.dir === 0 ? p.d.en : p.d.es;
+function buildReviewTest(){
+    currentQuestions = shuffle(mistakes).map(item => ({
+        item,
+        direction: getRandomDirection()
+    }));
+    reviewMode = true;
+}
 
-    let txt = p.dir === 0
-        ? `How do you say: "${p.d.es}"?`
-        : `What does "${p.d.en}" mean?`;
+function getWrongOptions(correctItem, direction){
+    const field = direction === "ES_EN" ? "en" : "es";
+    
+    // Primero, busca opciones falsas dentro de su misma categoría para que sea más difícil
+    let sameCategory = fullVocabulary.filter(v => 
+        v.category === correctItem.category && v[field] !== correctItem[field]
+    );
 
-    document.getElementById("texto-pregunta").innerText = txt;
+    let pool = sameCategory;
+    
+    // Si no hay suficientes palabras en esa categoría, coge del resto del vocabulario
+    if(pool.length < 5){
+        pool = fullVocabulary.filter(v => v[field] !== correctItem[field]);
+    }
 
-    let key = p.dir === 0 ? "en" : "es";
+    return shuffle([...new Set(pool.map(v => v[field]))]).slice(0,5);
+}
 
-    let otrasOpciones = shuffle([
-        ...new Set(
-            miLista
-            .filter(i => i[key] !== corr)
-            .map(i => i[key])
-        )
-    ]).slice(0, 5);
+// =====================================
+// FLUJO DEL TEST
+// =====================================
+function startMainTest(){
+    currentIndex = 0;
+    correctAnswers = 0;
+    wrongAnswers = 0;
+    mistakes = [];
 
-    let opts = shuffle([corr, ...otrasOpciones]);
+    buildMainTest();
+    questionTotal.textContent = MAIN_TEST_QUESTIONS;
+    showQuizScreen();
+    renderQuestion();
+}
 
-    let cont = document.getElementById("contenedor-opciones");
+function startReviewMode(){
+    currentIndex = 0;
+    correctAnswers = 0;
+    wrongAnswers = 0;
 
-    cont.innerHTML = "";
+    buildReviewTest();
+    questionTotal.textContent = currentQuestions.length;
+    showQuizScreen();
+    renderQuestion();
+}
 
-    opts.forEach(o => {
+function renderQuestion(){
+    nextBtn.classList.add("hidden");
+    updateStats();
 
-        let b = document.createElement("button");
+    const current = currentQuestions[currentIndex];
+    const item = current.item;
+    const direction = current.direction;
 
-        b.innerText = o;
+    const correct = direction === "ES_EN" ? item.en : item.es;
+    const question = direction === "ES_EN" 
+        ? `How do you say "${item.es}" in English?` 
+        : `What does "${item.en}" mean?`;
 
-        b.onclick = () => {
+    questionText.textContent = question;
+    questionNumber.textContent = currentIndex + 1;
+    progressBar.style.width = `${((currentIndex) / currentQuestions.length) * 100}%`;
 
-            Array.from(cont.children).forEach(btn => {
+    const wrongOptions = getWrongOptions(item, direction);
+    const options = shuffle([correct, ...wrongOptions]);
 
-                btn.disabled = true;
+    optionsContainer.innerHTML = "";
 
-                if(btn.innerText === corr) {
-                    btn.classList.add("btn-correct");
+    options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.className = "option-btn";
+        btn.textContent = option;
+
+        btn.addEventListener("click", () => {
+            const buttons = document.querySelectorAll(".option-btn");
+
+            buttons.forEach(b => {
+                b.disabled = true;
+                if(b.textContent === correct){
+                    b.classList.add("correct-answer");
                 }
             });
 
-            if(o === corr) {
+            if(option === correct){
+                correctAnswers++;
+            }else{
+                wrongAnswers++;
+                btn.classList.add("wrong-answer");
 
-                aciertos++;
+                const meaning = direction === "ES_EN" ? item.es : item.en;
+                const hint = document.createElement("span");
+                hint.className = "hint";
+                hint.textContent = `Correct: ${meaning}`;
+                btn.appendChild(hint);
 
-            } else {
-
-                b.classList.add("btn-wrong");
-
-                errores++;
-
-                let item = miLista.find(i => i[key] === o);
-
-                if(item) {
-
-                    b.innerHTML =
-                    `<span>${o}</span>
-                    <span class="meaning-hint">
-                    Is: ${p.dir === 0 ? item.es : item.en}
-                    </span>`;
+                if(!mistakes.includes(item)){
+                    mistakes.push(item);
                 }
             }
-
-            actualizarStats();
-
-            document.getElementById("btn-siguiente").style.display =
-                "block";
-        };
-
-        cont.appendChild(b);
+            updateStats();
+            nextBtn.classList.remove("hidden");
+        });
+        optionsContainer.appendChild(btn);
     });
 }
 
-const actualizarStats = () => {
-
-    document.getElementById("contador-correctas").innerText =
-        aciertos;
-
-    document.getElementById("contador-incorrectas").innerText =
-        errores;
-};
-
-const pasarPregunta = () => {
-
-    indicePregunta++;
-
-    if(indicePregunta < TOTAL) {
-        mostrarPregunta();
-    } else {
-        mostrarResult();
-    }
-};
-
-function mostrarResult() {
-
-    document.getElementById("pantalla-quiz").style.display = "none";
-
-    document.getElementById("pantalla-resultado").style.display =
-        "block";
-
-    let pct = Math.round((aciertos / TOTAL) * 100);
-
-    document.getElementById("aciertos").innerText = aciertos;
-
-    document.getElementById("porcentaje").innerText =
-        pct + "%";
-
-    let titulo = document.getElementById("titulo-resultado");
-
-    let mensaje = document.getElementById("mensaje-resultado");
-
-    if(pct >= 85) {
-
-        titulo.innerText = "🏆 Well Done! 🏆";
-        titulo.className = "success";
-
-        mensaje.innerText =
-            "Excellent! You passed the 85% barrier.";
-
-    } else {
-
-        titulo.innerText = "❌ Keep Training! ❌";
-        titulo.className = "fail";
-
-        mensaje.innerText =
-            "You need 85% to pass. Try again!";
+function nextQuestion(){
+    currentIndex++;
+    if(currentIndex < currentQuestions.length){
+        renderQuestion();
+    }else{
+        showResults();
     }
 }
 
-iniciarTest();
+function showResults(){
+    quizScreen.classList.add("hidden");
+    resultScreen.classList.remove("hidden");
 
+    const total = currentQuestions.length;
+    const percentage = Math.round((correctAnswers / total) * 100);
+
+    finalScore.textContent = `${correctAnswers} / ${total}`;
+    finalPercentage.textContent = `${percentage}%`;
+
+    if(percentage >= PASS_PERCENTAGE){
+        resultTitle.textContent = "🏆 Excellent Work!";
+        resultTitle.className = "result-title success";
+    }else{
+        resultTitle.textContent = "❌ Keep Practising!";
+        resultTitle.className = "result-title fail";
+    }
+
+    if(mistakes.length > 0 && !reviewMode){
+        mistakesSection.classList.remove("hidden");
+        mistakesList.innerHTML = "";
+        mistakes.forEach(word => {
+            const li = document.createElement("li");
+            li.textContent = `${word.es} → ${word.en}`;
+            mistakesList.appendChild(li);
+        });
+    }else{
+        mistakesSection.classList.add("hidden");
+    }
+}
+
+function updateStats(){
+    correctCount.textContent = correctAnswers;
+    wrongCount.textContent = wrongAnswers;
+    modeBadge.textContent = reviewMode ? "Review Mode" : "Main Test";
+}
+
+function showQuizScreen(){
+    resultScreen.classList.add("hidden");
+    quizScreen.classList.remove("hidden");
+}
+
+// =====================================
+// EVENTOS
+// =====================================
+nextBtn.addEventListener("click", nextQuestion);
+restartBtn.addEventListener("click", startMainTest);
+reviewBtn.addEventListener("click", startReviewMode);
+
+// INICIAR TEST
+startMainTest();
 </script>
 
 </body>
