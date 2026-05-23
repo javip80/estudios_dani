@@ -450,10 +450,10 @@ function getRandomDirection(){
 }
 
 // =====================================
-// GENERACIÓN DE PREGUNTAS Y LÓGICA DE TEMAS
+// GENERACIÓN DE PREGUNTAS Y LÓGICA
 // =====================================
 function buildMainTest(){
-    // La magia de las proporciones: 10 de M6, 25 del resto, 5 básicas
+    // Proporciones: 10 de M6, 25 del resto, 5 básicas
     let obligatoriasM6 = shuffle([...vocabM6]).slice(0, 10);
     let obligatoriasM1to5 = shuffle([...vocabM1to5]).slice(0, 25);
     let obligatoriasBasics = shuffle([...vocabBasics]).slice(0, 5);
@@ -562,11 +562,18 @@ function renderQuestion(){
                 wrongAnswers++;
                 btn.classList.add("wrong-answer");
 
-                const meaning = direction === "ES_EN" ? item.es : item.en;
-                const hint = document.createElement("span");
-                hint.className = "hint";
-                hint.textContent = `Correct: ${meaning}`;
-                btn.appendChild(hint);
+                // --- LÓGICA CORREGIDA PARA LA PISTA ---
+                const field = direction === "ES_EN" ? "en" : "es";
+                const clickedItem = fullVocabulary.find(v => v[field] === option);
+                
+                if(clickedItem){
+                    const translation = direction === "ES_EN" ? clickedItem.es : clickedItem.en;
+                    const hint = document.createElement("span");
+                    hint.className = "hint";
+                    hint.textContent = `(Significa: ${translation})`;
+                    btn.appendChild(hint);
+                }
+                // -------------------------------------
 
                 if(!mistakes.includes(item)){
                     mistakes.push(item);
