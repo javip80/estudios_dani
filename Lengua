@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dani: Repaso de Lengua</title>
+
+<style>
+*{ box-sizing:border-box; }
+body{
+margin:0; padding:20px;
+font-family: 'Segoe UI', Arial, sans-serif;
+background:#eef3f8; color:#2c3e50;
+}
+.container{
+max-width:800px; margin:auto;
+background:white; border-radius:16px;
+padding:30px; box-shadow:0 4px 18px rgba(0,0,0,0.1);
+}
+h1{ margin-top:0; color:#8e44ad; }
+.top-bar{
+display:flex; justify-content:space-between; align-items:center;
+gap:10px; flex-wrap:wrap; margin-bottom:20px;
+}
+.stats{ display:flex; gap:20px; font-weight:bold; }
+.correct{ color:#1e9b50; }
+.wrong{ color:#c0392b; }
+.progress-wrapper{
+width:100%; background:#dfe6ee; border-radius:999px;
+overflow:hidden; height:18px; margin:20px 0;
+}
+.progress-bar{
+height:100%; width:0%; background:#8e44ad; transition:0.3s;
+}
+.question{
+font-size:1.4rem; font-weight:bold; margin:30px 0; min-height:70px; line-height: 1.3;
+}
+.options{
+display:grid; grid-template-columns:1fr 1fr; gap:14px;
+}
+button{
+border:none; border-radius:10px; padding:16px;
+cursor:pointer; font-size:1rem; transition:0.2s;
+}
+.option-btn{
+background:white; border:2px solid #8e44ad; color:#8e44ad;
+min-height:70px; font-weight:600;
+}
+.option-btn:hover:not(:disabled){
+background:#8e44ad; color:white;
+}
+.option-btn:disabled{ cursor:default; }
+.correct-answer{
+background:#1e9b50 !important; border-color:#1e9b50 !important; color:white !important;
+}
+.wrong-answer{
+background:#c0392b !important; border-color:#c0392b !important; color:white !important;
+}
+.hint{
+display:block; margin-top:8px; font-size:0.85rem; opacity:0.95; font-style: italic;
+}
+.next-btn, .restart-btn, .review-btn{
+margin-top:25px; width:100%; background:#2c3e50;
+color:white; font-weight:bold; font-size:1rem;
+}
+.next-btn:hover, .restart-btn:hover, .review-btn:hover{ opacity:0.9; }
+.hidden{ display:none; }
+.result-title{ font-size:2rem; margin-bottom:10px; }
+.success{ color:#1e9b50; }
+.fail{ color:#c0392b; }
+.error-list{
+text-align:left; margin-top:20px; background:#f7f9fc;
+padding:15px; border-radius:10px;
+}
+.error-list li{ margin-bottom:8px; }
+.mode-badge{
+background:#8e44ad; color:white; padding:6px 12px;
+border-radius:999px; font-size:0.9rem; font-weight:bold;
+}
+@media(max-width:650px){
+.options{ grid-template-columns:1fr; }
+.question{ font-size:1.15rem; }
+.top-bar{ flex-direction:column; align-items:flex-start; }
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+<div id="quiz-screen">
+<div class="top-bar">
+<h1>📚 Repaso de Lengua: Verbos y Ortografía</h1>
+<div class="mode-badge" id="mode-badge">Test Principal</div>
+</div>
+
+<div class="top-bar">
+<div>Pregunta <strong><span id="question-number">1</span> / <span id="question-total">40</span></strong></div>
+<div class="stats">
+<span class="correct">✅ <span id="correct-count">0</span></span>
+<span class="wrong">❌ <span id="wrong-count">0</span></span>
+</div>
+</div>
+
+<div class="progress-wrapper">
+<div class="progress-bar" id="progress-bar"></div>
+</div>
+
+<div class="question" id="question-text">Cargando...</div>
+<div class="options" id="options-container"></div>
+<button class="next-btn hidden" id="next-btn">Siguiente Pregunta →</button>
+</div>
+
+<div id="result-screen" class="hidden">
+<h2 class="result-title" id="result-title"></h2>
+<p>Aciertos: <strong id="final-score"></strong></p>
+<p>Porcentaje: <strong id="final-percentage"></strong></p>
+
+<div id="mistakes-section" class="hidden">
+<h3>Conceptos a repasar:</h3>
+<ul class="error-list" id="mistakes-list"></ul>
+<button class="review-btn" id="review-btn">Practicar Errores</button>
+</div>
+<button class="restart-btn" id="restart-btn">Reiniciar Test Completo</button>
+</div>
+</div>
+
+<script>
+// =====================================
+// BANCOS DE PREGUNTAS
+// =====================================
+
+// --- 60 PREGUNTAS DE VERBOS (Depuradas y actualizadas con Tiempos Verbales) ---
+const verbosPool = [
+// 1. Identificación de Tiempos Verbales (Simples y Compuestos)
+{ q: "¿A qué tiempo verbal pertenece 'habíamos jugado'?", options: ["Pretérito pluscuamperfecto", "Pretérito perfecto compuesto", "Pretérito anterior", "Condicional compuesto"], correct: "Pretérito pluscuamperfecto", hint: "Lleva el auxiliar haber en imperfecto (habíamos)." },
+{ q: "¿A qué tiempo verbal pertenece 'hemos visto'?", options: ["Pretérito perfecto compuesto", "Pretérito pluscuamperfecto", "Presente", "Futuro compuesto"], correct: "Pretérito perfecto compuesto", hint: "Lleva el auxiliar haber en presente (hemos)." },
+{ q: "¿A qué tiempo verbal pertenece 'habré terminado'?", options: ["Futuro compuesto", "Futuro simple", "Condicional compuesto", "Pretérito anterior"], correct: "Futuro compuesto", hint: "Lleva el auxiliar haber en futuro (habré)." },
+{ q: "¿A qué tiempo verbal pertenece 'habría ido'?", options: ["Condicional compuesto", "Pretérito pluscuamperfecto", "Condicional simple", "Futuro compuesto"], correct: "Condicional compuesto", hint: "Lleva el auxiliar haber en condicional (habría)." },
+{ q: "¿A qué tiempo verbal pertenece 'hube cantado'?", options: ["Pretérito anterior", "Pretérito perfecto simple", "Pretérito pluscuamperfecto", "Condicional compuesto"], correct: "Pretérito anterior", hint: "Es un tiempo compuesto que usa 'hube', 'hubiste'..." },
+{ q: "¿A qué tiempo verbal pertenece 'hubiera o hubiese sabido'?", options: ["Pretérito pluscuamperfecto de subjuntivo", "Pretérito perfecto compuesto", "Pretérito imperfecto de subjuntivo", "Condicional compuesto"], correct: "Pretérito pluscuamperfecto de subjuntivo", hint: "Auxiliar en subjuntivo (hubiera/hubiese)." },
+{ q: "¿A qué tiempo verbal pertenece 'haya visto'?", options: ["Pretérito perfecto compuesto de subjuntivo", "Presente de subjuntivo", "Pretérito anterior", "Pretérito pluscuamperfecto"], correct: "Pretérito perfecto compuesto de subjuntivo", hint: "Auxiliar haber en presente de subjuntivo (haya)." },
+{ q: "¿A qué tiempo verbal pertenece 'cantaba'?", options: ["Pretérito imperfecto de indicativo", "Pretérito perfecto simple", "Condicional simple", "Presente"], correct: "Pretérito imperfecto de indicativo", hint: "Terminación en -aba, indica un pasado que duraba." },
+{ q: "¿A qué tiempo verbal pertenece 'vivía'?", options: ["Pretérito imperfecto de indicativo", "Pretérito perfecto simple", "Presente", "Condicional simple"], correct: "Pretérito imperfecto de indicativo", hint: "Terminación en -ía." },
+{ q: "¿A qué tiempo verbal pertenece 'canté'?", options: ["Pretérito perfecto simple", "Pretérito imperfecto", "Presente", "Futuro simple"], correct: "Pretérito perfecto simple", hint: "Acción terminada en el pasado. Lleva tilde." },
+{ q: "¿A qué tiempo verbal pertenece 'cantaré'?", options: ["Futuro simple de indicativo", "Condicional simple", "Presente", "Futuro compuesto"], correct: "Futuro simple de indicativo", hint: "Indica algo que pasará. Lleva tilde." },
+{ q: "¿A qué tiempo verbal pertenece 'cantaría'?", options: ["Condicional simple", "Pretérito imperfecto", "Futuro simple", "Pretérito perfecto simple"], correct: "Condicional simple", hint: "Termina en -ría." },
+{ q: "¿A qué tiempo verbal pertenece 'que yo cante'?", options: ["Presente de subjuntivo", "Presente de indicativo", "Imperativo", "Pretérito imperfecto"], correct: "Presente de subjuntivo", hint: "Expresa deseo: 'Ojalá que yo cante'." },
+{ q: "¿A qué tiempo verbal pertenece 'cantara o cantase'?", options: ["Pretérito imperfecto de subjuntivo", "Pretérito perfecto simple", "Pretérito pluscuamperfecto", "Condicional simple"], correct: "Pretérito imperfecto de subjuntivo", hint: "Es el pasado del modo subjuntivo." },
+
+// 2. Preguntas de conjugar y deducir la forma verbal
+{ q: "Dime el pretérito imperfecto de subjuntivo del verbo 'correr' (yo):", options: ["Corriera o corriese", "Corría", "Correré", "Haya corrido"], correct: "Corriera o corriese", hint: "Es subjuntivo: 'Ojalá yo...'" },
+{ q: "Dime el pretérito perfecto simple del verbo 'ir' (yo):", options: ["Fui", "Iba", "He ido", "Iría"], correct: "Fui", hint: "Es totalmente irregular." },
+{ q: "Dime el pretérito imperfecto de indicativo del verbo 'ir' (yo):", options: ["Iba", "Fui", "Iría", "Había ido"], correct: "Iba", hint: "Excepción importante: va con B." },
+{ q: "Dime el pretérito imperfecto de indicativo del verbo 'ser' (yo):", options: ["Era", "Fui", "Sería", "Sido"], correct: "Era", hint: "Es totalmente irregular." },
+{ q: "Dime el pretérito imperfecto de indicativo del verbo 'ver' (yo):", options: ["Veía", "Vi", "Vería", "Visto"], correct: "Veía", hint: "Mantiene la 'e' de la raíz." },
+{ q: "Dime el futuro simple de indicativo del verbo 'hacer' (tú):", options: ["Harás", "Hacerás", "Hiciste", "Hagas"], correct: "Harás", hint: "Es irregular, pierde la 'ce'." },
+{ q: "Dime el condicional simple de 'tener' (nosotros):", options: ["Tendríamos", "Teneríamos", "Tuvimos", "Teníamos"], correct: "Tendríamos", hint: "Es irregular, añade una 'd'." },
+{ q: "Dime el pretérito perfecto compuesto de 'escribir' (ella):", options: ["Ha escrito", "Ha escribido", "Escribió", "Había escrito"], correct: "Ha escrito", hint: "Recuerda que el participio es irregular." },
+{ q: "Dime el presente de subjuntivo de 'saber' (tú):", options: ["Sepas", "Sabes", "Supiste", "Sabrás"], correct: "Sepas", hint: "'Ojalá tú lo...'." },
+{ q: "Dime el imperativo afirmativo de 'venir' (tú):", options: ["Ven", "Vienes", "Venga", "Vengas"], correct: "Ven", hint: "Es una orden corta y directa." },
+{ q: "Dime el pretérito perfecto simple de 'estar' (nosotros):", options: ["Estuvimos", "Estábamos", "Estamos", "Habíamos estado"], correct: "Estuvimos", hint: "Ojo a la ortografía, siempre con V." },
+{ q: "Dime el condicional compuesto de 'decir' (yo):", options: ["Habría dicho", "Habría decido", "Hubiera dicho", "Diría"], correct: "Habría dicho", hint: "Auxiliar en condicional + participio irregular." },
+
+// 3. Formas no personales
+{ q: "¿Cuál es el participio de 'hacer'?", options: ["Hecho", "Hacido", "Haciendo", "Echo"], correct: "Hecho", hint: "Participio irregular con H." },
+{ q: "¿Cuál es el participio de 'romper'?", options: ["Roto", "Rompido", "Rompiendo", "Romper"], correct: "Roto", hint: "Es un participio irregular." },
+{ q: "¿Cuál es el gerundio de 'leer'?", options: ["Leyendo", "Leiendo", "Leído", "Leer"], correct: "Leyendo", hint: "Lleva Y porque va entre dos vocales." },
+{ q: "¿Cuál es el gerundio de 'viajar'?", options: ["Viajando", "Viajado", "Viajaremos", "Viajar"], correct: "Viajando", hint: "Termina en -ando." },
+{ q: "¿Cuál es el participio de 'tejer' (masculino singular)?", options: ["Tejido", "Tejida", "Tejiendo", "Tejer"], correct: "Tejido", hint: "Termina en -ido." },
+{ q: "¿Cuál es el participio de 'mezclar' (masculino singular)?", options: ["Mezclado", "Mezclada", "Mezclando", "Mezclar"], correct: "Mezclado", hint: "La forma neutra termina en -o." },
+{ q: "¿Cuál de estas es una forma NO personal?", options: ["Infinitivo", "Presente", "Pretérito", "Futuro"], correct: "Infinitivo", hint: "No tiene persona (yo, tú, él...)." },
+
+// 4. Modos
+{ q: "'¡Ven aquí ahora mismo!'. ¿En qué modo está el verbo?", options: ["Imperativo", "Indicativo", "Subjuntivo", "Infinitivo"], correct: "Imperativo", hint: "Expresa una orden o mandato." },
+{ q: "'Ojalá mañana llueva'. ¿En qué modo está 'llueva'?", options: ["Subjuntivo", "Indicativo", "Imperativo", "Condicional"], correct: "Subjuntivo", hint: "Expresa deseo o posibilidad." },
+{ q: "'Ayer fuimos al cine'. ¿En qué modo está el verbo?", options: ["Indicativo", "Subjuntivo", "Imperativo", "Infinitivo"], correct: "Indicativo", hint: "Expresa un hecho real y objetivo." },
+{ q: "'Quizás vayamos al parque'. ¿En qué modo está 'vayamos'?", options: ["Subjuntivo", "Indicativo", "Imperativo", "Gerundio"], correct: "Subjuntivo", hint: "Va acompañado de 'quizás', indica duda." },
+{ q: "'No toques eso'. ¿Qué modo roba el imperativo negativo?", options: ["Subjuntivo", "Indicativo", "Condicional", "Infinitivo"], correct: "Subjuntivo", hint: "Las órdenes negativas usan el presente de subjuntivo." },
+
+// 5. Simples vs Compuestas
+{ q: "'Habíamos recogido todo'. ¿Es simple o compuesta?", options: ["Compuesta", "Simple", "Infinita", "Ninguna"], correct: "Compuesta", hint: "Lleva el verbo haber + participio." },
+{ q: "'Estudiamos toda la tarde'. ¿Es simple o compuesta?", options: ["Simple", "Compuesta", "Verbal", "No es verbo"], correct: "Simple", hint: "Está formada por una sola palabra." },
+{ q: "'Cantarían en el coro'. ¿Es simple o compuesta?", options: ["Simple", "Compuesta", "Participio", "Ninguna"], correct: "Simple", hint: "Una sola palabra, es condicional simple." },
+{ q: "'Hemos quedado en casa'. ¿Es simple o compuesta?", options: ["Compuesta", "Simple", "Nominal", "Ninguna"], correct: "Compuesta", hint: "Haber + participio." },
+
+// 6. Raíz, desinencia y conjugaciones (reducidas y depuradas)
+{ q: "¿A qué conjugación pertenece el verbo 'tejer'?", options: ["Segunda", "Primera", "Tercera", "Ninguna"], correct: "Segunda", hint: "Termina en -er." },
+{ q: "¿A qué conjugación pertenece el verbo 'debatir'?", options: ["Tercera", "Primera", "Segunda", "Ninguna"], correct: "Tercera", hint: "Termina en -ir." },
+{ q: "¿A qué conjugación pertenece el verbo 'viajar'?", options: ["Primera", "Segunda", "Tercera", "Ninguna"], correct: "Primera", hint: "Termina en -ar." },
+{ q: "¿Cuál es la desinencia de 'comemos'?", options: ["-emos", "Com-", "-os", "-memos"], correct: "-emos", hint: "Si la raíz es Com-, lo que sobra es la desinencia." },
+{ q: "¿Cuál es la raíz (lexema) de 'viajamos'?", options: ["Viaj-", "Viaja-", "-mos", "-amos"], correct: "Viaj-", hint: "Quita la terminación -ar del infinitivo viajar." },
+{ q: "La parte del verbo que indica tiempo, modo y persona es...", options: ["Desinencia", "Raíz", "Lexema", "Sufijo"], correct: "Desinencia", hint: "Se añade a la raíz para conjugarlo." },
+
+// 7. Ortografía Verbal pura
+{ q: "'Estuvimos'. ¿Con qué letra se escribe el pasado de estar?", options: ["Con V", "Con B", "Depende", "Con H"], correct: "Con V", hint: "El pretérito de estar siempre lleva V." },
+{ q: "Elige la forma correcta con tilde:", options: ["Comí", "Comi", "Còmi", "Comíh"], correct: "Comí", hint: "Palabra aguda acabada en vocal." },
+{ q: "Elige la forma correcta:", options: ["Reímos", "Reimos", "Rèimos", "Reimós"], correct: "Reímos", hint: "Lleva tilde para romper el diptongo (hiato)." },
+{ q: "Imperativo de 2ª persona plural (vosotros) de 'saber':", options: ["Sabed", "Sabéis", "Saber", "Sepáis"], correct: "Sabed", hint: "El imperativo afirmativo de vosotros termina en -d." },
+{ q: "Si digo 'Yo echo sal' (sin H), ¿de qué verbo viene?", options: ["Echar (tirar)", "Hacer (suceso)", "Estar", "Haber"], correct: "Echar (tirar)", hint: "Lo primero que se hace es la H, echar es sin H." },
+{ q: "¿Cuál de estos verbos en pasado NO lleva tilde?", options: ["Pudieron", "Salió", "Comí", "Llegué"], correct: "Pudieron", hint: "Es palabra llana terminada en 'n', no lleva tilde." }
+];
+
+// --- 39 PREGUNTAS USO G y J ---
+const ortografiaGJPool = [
+{ q: "Completa: ___eneral", options: ["G", "J", "H", "Ninguna"], correct: "G", hint: "Rango militar." },
+{ q: "Completa: ___i___antesco", options: ["G - g", "J - g", "G - j", "J - j"], correct: "G - g", hint: "Viene de gigante." },
+{ q: "Completa: ___irasol", options: ["G", "J", "H", "Y"], correct: "G", hint: "Planta que gira." },
+{ q: "Completa: ___entío", options: ["G", "J", "H", "Ninguna"], correct: "G", hint: "Multitud de gente." },
+{ q: "Completa: ___eolo___ía", options: ["G - g", "J - j", "G - j", "J - g"], correct: "G - g", hint: "Estudio de la Tierra." },
+{ q: "Completa: Esfin___e", options: ["g", "j", "h", "x"], correct: "g", hint: "Estatua egipcia." },
+{ q: "Completa: Ima___inación", options: ["g", "j", "x", "h"], correct: "g", hint: "Inventar en la mente." },
+{ q: "Completa: Ma___enta", options: ["g", "j", "h", "x"], correct: "g", hint: "Color parecido al rosa." },
+{ q: "Completa: Ma___nético", options: ["g", "j", "h", "x"], correct: "g", hint: "Propiedades de imán." },
+{ q: "Completa: Su___erencia", options: ["g", "j", "h", "x"], correct: "g", hint: "Un consejo." },
+{ q: "Completa: Le___islación", options: ["g", "j", "h", "x"], correct: "g", hint: "Conjunto de leyes." },
+{ q: "Completa: Hemorra___ia", options: ["g", "j", "h", "x"], correct: "g", hint: "Sangrado." },
+{ q: "Completa (verbo coger): Co___imos", options: ["g", "j", "h", "x"], correct: "g", hint: "Mantiene la G." },
+{ q: "Completa (verbo encoger): Enco___ía", options: ["g", "j", "h", "x"], correct: "g", hint: "Mantiene la G." },
+{ q: "Completa (verbo recoger): Reco___ía", options: ["g", "j", "h", "x"], correct: "g", hint: "Mantiene la G." },
+{ q: "Completa (verbo sumergir): Sumer___ía", options: ["g", "j", "h", "x"], correct: "g", hint: "Mantiene la G." },
+{ q: "Completa (verbo girar): ___ira", options: ["G", "J", "H", "Ninguna"], correct: "G", hint: "Dar vueltas." },
+{ q: "Completa: ___eque", options: ["J", "G", "X", "H"], correct: "J", hint: "Líder árabe." },
+{ q: "Completa: ___erin___a", options: ["J - g", "G - g", "G - j", "J - j"], correct: "J - g", hint: "Instrumento médico." },
+{ q: "Completa: ___ero___lífico", options: ["J - g", "G - g", "G - j", "J - j"], correct: "J - g", hint: "Escritura egipcia." },
+{ q: "Completa: Ti___eras", options: ["j", "g", "x", "h"], correct: "j", hint: "Para cortar." },
+{ q: "Completa: Pere___il", options: ["j", "g", "x", "h"], correct: "j", hint: "Hierba de cocina." },
+{ q: "Completa: Pró___imo", options: ["j", "g", "x", "h"], correct: "j", hint: "Otra persona." },
+{ q: "Completa: Burbu___ear", options: ["j", "g", "x", "h"], correct: "j", hint: "Hacer burbujas." },
+{ q: "Completa: Ca___ón", options: ["j", "g", "x", "h"], correct: "j", hint: "Deriva de caja." },
+{ q: "Completa: Ca___a", options: ["j", "g", "x", "h"], correct: "j", hint: "Recipiente." },
+{ q: "Completa: Via___ero", options: ["j", "g", "x", "h"], correct: "j", hint: "El que hace un viaje." },
+{ q: "Completa: Via___ar", options: ["j", "g", "x", "h"], correct: "j", hint: "Desplazarse." },
+{ q: "Completa: Via___ando", options: ["j", "g", "x", "h"], correct: "j", hint: "Gerundio de viajar." },
+{ q: "Completa: Mensa___ero", options: ["j", "g", "x", "h"], correct: "j", hint: "El que lleva un mensaje." },
+{ q: "Completa: Aterriza___e", options: ["j", "g", "x", "h"], correct: "j", hint: "Termina en -aje." },
+{ q: "Completa: Camufla___e", options: ["j", "g", "x", "h"], correct: "j", hint: "Termina en -aje." },
+{ q: "Completa: Peregrina___e", options: ["j", "g", "x", "h"], correct: "j", hint: "Termina en -aje." },
+{ q: "Completa: Equipa___e", options: ["j", "g", "x", "h"], correct: "j", hint: "Termina en -aje." },
+{ q: "Completa: Mu___er", options: ["j", "g", "x", "h"], correct: "j", hint: "Sexo femenino." },
+{ q: "Completa: Mon___e", options: ["j", "g", "x", "h"], correct: "j", hint: "Religioso." },
+{ q: "Completa: ___uglar", options: ["J", "G", "H", "Ninguna"], correct: "J", hint: "Artista medieval." },
+{ q: "Completa: Bara___ando", options: ["j", "g", "x", "h"], correct: "j", hint: "Mezclar cartas." },
+{ q: "Completa (¡Excepción!): Cru___ir", options: ["j", "g", "x", "h"], correct: "j", hint: "Excepción a -ger/-gir." }
+];
+
+// --- 15 PREGUNTAS USO DIÉRESIS Y GU ---
+const ortografiaDieresisPool = [
+{ q: "¿Cuál es la adaptación correcta al español?", options: ["Güisqui", "Wisqui", "Guisqui", "Güixqui"], correct: "Güisqui", hint: "Lleva diéresis." },
+{ q: "Selecciona la correcta:", options: ["Cigüeña", "Cigueña", "Sigüeña", "Cigüena"], correct: "Cigüeña", hint: "Lleva diéresis." },
+{ q: "Selecciona la correcta (diminutivo de agua):", options: ["Agüita", "Aguita", "Ahüita", "Hagüita"], correct: "Agüita", hint: "Lleva diéresis." },
+{ q: "Selecciona la correcta:", options: ["Agüero", "Aguero", "Agüeró", "Ahüero"], correct: "Agüero", hint: "Lleva diéresis." },
+{ q: "Selecciona la correcta:", options: ["Desagüe", "Desague", "Desagüé", "Dezagüe"], correct: "Desagüe", hint: "Lleva diéresis." },
+{ q: "Selecciona la correcta:", options: ["Pingüino", "Pinguino", "Pingüíno", "Pinwino"], correct: "Pingüino", hint: "Lleva diéresis." },
+{ q: "Selecciona la correcta:", options: ["Piragüista", "Piraguista", "Piraüista", "Piragüísta"], correct: "Piragüista", hint: "Lleva diéresis." },
+{ q: "Selecciona la correcta:", options: ["Paragüero", "Paraguero", "Paragüéro", "Paraüero"], correct: "Paragüero", hint: "Lleva diéresis." },
+{ q: "¿Lleva diéresis 'Paraguas'?", options: ["No, Paraguas", "Sí, Paragüas", "En plural", "Siempre"], correct: "No, Paraguas", hint: "En 'gua' la U siempre suena sola." },
+{ q: "¿Lleva diéresis 'Agua'?", options: ["No, Agua", "Sí, Agüa", "A veces", "Sí, Água"], correct: "No, Agua", hint: "En 'gua' la U siempre suena sola." },
+{ q: "¿Lleva diéresis 'Guitarra'?", options: ["No, Guitarra", "Sí, Güitarra", "A veces", "Con tilde"], correct: "No, Guitarra", hint: "La U es muda." },
+{ q: "¿Lleva diéresis 'Guisante'?", options: ["No, Guisante", "Sí, Güisante", "A veces", "Con tilde"], correct: "No, Guisante", hint: "La U es muda." },
+{ q: "¿Lleva diéresis 'Guepardo'?", options: ["No, Guepardo", "Sí, Güepardo", "A veces", "Con tilde"], correct: "No, Guepardo", hint: "La U es muda." },
+{ q: "¿Lleva diéresis 'Albergue'?", options: ["No, Albergue", "Sí, Albergüe", "A veces", "Con tilde"], correct: "No, Albergue", hint: "La U es muda." },
+{ q: "¿Lleva diéresis 'Miguel'?", options: ["No, Miguel", "Sí, Migüel", "A veces", "Con tilde"], correct: "No, Miguel", hint: "La U es muda." }
+];
+
+// =====================================
+// ESTADOS Y VARIABLES
+// =====================================
+let currentQuestions = [];
+let currentIndex = 0;
+let correctAnswers = 0;
+let wrongAnswers = 0;
+let mistakes = [];
+let reviewMode = false;
+
+// Elementos DOM
+const questionText = document.getElementById("question-text");
+const optionsContainer = document.getElementById("options-container");
+const nextBtn = document.getElementById("next-btn");
+const correctCount = document.getElementById("correct-count");
+const wrongCount = document.getElementById("wrong-count");
+const questionNumber = document.getElementById("question-number");
+const questionTotal = document.getElementById("question-total");
+const progressBar = document.getElementById("progress-bar");
+const quizScreen = document.getElementById("quiz-screen");
+const resultScreen = document.getElementById("result-screen");
+const resultTitle = document.getElementById("result-title");
+const finalScore = document.getElementById("final-score");
+const finalPercentage = document.getElementById("final-percentage");
+const mistakesSection = document.getElementById("mistakes-section");
+const mistakesList = document.getElementById("mistakes-list");
+const reviewBtn = document.getElementById("review-btn");
+const restartBtn = document.getElementById("restart-btn");
+const modeBadge = document.getElementById("mode-badge");
+
+// =====================================
+// UTILIDADES
+// =====================================
+function shuffle(array){
+const arr = [...array];
+for(let i = arr.length - 1; i > 0; i--){
+const j = Math.floor(Math.random() * (i + 1));
+[arr[i], arr[j]] = [arr[j], arr[i]];
+}
+return arr;
+}
+
+// =====================================
+// LÓGICA DEL TEST
+// =====================================
+function startMainTest(){
+currentIndex = 0; correctAnswers = 0; wrongAnswers = 0; mistakes = [];
+
+// Proporciones exactas solicitadas: 30 verbos, 7 GJ, 3 diéresis (TOTAL 40)
+let verbosSeleccionados = shuffle([...verbosPool]).slice(0, 30);
+let gjSeleccionados = shuffle([...ortografiaGJPool]).slice(0, 7);
+let dieresisSeleccionados = shuffle([...ortografiaDieresisPool]).slice(0, 3);
+
+// Unir y mezclar el examen final
+currentQuestions = shuffle([...verbosSeleccionados, ...gjSeleccionados, ...dieresisSeleccionados]);
+
+reviewMode = false;
+questionTotal.textContent = currentQuestions.length;
+showQuizScreen();
+renderQuestion();
+}
+
+function startReviewMode(){
+currentIndex = 0; correctAnswers = 0; wrongAnswers = 0;
+currentQuestions = shuffle(mistakes);
+reviewMode = true;
+questionTotal.textContent = currentQuestions.length;
+showQuizScreen();
+renderQuestion();
+}
+
+function renderQuestion(){
+nextBtn.classList.add("hidden");
+updateStats();
+
+const item = currentQuestions[currentIndex];
+questionText.textContent = item.q;
+questionNumber.textContent = currentIndex + 1;
+progressBar.style.width = `${((currentIndex) / currentQuestions.length) * 100}%`;
+
+const shuffledOptions = shuffle(item.options);
+optionsContainer.innerHTML = "";
+
+shuffledOptions.forEach(option => {
+const btn = document.createElement("button");
+btn.className = "option-btn";
+btn.textContent = option;
+
+btn.addEventListener("click", () => {
+const buttons = document.querySelectorAll(".option-btn");
+buttons.forEach(b => {
+b.disabled = true;
+if(b.textContent === item.correct){
+b.classList.add("correct-answer");
+}
+});
+
+if(option === item.correct){
+correctAnswers++;
+} else {
+wrongAnswers++;
+btn.classList.add("wrong-answer");
+
+const hintSpan = document.createElement("span");
+hintSpan.className = "hint";
+hintSpan.textContent = `💡 Pista: ${item.hint}`;
+btn.appendChild(hintSpan);
+
+if(!mistakes.includes(item)){
+mistakes.push(item);
+}
+}
+updateStats();
+nextBtn.classList.remove("hidden");
+});
+optionsContainer.appendChild(btn);
+});
+}
+
+function nextQuestion(){
+currentIndex++;
+if(currentIndex < currentQuestions.length){
+renderQuestion();
+} else {
+showResults();
+}
+}
+
+function showResults(){
+quizScreen.classList.add("hidden");
+resultScreen.classList.remove("hidden");
+
+const total = currentQuestions.length;
+const percentage = Math.round((correctAnswers / total) * 100);
+
+finalScore.textContent = `${correctAnswers} / ${total}`;
+finalPercentage.textContent = `${percentage}%`;
+
+if(percentage >= 85){
+resultTitle.textContent = "🏆 ¡Excelente Trabajo!";
+resultTitle.className = "result-title success";
+} else {
+resultTitle.textContent = "❌ ¡Sigue Practicando!";
+resultTitle.className = "result-title fail";
+}
+
+if(mistakes.length > 0 && !reviewMode){
+mistakesSection.classList.remove("hidden");
+mistakesList.innerHTML = "";
+mistakes.forEach(questionObj => {
+const li = document.createElement("li");
+li.innerHTML = `<strong>${questionObj.q}</strong><br>Respuesta: <span class="correct">${questionObj.correct}</span>`;
+mistakesList.appendChild(li);
+});
+} else {
+mistakesSection.classList.add("hidden");
+}
+}
+
+function updateStats(){
+correctCount.textContent = correctAnswers;
+wrongCount.textContent = wrongAnswers;
+modeBadge.textContent = reviewMode ? "Modo Repaso" : "Test Principal";
+}
+
+function showQuizScreen(){
+resultScreen.classList.add("hidden");
+quizScreen.classList.remove("hidden");
+}
+
+nextBtn.addEventListener("click", nextQuestion);
+restartBtn.addEventListener("click", startMainTest);
+reviewBtn.addEventListener("click", startReviewMode);
+
+startMainTest();
+</script>
+</body>
+</html>
