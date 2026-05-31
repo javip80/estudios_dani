@@ -1,130 +1,130 @@
-<! DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
-<cabeza>
+<head>
 <meta charset="UTF-8" />
-<meta nombre="viewport" content="width=device-width, initial-scale=1.0" />
-<título>Dani: La Clase Magistral del Futuro</título>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dani: The Future Masterclass</title>
 
-<estilo>
-*{ tamaño-caja:recuadro de borde; }
+<style>
+*{ box-sizing:border-box; }
 body{
-marje:0; acolchado: 20px;
-familia de fuentes: 'Segoe UI', Tahoma, Ginebra, Verdana, sans-serif;
-Antecedentes:#f0f4f8; color: #333;
+margin:0; padding:20px;
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+background:#f0f4f8; color:#333;
 }
 .container{
-Ancho máximo: 850px; marje:auto;
-antecedentes: blanco; radio de frontera: 16px;
-acolchado: 30px; Box-shadow:0 8px 24px rgba(0,0,0,0,1);
+max-width:850px; margin:auto;
+background:white; border-radius:16px;
+padding:30px; box-shadow:0 8px 24px rgba(0,0,0,0.1);
 }
-h1{ margen-top:0; color:#e67e22; tamaño-fuente: 1.8rem;}
+h1{ margin-top:0; color:#e67e22; font-size: 1.8rem;}
 .top-bar{
-pantalla:flex; justificar-contenido:espacio-entre; alinear-ítems:centro;
-Diferencia: 10px; Envoltura flexible: envolviente; margen-fondo:20px;
+display:flex; justify-content:space-between; align-items:center;
+gap:10px; flex-wrap:wrap; margin-bottom:20px;
 }
 .stats{ display:flex; gap:20px; font-weight:bold; font-size:1.1rem; }
-.correcto{ color:#27ae60; }
-.incorrecto{ color:#c0392b; }
-.progreso-envoltorio{
-ancho:100%; Antecedentes:#e2e8f0; radio de frontera: 999px;
-desbordamiento: oculto; Altura: 20px; Marje:20px 0;
+.correct{ color:#27ae60; }
+.wrong{ color:#c0392b; }
+.progress-wrapper{
+width:100%; background:#e2e8f0; border-radius:999px;
+overflow:hidden; height:20px; margin:20px 0;
 }
 .progress-bar{
-altura: 100%; ancho:0%; Antecedentes:#e67e22; transición: 0,4s de salida de aceleración;
+height:100%; width:0%; background:#e67e22; transition:0.4s ease-out;
 }
-.pregunta{
-tamaño de fuente:1,4rem; font-weight:bold; margen: 25px 0; Altura mínima: 80px; altura de línea: 1,4;
+.question{
+font-size:1.4rem; font-weight:bold; margin:25px 0; min-height:80px; line-height:1.4;
 }
 .options{
-pantalla:cuadrija; cuadrícula-plantillas-columnas:1fr 1fr; Diferencia: 15 px;
+display:grid; grid-template-columns:1fr 1fr; gap:15px;
 }
 button{
-frontera: ninguna; radio de frontera: 12px; relleno: 18px;
-cursor:apuntador; tamaño-fuente:1.1rem; transición: todos los 0,2;
+border:none; border-radius:12px; padding:18px;
+cursor:pointer; font-size:1.1rem; transition:all 0.2s;
 }
 .option-btn{
-antecedentes: blanco; borde:2px sólido #e67e22; color: #d35400;
-Altura mínima: 75px; peso-fuente: 600; pantalla:flex; dirección-flexible:columna; justificar-contenido:centro; alinear-ítems:centro;
+background:white; border:2px solid #e67e22; color:#d35400;
+min-height:75px; font-weight:600; display:flex; flex-direction:column; justify-content:center; align-items:center;
 }
-.option-btn:hover:not(:d isabled){
-Antecedentes:#e67e22; color: blanco; transformar: translateY(-2px); Sombra de caja: 0 4px 10px RGB (230, 126, 34, 0.2);
+.option-btn:hover:not(:disabled){
+background:#e67e22; color:white; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(230, 126, 34, 0.2);
 }
 .option-btn:disabled{ cursor:default; transform:none; }
-.respuesta correcta{
-Antecedentes:#27ae60 ¡Importante; color-borde:#27ae60 !importante; color: blanco! importante;
+.correct-answer{
+background:#27ae60 !important; border-color:#27ae60 !important; color:white !important;
 }
-.respuesta incorrecta{
-Antecedentes:#c0392b ¡Importante; color-borde:#c0392b !importante; color: blanco! importante;
+.wrong-answer{
+background:#c0392b !important; border-color:#c0392b !important; color:white !important;
 }
 .hint{
-pantalla:bloqueo; margen arriba: 8px; tamaño-fuente:0,9rem; opacidad:0,95; Tipo-estilo: cursiva; Peso-fuente:Normal;
+display:block; margin-top:8px; font-size:0.9rem; opacity:0.95; font-style: italic; font-weight:normal;
 }
 .next-btn, .restart-btn, .review-btn{
-margen arriba: 30px; ancho:100%; Antecedentes:#2c3e50;
-color: blanco; font-weight:bold; tamaño-fuente:1.2rem;
+margin-top:30px; width:100%; background:#2c3e50;
+color:white; font-weight:bold; font-size:1.2rem;
 }
 .next-btn:hover, .restart-btn:hover, .review-btn:hover{ background:#1a252f; }
 .hidden{ display:none; }
-.resulta-título{ font-size:2.5rem; margin-bottom:10px; }
-.éxito{ color:#27ae60; }
+.result-title{ font-size:2.5rem; margin-bottom:10px; }
+.success{ color:#27ae60; }
 .fail{ color:#c0392b; }
 .error-list{
-text-align:left; margen arriba: 20px; Antecedentes:#f8f9fa;
-acolchado: 20px; radio de frontera: 12px; borde izquierdo: 5px sólidos #c0392b;
+text-align:left; margin-top:20px; background:#f8f9fa;
+padding:20px; border-radius:12px; border-left: 5px solid #c0392b;
 }
 .error-list li{ margin-bottom:12px; font-size: 1.1rem; line-height: 1.4; }
 .mode-badge{
-Antecedentes:#e67e22; color: blanco; acolchado: 8px 16px;
-radio de frontera: 999px; tamaño-fuente:1rem; font-weight:bold; transformación de texto: mayúsculas; espaciado entre letras: 1px;
+background:#e67e22; color:white; padding:8px 16px;
+border-radius:999px; font-size:1rem; font-weight:bold; text-transform:uppercase; letter-spacing:1px;
 }
 @media(max-width:650px){
 .options{ grid-template-columns:1fr; }
 .question{ font-size:1.2rem; }
 .top-bar{ flex-direction:column; align-items:flex-start; }
 }
-</estilo>
-</cabeza>
+</style>
+</head>
 
-<cuerpo>
+<body>
 <div class="container">
 <div id="quiz-screen">
-<div class="barra superior">
-<h1> 🚀 Clase magistral de Futuros</h1>
+<div class="top-bar">
+<h1>🚀 Future Tenses Masterclass</h1>
 <div class="mode-badge" id="mode-badge">TEST PRINCIPAL</div>
 </div>
 
-<div class="barra superior">
-<div>Pregunta <strong><span id="número de pregunta">1</espacio> / <span id="total-pregunta">30</span></fuerte></div>
+<div class="top-bar">
+<div>Pregunta <strong><span id="question-number">1</span> / <span id="question-total">30</span></strong></div>
 <div class="stats">
-<span class="correct"> ✅ <span id="correct-count">0</span></span>
-<span class="wrong"> ❌ <span id="wrong-count">0</span></span>
+<span class="correct">✅ <span id="correct-count">0</span></span>
+<span class="wrong">❌ <span id="wrong-count">0</span></span>
 </div>
 </div>
 
-<div class="encapsulador-progreso">
+<div class="progress-wrapper">
 <div class="progress-bar" id="progress-bar"></div>
 </div>
 
-<div class="pregunta" id="pregunta-texto">Cargando... </div>
+<div class="question" id="question-text">Cargando...</div>
 <div class="options" id="options-container"></div>
 <button class="next-btn hidden" id="next-btn">Siguiente Pregunta →</button>
 </div>
 
 <div id="result-screen" class="hidden">
-<h2 class="resultado-título" id="resultado-título"></h2>
+<h2 class="result-title" id="result-title"></h2>
 <p style="font-size:1.5rem">Aciertos: <strong id="final-score"></strong></p>
-<p style="font-size:1.5rem">Percentage: <strong id="final-percentage"></strong></p>
+<p style="font-size:1.5rem">Porcentaje: <strong id="final-percentage"></strong></p>
 
-<div id="errors-section" class="hidden">
-<h3>Conceptos para repasar: </h3>
-<ul class="error-list" id="errors-list"></ul>
+<div id="mistakes-section" class="hidden">
+<h3>Conceptos a repasar:</h3>
+<ul class="error-list" id="mistakes-list"></ul>
 <button class="review-btn" id="review-btn">Practicar Errores</button>
 </div>
 <button class="restart-btn" id="restart-btn">Generar Nuevo Test de 30 Preguntas</button>
 </div>
 </div>
 
-<guion>
+<script>
 // =====================================
 // BASE DE DATOS: 60 PREGUNTAS (Teoría y Práctica)
 // =====================================
@@ -137,7 +137,7 @@ const questionPool = [
 { q: "TEORÍA: ¿Qué usamos para PREDICCIONES que nos imaginamos sobre el futuro (normalmente con 'I think' o 'maybe')?", options: ["Will", "Be going to", "Present Continuous", "Past Continuous"], correct: "Will", hint: "Predicciones sin pruebas, basadas en tu opinión." },
 { q: "TEORÍA: ¿Qué usamos para PREDICCIONES BASADAS EN EVIDENCIAS visuales (ej. ves nubes muy negras y sabes que lloverá)?", options: ["Be going to", "Will", "Present Continuous", "Present Simple"], correct: "Be going to", hint: "Si tienes la prueba delante de tus ojos, usa 'be going to'." },
 { q: "TEORÍA: La forma negativa de 'Will' es...", options: ["Won't", "Willn't", "Don't will", "Isn't will"], correct: "Won't", hint: "Es una contracción irregular de 'will not'." },
-{ q: "TEORÍA: ¿Cuál es la estructura correcta de 'Be going to'?", opciones: ["am/is/are + va a + verbo normal", "will + going to + verbo", "am/is/are + going + verbo-ing", "going to + verbo"], correcta: "am/is/are + going to + verbo normal", pista: "Ejemplo: I AI to PLAY." },
+{ q: "TEORÍA: ¿Cuál es la estructura correcta de 'Be going to'?", options: ["am/is/are + going to + verbo normal", "will + going to + verbo", "am/is/are + going + verbo-ing", "going to + verbo"], correct: "am/is/are + going to + verbo normal", hint: "Ejemplo: I AM going to PLAY." },
 { q: "TEORÍA: ¿Cuál es la estructura correcta del 'Present Continuous' para futuro?", options: ["am/is/are + verbo en -ing", "will + verbo en -ing", "am/is/are + verbo normal", "going to + verbo en -ing"], correct: "am/is/are + verbo en -ing", hint: "Ejemplo: I AM PLAYING tennis tomorrow." },
 { q: "TEORÍA: Si ves que un niño está a punto de caerse de un árbol, ¿qué dices?", options: ["He is going to fall!", "He will fall!", "He is falling!", "He fall!"], correct: "He is going to fall!", hint: "Es una evidencia visual inminente, lo estás viendo." },
 { q: "TEORÍA: Si compraste pintura ayer para pintar tu cuarto hoy, ¿qué dices?", options: ["I am going to paint my room.", "I will paint my room.", "I paint my room.", "I painted my room."], correct: "I am going to paint my room.", hint: "Es una intención clara, ya tienes hasta los materiales." },
@@ -146,18 +146,18 @@ const questionPool = [
 { q: "TEORÍA: Si tu madre te riñe por tu habitación desordenada y quieres prometerle que la limpiarás, dices:", options: ["I will clean it, I promise.", "I am going to clean it.", "I am cleaning it.", "I clean it."], correct: "I will clean it, I promise.", hint: "Promesa = Will." },
 { q: "TEORÍA: ¿Qué palabra interrogativa usamos para preguntar 'Dónde' irá alguien?", options: ["Where", "What", "When", "Who"], correct: "Where", hint: "Where = Dónde." },
 
---- HARÁ / NO VA A SER (15 preguntas) ---
-{ q: "¡El teléfono está sonando! - No te preocupes, yo ___ contesto.", opciones: ["will", "voy a", "estoy respondiendo", "answer"], correcto: "will", pista: "Decisión rápida." },
-{ q: "Prometo que ___ cuento tu secreto a cualquiera.", opciones: ["no't", "no lo haré", "no", "no lo diré"], correcto: "no't", pista: "Promesa en negativo = won't." },
-{ q: "Creo que en 2080, los humanos ___ viven en Marte.", opciones: ["harán", "van a", "están viviendo", "vivirán"], correcto: "harán", pista: "Predicción basada en opinión (creo)." },
-{ q: "¿Tienes hambre? Te hago un sándwich.", opciones: ["hará", "voy a", "voy a preparar", "hago"], correcto: "will", pista: "Decisión espontánea para ayudar." },
-{ q: "Quizá ___ llueva mañana, pero no estoy seguro.", opciones: ["hará", "va a", "está lloviendo", "llueve", correcto: "will", pista: "Predicción con 'maybe' (quizás), no hay seguridad." },
-{ q: "En el futuro, los coches ___ vuelan.", opciones: ["hará", "van a", "están volando", "vuela"], correcto: "will", pista: "Predicción inventada sobre el futuro." },
-{ q: "¡Yo ___ siempre te quiero! (Promesa)", opciones: ["will", "am to to", "am aming", "love"], correcto: "will", pista: "Las promesas van con will." },
-{ q: "¡Tengo sed! - Yo ___ te traigo un vaso de agua.", opciones: ["hará", "voy a", "voy a traer", "traer"], correcto: "will", pista: "Decisión rápida para ser amable." },
-{ q: "No creo que ___ haya aprobado el examen. No estudió.", opciones: ["va", "va a", "está aprobando", "aproba"], correcto: "va", pista: "opinión personal (no creo)." },
-{ q: "Hace demasiado calor aquí dentro. Yo ___ abro la ventana.", opciones: ["hará", "voy a", "estoy abriendo", "abrir"], correcto: "will", pista: "Decisión en el momento." },
-{ q: "Prometo que ___ te ayudo con los deberes.", opciones: ["hará", "voy a", "estoy ayudando", "ayudar"], correcto: "will", pista: "Promesa." },
+// --- WILL / WON'T (15 preguntas) ---
+{ q: "The phone is ringing! - Don't worry, I ___ answer it.", options: ["will", "am going to", "am answering", "answer"], correct: "will", hint: "Decisión rápida." },
+{ q: "I promise I ___ tell your secret to anyone.", options: ["won't", "am not going to", "don't", "am not telling"], correct: "won't", hint: "Promesa en negativo = won't." },
+{ q: "I think that in 2080, humans ___ live on Mars.", options: ["will", "are going to", "are living", "live"], correct: "will", hint: "Predicción basada en opinión (I think)." },
+{ q: "Are you hungry? I ___ make you a sandwich.", options: ["will", "am going to", "am making", "make"], correct: "will", hint: "Decisión espontánea para ayudar." },
+{ q: "Maybe it ___ rain tomorrow, but I'm not sure.", options: ["will", "is going to", "is raining", "rains"], correct: "will", hint: "Predicción con 'maybe' (quizás), no hay seguridad." },
+{ q: "In the future, cars ___ fly.", options: ["will", "are going to", "are flying", "flies"], correct: "will", hint: "Predicción inventada sobre el futuro." },
+{ q: "I ___ always love you! (Promesa)", options: ["will", "am going to", "am loving", "love"], correct: "will", hint: "Las promesas van con will." },
+{ q: "I am thirsty! - I ___ bring you a glass of water.", options: ["will", "am going to", "am bringing", "bring"], correct: "will", hint: "Decisión rápida para ser amable." },
+{ q: "I don't think she ___ pass the exam. She didn't study.", options: ["will", "is going to", "is passing", "passes"], correct: "will", hint: "Opinión personal (I don't think)." },
+{ q: "It's too hot in here. I ___ open the window.", options: ["will", "am going to", "am opening", "open"], correct: "will", hint: "Decisión en el momento." },
+{ q: "I promise I ___ help you with your homework.", options: ["will", "am going to", "am helping", "help"], correct: "will", hint: "Promesa." },
 { q: "What ___ you do when you are 30 years old?", options: ["will", "are going to", "are doing", "do"], correct: "will", hint: "Pregunta sobre predicciones de futuro." },
 { q: "People ___ eat normal food in 2090. They will eat pills.", options: ["won't", "aren't going to", "aren't eating", "don't"], correct: "won't", hint: "Predicción de futuro en negativo." },
 { q: "___ astronauts travel to Jupiter in the future?", options: ["Will", "Are going to", "Are", "Do"], correct: "Will", hint: "Pregunta de predicción." },
