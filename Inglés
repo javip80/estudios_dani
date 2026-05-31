@@ -1,0 +1,381 @@
+<! DOCTYPE html>
+<html lang="es">
+<cabeza>
+<meta charset="UTF-8" />
+<meta nombre="viewport" content="width=device-width, initial-scale=1.0" />
+<título>Dani: La Clase Magistral del Futuro</título>
+
+<estilo>
+*{ tamaño-caja:recuadro de borde; }
+body{
+marje:0; acolchado: 20px;
+familia de fuentes: 'Segoe UI', Tahoma, Ginebra, Verdana, sans-serif;
+Antecedentes:#f0f4f8; color: #333;
+}
+.container{
+Ancho máximo: 850px; marje:auto;
+antecedentes: blanco; radio de frontera: 16px;
+acolchado: 30px; Box-shadow:0 8px 24px rgba(0,0,0,0,1);
+}
+h1{ margen-top:0; color:#e67e22; tamaño-fuente: 1.8rem;}
+.top-bar{
+pantalla:flex; justificar-contenido:espacio-entre; alinear-ítems:centro;
+Diferencia: 10px; Envoltura flexible: envolviente; margen-fondo:20px;
+}
+.stats{ display:flex; gap:20px; font-weight:bold; font-size:1.1rem; }
+.correcto{ color:#27ae60; }
+.incorrecto{ color:#c0392b; }
+.progreso-envoltorio{
+ancho:100%; Antecedentes:#e2e8f0; radio de frontera: 999px;
+desbordamiento: oculto; Altura: 20px; Marje:20px 0;
+}
+.progress-bar{
+altura: 100%; ancho:0%; Antecedentes:#e67e22; transición: 0,4s de salida de aceleración;
+}
+.pregunta{
+tamaño de fuente:1,4rem; font-weight:bold; margen: 25px 0; Altura mínima: 80px; altura de línea: 1,4;
+}
+.options{
+pantalla:cuadrija; cuadrícula-plantillas-columnas:1fr 1fr; Diferencia: 15 px;
+}
+button{
+frontera: ninguna; radio de frontera: 12px; relleno: 18px;
+cursor:apuntador; tamaño-fuente:1.1rem; transición: todos los 0,2;
+}
+.option-btn{
+antecedentes: blanco; borde:2px sólido #e67e22; color: #d35400;
+Altura mínima: 75px; peso-fuente: 600; pantalla:flex; dirección-flexible:columna; justificar-contenido:centro; alinear-ítems:centro;
+}
+.option-btn:hover:not(:d isabled){
+Antecedentes:#e67e22; color: blanco; transformar: translateY(-2px); Sombra de caja: 0 4px 10px RGB (230, 126, 34, 0.2);
+}
+.option-btn:disabled{ cursor:default; transform:none; }
+.respuesta correcta{
+Antecedentes:#27ae60 ¡Importante; color-borde:#27ae60 !importante; color: blanco! importante;
+}
+.respuesta incorrecta{
+Antecedentes:#c0392b ¡Importante; color-borde:#c0392b !importante; color: blanco! importante;
+}
+.hint{
+pantalla:bloqueo; margen arriba: 8px; tamaño-fuente:0,9rem; opacidad:0,95; Tipo-estilo: cursiva; Peso-fuente:Normal;
+}
+.next-btn, .restart-btn, .review-btn{
+margen arriba: 30px; ancho:100%; Antecedentes:#2c3e50;
+color: blanco; font-weight:bold; tamaño-fuente:1.2rem;
+}
+.next-btn:hover, .restart-btn:hover, .review-btn:hover{ background:#1a252f; }
+.hidden{ display:none; }
+.resulta-título{ font-size:2.5rem; margin-bottom:10px; }
+.éxito{ color:#27ae60; }
+.fail{ color:#c0392b; }
+.error-list{
+text-align:left; margen arriba: 20px; Antecedentes:#f8f9fa;
+acolchado: 20px; radio de frontera: 12px; borde izquierdo: 5px sólidos #c0392b;
+}
+.error-list li{ margin-bottom:12px; font-size: 1.1rem; line-height: 1.4; }
+.mode-badge{
+Antecedentes:#e67e22; color: blanco; acolchado: 8px 16px;
+radio de frontera: 999px; tamaño-fuente:1rem; font-weight:bold; transformación de texto: mayúsculas; espaciado entre letras: 1px;
+}
+@media(max-width:650px){
+.options{ grid-template-columns:1fr; }
+.question{ font-size:1.2rem; }
+.top-bar{ flex-direction:column; align-items:flex-start; }
+}
+</estilo>
+</cabeza>
+
+<cuerpo>
+<div class="container">
+<div id="quiz-screen">
+<div class="barra superior">
+<h1> 🚀 Clase magistral de Futuros</h1>
+<div class="mode-badge" id="mode-badge">TEST PRINCIPAL</div>
+</div>
+
+<div class="barra superior">
+<div>Pregunta <strong><span id="número de pregunta">1</espacio> / <span id="total-pregunta">30</span></fuerte></div>
+<div class="stats">
+<span class="correct"> ✅ <span id="correct-count">0</span></span>
+<span class="wrong"> ❌ <span id="wrong-count">0</span></span>
+</div>
+</div>
+
+<div class="encapsulador-progreso">
+<div class="progress-bar" id="progress-bar"></div>
+</div>
+
+<div class="pregunta" id="pregunta-texto">Cargando... </div>
+<div class="options" id="options-container"></div>
+<button class="next-btn hidden" id="next-btn">Siguiente Pregunta →</button>
+</div>
+
+<div id="result-screen" class="hidden">
+<h2 class="resultado-título" id="resultado-título"></h2>
+<p style="font-size:1.5rem">Aciertos: <strong id="final-score"></strong></p>
+<p style="font-size:1.5rem">Percentage: <strong id="final-percentage"></strong></p>
+
+<div id="errors-section" class="hidden">
+<h3>Conceptos para repasar: </h3>
+<ul class="error-list" id="errors-list"></ul>
+<button class="review-btn" id="review-btn">Practicar Errores</button>
+</div>
+<button class="restart-btn" id="restart-btn">Generar Nuevo Test de 30 Preguntas</button>
+</div>
+</div>
+
+<guion>
+// =====================================
+// BASE DE DATOS: 60 PREGUNTAS (Teoría y Práctica)
+// =====================================
+const questionPool = [
+// --- TEORÍA EN ESPAÑOL (15 preguntas) ---
+{ q: "TEORÍA: ¿Qué tiempo verbal usamos para hacer PROMESAS ('I promise...')?", options: ["Will", "Be going to", "Present Continuous", "Present Simple"], correct: "Will", hint: "Las promesas siempre se hacen con Will." },
+{ q: "TEORÍA: ¿Qué usamos para DECISIONES RÁPIDAS tomadas en el mismo momento de hablar?", options: ["Will", "Be going to", "Present Continuous", "Past Simple"], correct: "Will", hint: "Ejemplo: Suena el teléfono y decides contestar -> 'I will answer it'." },
+{ q: "TEORÍA: ¿Qué tiempo verbal usamos para PLANES FIJOS o citas cerradas (con fecha, hora o lugar en tu agenda)?", options: ["Present Continuous", "Will", "Be going to", "Present Simple"], correct: "Present Continuous", hint: "Planes seguros al 100% como citas del médico o viajes con billete comprado." },
+{ q: "TEORÍA: ¿Qué tiempo verbal usamos para INTENCIONES (cosas que tienes pensado hacer pero sin fecha fija)?", options: ["Be going to", "Will", "Present Continuous", "Present Simple"], correct: "Be going to", hint: "Ejemplo: 'Voy a estudiar más este año' -> I am going to study." },
+{ q: "TEORÍA: ¿Qué usamos para PREDICCIONES que nos imaginamos sobre el futuro (normalmente con 'I think' o 'maybe')?", options: ["Will", "Be going to", "Present Continuous", "Past Continuous"], correct: "Will", hint: "Predicciones sin pruebas, basadas en tu opinión." },
+{ q: "TEORÍA: ¿Qué usamos para PREDICCIONES BASADAS EN EVIDENCIAS visuales (ej. ves nubes muy negras y sabes que lloverá)?", options: ["Be going to", "Will", "Present Continuous", "Present Simple"], correct: "Be going to", hint: "Si tienes la prueba delante de tus ojos, usa 'be going to'." },
+{ q: "TEORÍA: La forma negativa de 'Will' es...", options: ["Won't", "Willn't", "Don't will", "Isn't will"], correct: "Won't", hint: "Es una contracción irregular de 'will not'." },
+{ q: "TEORÍA: ¿Cuál es la estructura correcta de 'Be going to'?", opciones: ["am/is/are + va a + verbo normal", "will + going to + verbo", "am/is/are + going + verbo-ing", "going to + verbo"], correcta: "am/is/are + going to + verbo normal", pista: "Ejemplo: I AI to PLAY." },
+{ q: "TEORÍA: ¿Cuál es la estructura correcta del 'Present Continuous' para futuro?", options: ["am/is/are + verbo en -ing", "will + verbo en -ing", "am/is/are + verbo normal", "going to + verbo en -ing"], correct: "am/is/are + verbo en -ing", hint: "Ejemplo: I AM PLAYING tennis tomorrow." },
+{ q: "TEORÍA: Si ves que un niño está a punto de caerse de un árbol, ¿qué dices?", options: ["He is going to fall!", "He will fall!", "He is falling!", "He fall!"], correct: "He is going to fall!", hint: "Es una evidencia visual inminente, lo estás viendo." },
+{ q: "TEORÍA: Si compraste pintura ayer para pintar tu cuarto hoy, ¿qué dices?", options: ["I am going to paint my room.", "I will paint my room.", "I paint my room.", "I painted my room."], correct: "I am going to paint my room.", hint: "Es una intención clara, ya tienes hasta los materiales." },
+{ q: "TEORÍA: Si te ofrecen bebida en un restaurante y decides en ese segundo, dices:", options: ["I will have water, please.", "I am going to have water.", "I am having water.", "I have water."], correct: "I will have water, please.", hint: "Es una decisión espontánea." },
+{ q: "TEORÍA: Las palabras 'Next weekend', 'Tomorrow' o 'In 2050' indican...", options: ["Futuro", "Pasado", "Presente", "Rutina"], correct: "Futuro", hint: "Expresan tiempo que aún no ha ocurrido." },
+{ q: "TEORÍA: Si tu madre te riñe por tu habitación desordenada y quieres prometerle que la limpiarás, dices:", options: ["I will clean it, I promise.", "I am going to clean it.", "I am cleaning it.", "I clean it."], correct: "I will clean it, I promise.", hint: "Promesa = Will." },
+{ q: "TEORÍA: ¿Qué palabra interrogativa usamos para preguntar 'Dónde' irá alguien?", options: ["Where", "What", "When", "Who"], correct: "Where", hint: "Where = Dónde." },
+
+--- HARÁ / NO VA A SER (15 preguntas) ---
+{ q: "¡El teléfono está sonando! - No te preocupes, yo ___ contesto.", opciones: ["will", "voy a", "estoy respondiendo", "answer"], correcto: "will", pista: "Decisión rápida." },
+{ q: "Prometo que ___ cuento tu secreto a cualquiera.", opciones: ["no't", "no lo haré", "no", "no lo diré"], correcto: "no't", pista: "Promesa en negativo = won't." },
+{ q: "Creo que en 2080, los humanos ___ viven en Marte.", opciones: ["harán", "van a", "están viviendo", "vivirán"], correcto: "harán", pista: "Predicción basada en opinión (creo)." },
+{ q: "¿Tienes hambre? Te hago un sándwich.", opciones: ["hará", "voy a", "voy a preparar", "hago"], correcto: "will", pista: "Decisión espontánea para ayudar." },
+{ q: "Quizá ___ llueva mañana, pero no estoy seguro.", opciones: ["hará", "va a", "está lloviendo", "llueve", correcto: "will", pista: "Predicción con 'maybe' (quizás), no hay seguridad." },
+{ q: "En el futuro, los coches ___ vuelan.", opciones: ["hará", "van a", "están volando", "vuela"], correcto: "will", pista: "Predicción inventada sobre el futuro." },
+{ q: "¡Yo ___ siempre te quiero! (Promesa)", opciones: ["will", "am to to", "am aming", "love"], correcto: "will", pista: "Las promesas van con will." },
+{ q: "¡Tengo sed! - Yo ___ te traigo un vaso de agua.", opciones: ["hará", "voy a", "voy a traer", "traer"], correcto: "will", pista: "Decisión rápida para ser amable." },
+{ q: "No creo que ___ haya aprobado el examen. No estudió.", opciones: ["va", "va a", "está aprobando", "aproba"], correcto: "va", pista: "opinión personal (no creo)." },
+{ q: "Hace demasiado calor aquí dentro. Yo ___ abro la ventana.", opciones: ["hará", "voy a", "estoy abriendo", "abrir"], correcto: "will", pista: "Decisión en el momento." },
+{ q: "Prometo que ___ te ayudo con los deberes.", opciones: ["hará", "voy a", "estoy ayudando", "ayudar"], correcto: "will", pista: "Promesa." },
+{ q: "What ___ you do when you are 30 years old?", options: ["will", "are going to", "are doing", "do"], correct: "will", hint: "Pregunta sobre predicciones de futuro." },
+{ q: "People ___ eat normal food in 2090. They will eat pills.", options: ["won't", "aren't going to", "aren't eating", "don't"], correct: "won't", hint: "Predicción de futuro en negativo." },
+{ q: "___ astronauts travel to Jupiter in the future?", options: ["Will", "Are going to", "Are", "Do"], correct: "Will", hint: "Pregunta de predicción." },
+{ q: "Someone is knocking at the door! - I ___ go.", options: ["will", "am going to", "am going", "go"], correct: "will", hint: "Decisión rápida." },
+
+// --- BE GOING TO (15 preguntas) ---
+{ q: "Why are you wearing old clothes? - Because I ___ paint my room.", options: ["am going to", "will", "am painting", "paint"], correct: "am going to", hint: "Ya tenías la intención, por eso te pusiste la ropa." },
+{ q: "Look at those black clouds! It ___ rain.", options: ["is going to", "will", "is raining", "rains"], correct: "is going to", hint: "Evidencia visual." },
+{ q: "Watch out! You ___ drop those plates!", options: ["are going to", "will", "are dropping", "drop"], correct: "are going to", hint: "Lo ves venir, es inminente." },
+{ q: "Next year, I ___ study harder. (Intention)", options: ["am going to", "will", "am studying", "study"], correct: "am going to", hint: "Es tu intención o propósito." },
+{ q: "He ___ buy a new car. He has saved a lot of money.", options: ["is going to", "will", "is buying", "buys"], correct: "is going to", hint: "Intención respaldada (ha ahorrado dinero)." },
+{ q: "Oh no! The boat has a hole! It ___ sink!", options: ["is going to", "will", "is sinking", "sinks"], correct: "is going to", hint: "Evidencia inminente (el agujero en el barco)." },
+{ q: "What ___ you ___ do this weekend?", options: ["are / going to", "will / do", "are / doing", "do / do"], correct: "are / going to", hint: "Preguntando por intenciones." },
+{ q: "We ___ travel to Japan next summer. We are planning it.", options: ["are going to", "will", "are traveling", "travel"], correct: "are going to", hint: "Es un plan/intención que están preparando." },
+{ q: "Look at that boy on the bike! He ___ crash!", options: ["is going to", "will", "is crashing", "crashes"], correct: "is going to", hint: "Evidencia visual." },
+{ q: "I ___ eat junk food anymore. I want to be healthy.", options: ["am not going to", "won't", "am not eating", "don't eat"], correct: "am not going to", hint: "Una fuerte intención personal." },
+{ q: "My sister ___ have a baby! Look at her belly!", options: ["is going to", "will", "is having", "has"], correct: "is going to", hint: "Evidencia biológica visible." },
+{ q: "They ___ visit their grandparents this afternoon.", options: ["are going to", "will", "visit", "visits"], correct: "are going to", hint: "Intención para esta tarde." },
+{ q: "___ she ___ participate in the contest?", options: ["Is / going to", "Will / participate", "Is / participating", "Does / participate"], correct: "Is / going to", hint: "Pregunta sobre la intención de ella." },
+{ q: "He is running very fast! He ___ win the race!", options: ["is going to", "will", "is winning", "wins"], correct: "is going to", hint: "Evidencia en medio de la carrera." },
+{ q: "I ___ save money to buy a computer.", options: ["am going to", "will", "am saving", "save"], correct: "am going to", hint: "Propósito o intención." },
+
+// --- PRESENT CONTINUOUS FOR FUTURE (15 preguntas) ---
+{ q: "Tomorrow at 5 PM, I ___ the dentist. (Cita en la agenda)", options: ["am visiting", "will visit", "am going to visit", "visit"], correct: "am visiting", hint: "Cita médica fija = Present Continuous." },
+{ q: "Next Saturday at 10:00, Tom ___ in the football final.", options: ["is playing", "will play", "plays", "is going to play"], correct: "is playing", hint: "Evento oficial cerrado con hora y fecha." },
+{ q: "We ___ to New York tomorrow morning. We have the tickets!", options: ["are flying", "will fly", "fly", "are going to fly"], correct: "are flying", hint: "Billetes comprados = 100% seguro." },
+{ q: "On Sunday at 14:00, Sarah ___ lunch with her grandma.", options: ["is having", "will have", "has", "is going to have"], correct: "is having", hint: "Cita programada con hora." },
+{ q: "I can't go to the cinema tonight because I ___ for the exam.", options: ["am studying", "will study", "study", "am going to study"], correct: "am studying", hint: "Plan fijo inamovible para esta noche." },
+{ q: "___ you ___ anything tomorrow evening?", options: ["Are / doing", "Will / do", "Are / going to do", "Do / do"], correct: "Are / doing", hint: "Preguntando por planes fijos (agenda)." },
+{ q: "They ___ a marathon on Sunday at 9 AM.", options: ["are running", "will run", "run", "are going to run"], correct: "are running", hint: "Evento oficial con horario." },
+{ q: "My parents ___ dinner with their friends tonight.", options: ["are having", "will have", "have", "are going to have"], correct: "are having", hint: "Cena organizada = plan fijo." },
+{ q: "He ___ his teacher tomorrow morning at school.", options: ["is meeting", "will meet", "meets", "is going to meet"], correct: "is meeting", hint: "Reunión concertada en la agenda." },
+{ q: "Sorry, I can't. I ___ my bedroom this afternoon.", options: ["am painting", "will paint", "paint", "am going to paint"], correct: "am painting", hint: "Lo tienes en tu agenda personal como plan inamovible." },
+{ q: "We ___ a rock concert on Saturday night. Here are the tickets!", options: ["are watching", "will watch", "watch", "are going to watch"], correct: "are watching", hint: "Entradas en la mano = Present Continuous." },
+{ q: "She ___ an English exam on Friday at 11:00.", options: ["is taking", "will take", "takes", "is going to take"], correct: "is taking", hint: "Fecha y hora del instituto." },
+{ q: "I ___ my suitcase tonight because my flight is tomorrow.", options: ["am packing", "will pack", "pack", "am going to pack"], correct: "am packing", hint: "Acción programada obligatoria." },
+{ q: "Emma ___ to the dentist at 17:00.", options: ["is going", "will go", "goes", "is going to go"], correct: "is going", hint: "Cita médica." },
+{ q: "___ they ___ tennis with Mark on Sunday?", options: ["Are / playing", "Will / play", "Are / going to play", "Do / play"], correct: "Are / playing", hint: "Preguntando por una cita deportiva agendada." }
+];
+
+// =====================================
+// ESTADOS Y VARIABLES
+// =====================================
+let currentQuestions = [];
+let currentIndex = 0;
+let correctAnswers = 0;
+let wrongAnswers = 0;
+let mistakes = [];
+let reviewMode = false;
+const QUESTIONS_PER_TEST = 30;
+
+// Elementos DOM
+const questionText = document.getElementById("question-text");
+const optionsContainer = document.getElementById("options-container");
+const nextBtn = document.getElementById("next-btn");
+const correctCount = document.getElementById("correct-count");
+const wrongCount = document.getElementById("wrong-count");
+const questionNumber = document.getElementById("question-number");
+const questionTotal = document.getElementById("question-total");
+const progressBar = document.getElementById("progress-bar");
+const quizScreen = document.getElementById("quiz-screen");
+const resultScreen = document.getElementById("result-screen");
+const resultTitle = document.getElementById("result-title");
+const finalScore = document.getElementById("final-score");
+const finalPercentage = document.getElementById("final-percentage");
+const mistakesSection = document.getElementById("mistakes-section");
+const mistakesList = document.getElementById("mistakes-list");
+const reviewBtn = document.getElementById("review-btn");
+const restartBtn = document.getElementById("restart-btn");
+const modeBadge = document.getElementById("mode-badge");
+
+// =====================================
+// UTILIDADES
+// =====================================
+function shuffle(array){
+const arr = [...array];
+for(let i = arr.length - 1; i > 0; i--){
+const j = Math.floor(Math.random() * (i + 1));
+[arr[i], arr[j]] = [arr[j], arr[i]];
+}
+return arr;
+}
+
+// =====================================
+// LÓGICA DEL TEST
+// =====================================
+function startMainTest(){
+currentIndex = 0; correctAnswers = 0; wrongAnswers = 0; mistakes = [];
+// Seleccionar aleatoriamente 30 preguntas del pool de 60
+currentQuestions = shuffle(questionPool).slice(0, QUESTIONS_PER_TEST);
+reviewMode = false;
+
+questionTotal.textContent = currentQuestions.length;
+showQuizScreen();
+renderQuestion();
+}
+
+function startReviewMode(){
+currentIndex = 0; correctAnswers = 0; wrongAnswers = 0;
+currentQuestions = shuffle(mistakes);
+reviewMode = true;
+
+questionTotal.textContent = currentQuestions.length;
+showQuizScreen();
+renderQuestion();
+}
+
+function renderQuestion(){
+nextBtn.classList.add("hidden");
+updateStats();
+
+const item = currentQuestions[currentIndex];
+questionText.textContent = item.q;
+questionNumber.textContent = currentIndex + 1;
+progressBar.style.width = `${((currentIndex) / currentQuestions.length) * 100}%`;
+
+const shuffledOptions = shuffle(item.options);
+optionsContainer.innerHTML = "";
+
+shuffledOptions.forEach(option => {
+const btn = document.createElement("button");
+btn.className = "option-btn";
+btn.innerHTML = `<span>${option}</span>`;
+
+btn.addEventListener("click", () => {
+const buttons = document.querySelectorAll(".option-btn");
+buttons.forEach(b => {
+b.disabled = true;
+if(b.textContent === item.correct){
+b.classList.add("correct-answer");
+}
+});
+
+if(option === item.correct){
+correctAnswers++;
+} else {
+wrongAnswers++;
+btn.classList.add("wrong-answer");
+
+const hintSpan = document.createElement("span");
+hintSpan.className = "hint";
+hintSpan.innerHTML = `💡 <strong>Pista:</strong> ${item.hint}`;
+
+// Buscar el botón correcto para añadirle la pista debajo
+buttons.forEach(b => {
+if(b.textContent === item.correct){
+b.appendChild(hintSpan);
+}
+});
+
+if(!mistakes.includes(item)){
+mistakes.push(item);
+}
+}
+updateStats();
+nextBtn.classList.remove("hidden");
+});
+optionsContainer.appendChild(btn);
+});
+}
+
+function nextQuestion(){
+currentIndex++;
+if(currentIndex < currentQuestions.length){
+renderQuestion();
+} else {
+showResults();
+}
+}
+
+function showResults(){
+quizScreen.classList.add("hidden");
+resultScreen.classList.remove("hidden");
+
+const total = currentQuestions.length;
+const percentage = Math.round((correctAnswers / total) * 100);
+
+finalScore.textContent = `${correctAnswers} / ${total}`;
+finalPercentage.textContent = `${percentage}%`;
+
+if(percentage >= 85){
+resultTitle.textContent = "🏆 ¡Impresionante, Dani!";
+resultTitle.className = "result-title success";
+} else {
+resultTitle.textContent = "❌ ¡No te rindas, repasa tus fallos!";
+resultTitle.className = "result-title fail";
+}
+
+if(mistakes.length > 0 && !reviewMode){
+mistakesSection.classList.remove("hidden");
+mistakesList.innerHTML = "";
+mistakes.forEach(questionObj => {
+const li = document.createElement("li");
+li.innerHTML = `<strong>${questionObj.q}</strong><br>Respuesta correcta: <span class="correct">${questionObj.correct}</span>`;
+mistakesList.appendChild(li);
+});
+} else {
+mistakesSection.classList.add("hidden");
+}
+}
+
+function updateStats(){
+correctCount.textContent = correctAnswers;
+wrongCount.textContent = wrongAnswers;
+modeBadge.textContent = reviewMode ? "MODO REPASO DE ERRORES" : "TEST PRINCIPAL (30 PREGUNTAS)";
+}
+
+function showQuizScreen(){
+resultScreen.classList.add("hidden");
+quizScreen.classList.remove("hidden");
+}
+
+nextBtn.addEventListener("click", nextQuestion);
+restartBtn.addEventListener("click", startMainTest);
+reviewBtn.addEventListener("click", startReviewMode);
+
+// INICIAR AL CARGAR
+startMainTest();
+</script>
+</body>
+</html>
