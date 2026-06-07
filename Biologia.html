@@ -91,7 +91,7 @@ border-radius:999px; font-size:1rem; font-weight:bold; text-transform:uppercase;
 </div>
 
 <div class="top-bar">
-<div>Pregunta <strong><span id="question-number">1</span> / <span id="question-total">30</span></strong></div>
+<div>Pregunta <strong><span id="question-number">1</span> / <span id="question-total">40</span></strong></div>
 <div class="stats">
 <span class="correct">✅ <span id="correct-count">0</span></span>
 <span class="wrong">❌ <span id="wrong-count">0</span></span>
@@ -117,7 +117,7 @@ border-radius:999px; font-size:1rem; font-weight:bold; text-transform:uppercase;
 <ul class="error-list" id="mistakes-list"></ul>
 <button class="review-btn" id="review-btn">Practicar Errores</button>
 </div>
-<button class="restart-btn" id="restart-btn">Generar Nuevo Test de 30 Preguntas</button>
+<button class="restart-btn" id="restart-btn">Generar Nuevo Test de 40 Preguntas</button>
 </div>
 </div>
 
@@ -207,7 +207,7 @@ let correctAnswers = 0;
 let wrongAnswers = 0;
 let mistakes = [];
 let reviewMode = false;
-const QUESTIONS_PER_TEST = 30;
+const QUESTIONS_PER_TEST = 40;
 
 // Elementos DOM
 const questionText = document.getElementById("question-text");
@@ -350,7 +350,7 @@ mistakesSection.classList.add("hidden");
 function updateStats(){
 correctCount.textContent = correctAnswers;
 wrongCount.textContent = wrongAnswers;
-modeBadge.textContent = reviewMode ? "MODO REPASO DE ERRORES" : "TEST PRINCIPAL (30 PREGUNTAS)";
+modeBadge.textContent = reviewMode ? "MODO REPASO DE ERRORES" : "TEST PRINCIPAL (40 PREGUNTAS)";
 }
 
 function showQuizScreen(){
