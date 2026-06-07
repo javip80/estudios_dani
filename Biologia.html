@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Test: La Geosfera</title>
+
+<style>
+*{ box-sizing:border-box; }
+body{
+margin:0; padding:20px;
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+background:#e8f4f8; color:#333;
+}
+.container{
+max-width:900px; margin:auto;
+background:white; border-radius:16px;
+padding:30px; box-shadow:0 8px 24px rgba(0,0,0,0.1);
+}
+h1{ margin-top:0; color:#2980b9; font-size: 1.8rem;}
+.top-bar{
+display:flex; justify-content:space-between; align-items:center;
+gap:10px; flex-wrap:wrap; margin-bottom:20px;
+}
+.stats{ display:flex; gap:20px; font-weight:bold; font-size:1.1rem; }
+.correct{ color:#27ae60; }
+.wrong{ color:#c0392b; }
+.progress-wrapper{
+width:100%; background:#e2e8f0; border-radius:999px;
+overflow:hidden; height:20px; margin:20px 0;
+}
+.progress-bar{
+height:100%; width:0%; background:#2980b9; transition:0.4s ease-out;
+}
+.question{
+font-size:1.3rem; font-weight:bold; margin:25px 0; min-height:80px; line-height:1.4;
+}
+.options{
+display:grid; grid-template-columns:1fr 1fr; gap:15px;
+}
+button{
+border:none; border-radius:12px; padding:18px;
+cursor:pointer; font-size:1.1rem; transition:all 0.2s;
+}
+.option-btn{
+background:white; border:2px solid #2980b9; color:#2980b9;
+min-height:85px; font-weight:600; display:flex; flex-direction:column; justify-content:center; align-items:center;
+}
+.option-btn:hover:not(:disabled){
+background:#2980b9; color:white; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(41, 128, 185, 0.2);
+}
+.option-btn:disabled{ cursor:default; transform:none; }
+.correct-answer{
+background:#27ae60 !important; border-color:#27ae60 !important; color:white !important;
+}
+.wrong-answer{
+background:#c0392b !important; border-color:#c0392b !important; color:white !important;
+}
+.next-btn, .restart-btn, .review-btn{
+margin-top:30px; width:100%; background:#2c3e50;
+color:white; font-weight:bold; font-size:1.2rem;
+}
+.next-btn:hover, .restart-btn:hover, .review-btn:hover{ background:#1a252f; }
+.hidden{ display:none; }
+.result-title{ font-size:2.5rem; margin-bottom:10px; }
+.success{ color:#27ae60; }
+.fail{ color:#c0392b; }
+.error-list{
+text-align:left; margin-top:20px; background:#f8f9fa;
+padding:20px; border-radius:12px; border-left: 5px solid #c0392b;
+}
+.error-list li{ margin-bottom:12px; font-size: 1.1rem; line-height: 1.4; }
+.mode-badge{
+background:#2980b9; color:white; padding:8px 16px;
+border-radius:999px; font-size:1rem; font-weight:bold; text-transform:uppercase; letter-spacing:1px;
+}
+@media(max-width:650px){
+.options{ grid-template-columns:1fr; }
+.question{ font-size:1.2rem; }
+.top-bar{ flex-direction:column; align-items:flex-start; }
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+<div id="quiz-screen">
+<div class="top-bar">
+<h1>🌍 Test: Cuestionario Exacto de la Geosfera</h1>
+<div class="mode-badge" id="mode-badge">TEST PRINCIPAL</div>
+</div>
+
+<div class="top-bar">
+<div>Pregunta <strong><span id="question-number">1</span> / <span id="question-total">30</span></strong></div>
+<div class="stats">
+<span class="correct">✅ <span id="correct-count">0</span></span>
+<span class="wrong">❌ <span id="wrong-count">0</span></span>
+</div>
+</div>
+
+<div class="progress-wrapper">
+<div class="progress-bar" id="progress-bar"></div>
+</div>
+
+<div class="question" id="question-text">Cargando...</div>
+<div class="options" id="options-container"></div>
+<button class="next-btn hidden" id="next-btn">Siguiente Pregunta →</button>
+</div>
+
+<div id="result-screen" class="hidden">
+<h2 class="result-title" id="result-title"></h2>
+<p style="font-size:1.5rem">Aciertos: <strong id="final-score"></strong></p>
+<p style="font-size:1.5rem">Porcentaje: <strong id="final-percentage"></strong></p>
+
+<div id="mistakes-section" class="hidden">
+<h3>Preguntas falladas (Repasa las respuestas correctas):</h3>
+<ul class="error-list" id="mistakes-list"></ul>
+<button class="review-btn" id="review-btn">Practicar Errores</button>
+</div>
+<button class="restart-btn" id="restart-btn">Generar Nuevo Test de 30 Preguntas</button>
+</div>
+</div>
+
+<script>
+// =====================================
+// BASE DE DATOS EXACTA DEL PDF EN PANTALLA (70 PREGUNTAS)
+// =====================================
+const questionPool = [
+{ q: "1. ¿Cuáles son las capas principales de la geosfera?", correct: "Corteza, manto y núcleo.", options: ["Corteza, manto y núcleo.", "Litosfera, astenosfera y mesosfera.", "Atmósfera, hidrosfera y biosfera.", "Oceánica, continental y terrestre."] },
+{ q: "2. ¿Qué capa se encuentra entre la corteza y el núcleo?", correct: "El manto.", options: ["El manto.", "La litosfera.", "La astenosfera.", "El magma."] },
+{ q: "3. ¿En qué dos partes se divide el núcleo?", correct: "En núcleo externo y núcleo interno.", options: ["En núcleo externo y núcleo interno.", "En manto superior e inferior.", "En corteza oceánica y continental.", "En litosfera y astenosfera."] },
+{ q: "4. ¿Qué parte del núcleo es fluida?", correct: "El núcleo externo.", options: ["El núcleo externo.", "El núcleo interno.", "El manto superior.", "La astenosfera."] },
+{ q: "5. ¿Qué parte del núcleo es sólida y rica en hierro?", correct: "El núcleo interno.", options: ["El núcleo interno.", "El núcleo externo.", "El manto inferior.", "La corteza continental."] },
+{ q: "6. ¿Qué es la litosfera?", correct: "Es la capa sólida formada por la corteza terrestre y los primeros kilómetros del manto.", options: ["Es la capa sólida formada por la corteza terrestre y los primeros kilómetros del manto.", "Es la capa de agua que recubre la Tierra.", "Es la parte más profunda del manto.", "Es el conjunto de todos los seres vivos."] },
+{ q: "7. ¿Qué es la astenosfera?", correct: "Es una capa del manto superior formada por materiales fundidos.", options: ["Es una capa del manto superior formada por materiales fundidos.", "Es la parte sólida del núcleo interno.", "Es la capa gaseosa que envuelve la Tierra.", "Es la corteza oceánica más antigua."] },
+{ q: "8. ¿Cómo se llama el material fundido del interior terrestre?", correct: "Magma.", options: ["Magma.", "Lava.", "Plasma.", "Sedimento."] },
+{ q: "9. ¿Qué fenómenos externos modifican la corteza terrestre?", correct: "La lluvia, el viento, los ríos, los mares y los océanos.", options: ["La lluvia, el viento, los ríos, los mares y los océanos.", "Los terremotos y volcanes.", "La presión y la temperatura.", "El magma y el núcleo."] },
+{ q: "10. ¿De qué está constituida la corteza terrestre?", correct: "Por elementos químicos que se combinan y forman minerales.", options: ["Por elementos químicos que se combinan y forman minerales.", "Por agua y gases.", "Solo por hierro y níquel.", "Por magma solidificado rápidamente."] },
+{ q: "11. ¿Qué forman los elementos químicos al combinarse?", correct: "Forman minerales.", options: ["Forman minerales.", "Forman agua.", "Forman magma.", "Forman fósiles."] },
+{ q: "12. ¿Dónde pueden encontrarse los minerales?", correct: "Pueden encontrarse aislados o formando rocas.", options: ["Pueden encontrarse aislados o formando rocas.", "Solo en el núcleo de la Tierra.", "Exclusivamente en los volcanes.", "Solo en el fondo del mar."] },
+{ q: "13. ¿Qué dos tipos de corteza terrestre existen?", correct: "La corteza continental y la corteza oceánica.", options: ["La corteza continental y la corteza oceánica.", "La litosfera y la astenosfera.", "La corteza interna y externa.", "El manto superior e inferior."] },
+{ q: "14. ¿Qué tipo de corteza forma los continentes?", correct: "La corteza continental.", options: ["La corteza continental.", "La corteza oceánica.", "La litosfera.", "La mesosfera."] },
+{ q: "15. ¿Qué tipo de corteza forma el fondo de océanos y mares?", correct: "La corteza oceánica.", options: ["La corteza oceánica.", "La corteza continental.", "La astenosfera.", "El núcleo externo."] },
+{ q: "16. ¿Qué son los minerales?", correct: "Son materiales sólidos e inertes que se forman de manera natural en la Tierra.", options: ["Son materiales sólidos e inertes que se forman de manera natural en la Tierra.", "Son seres vivos microscópicos.", "Son rocas formadas por magma.", "Son sustancias líquidas del interior de la Tierra."] },
+{ q: "17. ¿Los minerales son materiales vivos o inertes?", correct: "Son materiales inertes.", options: ["Son materiales inertes.", "Son materiales vivos.", "Ambas respuestas son correctas.", "Son organismos orgánicos."] },
+{ q: "18. ¿Dónde se forman los minerales de manera natural?", correct: "En la Tierra, especialmente en la corteza terrestre.", options: ["En la Tierra, especialmente en la corteza terrestre.", "En el espacio exterior.", "Solo en el núcleo terrestre.", "En la atmósfera."] },
+{ q: "19. ¿Qué significa que cada mineral tenga una composición química propia?", correct: "Que está formado por unos elementos químicos determinados.", options: ["Que está formado por unos elementos químicos determinados.", "Que todos tienen los mismos elementos.", "Que se puede convertir en magma.", "Que cambia de elementos cada año."] },
+{ q: "20. ¿Cómo se llama la estructura interna ordenada de los minerales?", correct: "Estructura cristalina.", options: ["Estructura cristalina.", "Estructura rocosa.", "Estructura magmática.", "Estructura sedimentaria."] },
+{ q: "21. ¿Qué mineral aparece como ejemplo de cristal?", correct: "El cuarzo.", options: ["El cuarzo.", "El granito.", "El basalto.", "El carbón."] },
+{ q: "22. ¿Qué es la exfoliación?", correct: "Es la capacidad de un mineral de romperse en formas regulares.", options: ["Es la capacidad de un mineral de romperse en formas regulares.", "Es la capacidad de brillar.", "Es la forma irregular en la que se rompe.", "Es el polvo que deja al rayarse."] },
+{ q: "23. ¿Cómo se llama la rotura irregular de un mineral?", correct: "Fractura.", options: ["Fractura.", "Exfoliación.", "Raya.", "Dureza."] },
+{ q: "24. ¿Qué mide la dureza de un mineral?", correct: "La resistencia de un mineral a ser rayado.", options: ["La resistencia de un mineral a ser rayado.", "La resistencia a romperse al caer.", "La capacidad de rayar el vidrio.", "Su peso en gramos."] },
+{ q: "25. ¿Con qué escala se mide la dureza?", correct: "Con la escala de Mohs.", options: ["Con la escala de Mohs.", "Con la escala de Richter.", "Con la escala Celsius.", "Con la balanza."] },
+{ q: "26. ¿Cuál es el mineral más blando? ¿Y el más duro?", correct: "El más blando es el talco y el más duro es el diamante.", options: ["El más blando es el talco y el más duro es el diamante.", "El más blando es el yeso y el más duro el cuarzo.", "El más blando es el carbón y el más duro el rubí.", "El más blando es la arcilla y el más duro el granito."] },
+{ q: "27. ¿Qué es el brillo de un mineral? Nombra dos tipos de Brillo.", correct: "Es la forma en la que un mineral refleja la luz. Ejemplos: metálico, vítreo, nacarado o adamantino.", options: ["Es la forma en la que un mineral refleja la luz. Ejemplos: metálico, vítreo, nacarado o adamantino.", "Es el color del mineral. Ejemplos: rojo o azul.", "Es la transparencia. Ejemplos: opaco o cristalino.", "Es su dureza. Ejemplos: brillante o mate."] },
+{ q: "28. ¿Qué es el color de un mineral?", correct: "Es el color que presenta el mineral a simple vista; puede ayudar a reconocerlo, aunque algunos minerales tienen varios colores por las impurezas.", options: ["Es el color que presenta el mineral a simple vista; puede ayudar a reconocerlo, aunque algunos minerales tienen varios colores por las impurezas.", "Es el color del polvo al rayarlo.", "Es el brillo que emite en la oscuridad.", "Es el color fijo que nunca cambia en ningún mineral."] },
+{ q: "29. ¿Qué es la raya de un mineral?", correct: "Es el color que deja el mineral cuando se convierte en polvo.", options: ["Es el color que deja el mineral cuando se convierte en polvo.", "Es la marca de fractura en su superficie.", "Es una línea geométrica de su cristal.", "Es el color de su superficie exterior."] },
+{ q: "30. ¿Por qué la raya es más útil que el color para identificar minerales?", correct: "Porque suele ser constante, mientras que el color externo puede variar por impurezas.", options: ["Porque suele ser constante, mientras que el color externo puede variar por impurezas.", "Porque es más brillante.", "Porque se ve a simple vista sin hacer nada.", "Porque el color desaparece con el agua."] },
+{ q: "31. ¿Qué es la diafanidad?", correct: "Es la capacidad de un mineral para dejar pasar la luz.", options: ["Es la capacidad de un mineral para dejar pasar la luz.", "Es la resistencia a ser rayado.", "Es su forma de romperse.", "Es el color de su polvo."] },
+{ q: "32. ¿Qué diferencia hay entre un mineral transparente, translúcido y opaco?", correct: "Un mineral transparente deja pasar la luz y permite ver objetos a través de él; uno translúcido deja pasar algo de luz, pero no permite ver bien los objetos; uno opaco no deja pasar la luz.", options: ["Un mineral transparente deja pasar la luz y permite ver objetos a través de él; uno translúcido deja pasar algo de luz, pero no permite ver bien los objetos; uno opaco no deja pasar la luz.", "El transparente es duro, el translúcido blando y el opaco líquido.", "Son tres tipos de brillo metálico.", "Ninguna, los tres son iguales."] },
+{ q: "33. ¿Qué son las rocas?", correct: "Son materiales que forman los continentes y el fondo de los océanos.", options: ["Son materiales que forman los continentes y el fondo de los océanos.", "Son minerales artificiales.", "Son capas de la atmósfera.", "Son gases solidificados."] },
+{ q: "34. ¿De qué están compuestas las rocas?", correct: "De uno o varios minerales.", options: ["De uno o varios minerales.", "Solo de magma.", "Solo de agua y tierra.", "De hierro y níquel."] },
+{ q: "35. ¿Dónde encontramos rocas en la Tierra?", correct: "En los continentes y en el fondo de océanos y mares.", options: ["En los continentes y en el fondo de océanos y mares.", "Solo en las montañas.", "Solo en el manto terrestre.", "En la atmósfera."] },
+{ q: "36. ¿Qué roca tiene minerales visibles a simple vista?", correct: "El granito.", options: ["El granito.", "La arcilla.", "La caliza.", "La obsidiana."] },
+{ q: "37. ¿Qué roca tiene minerales muy pequeños que solo se ven con microscopio?", correct: "Las arcillas.", options: ["Las arcillas.", "El granito.", "El conglomerado.", "El mármol."] },
+{ q: "38. ¿En qué tres grupos se clasifican las rocas según su formación?", correct: "Rocas sedimentarias, rocas magmáticas o ígneas y rocas metamórficas.", options: ["Rocas sedimentarias, rocas magmáticas o ígneas y rocas metamórficas.", "Rocas plutónicas, volcánicas y cristalinas.", "Rocas detríticas, químicas y orgánicas.", "Rocas duras, blandas y frágiles."] },
+{ q: "39. ¿Cómo se forman las rocas sedimentarias?", correct: "Se forman por la acumulación, compactación y transformación de sedimentos.", options: ["Se forman por la acumulación, compactación y transformación de sedimentos.", "Por el enfriamiento del magma.", "Por las altas presiones y temperaturas del manto.", "Al solidificarse la lava del volcán."] },
+{ q: "40. ¿Qué son los sedimentos?", correct: "Son fragmentos que proceden de otras rocas o de restos de seres vivos.", options: ["Son fragmentos que proceden de otras rocas o de restos de seres vivos.", "Son minerales puros de la escala de Mohs.", "Es magma fundido.", "Es agua de mar evaporada."] },
+{ q: "41. ¿De dónde pueden proceder los sedimentos?", correct: "De otras rocas o de restos de seres vivos.", options: ["De otras rocas o de restos de seres vivos.", "Del núcleo terrestre.", "Del espacio exterior.", "De los rayos solares."] },
+{ q: "42. ¿Por qué las rocas sedimentarias suelen aparecer en capas o estratos?", correct: "Porque los sedimentos se depositan en capas y, con el tiempo, se compactan formando rocas.", options: ["Porque los sedimentos se depositan en capas y, con el tiempo, se compactan formando rocas.", "Porque se cortan así en las minas.", "Porque el viento las pule en forma plana.", "Porque el magma fluye en líneas rectas."] },
+{ q: "43. ¿Cuáles son los tres tipos de rocas sedimentarias?", correct: "Detríticas, de origen químico y de origen orgánico.", options: ["Detríticas, de origen químico y de origen orgánico.", "Plutónicas y volcánicas.", "Metamórficas y magmáticas.", "Transparentes, translúcidas y opacas."] },
+{ q: "44. ¿Cómo se forman las rocas sedimentarias detríticas?", correct: "Se forman a partir de fragmentos de otras rocas.", options: ["Se forman a partir de fragmentos de otras rocas.", "Por restos vegetales y animales.", "Por sustancias disueltas en agua.", "Por enfriamiento rápido."] },
+{ q: "45. ¿Cómo se clasifican las rocas sedimentarias detríticas?", correct: "Según el tamaño de sus fragmentos.", options: ["Según el tamaño de sus fragmentos.", "Según su color.", "Según el lugar donde se encuentran.", "Según su dureza en la escala de Mohs."] },
+{ q: "46. ¿Qué roca sedimentaria detrítica tiene fragmentos grandes?", correct: "El conglomerado.", options: ["El conglomerado.", "La arenisca.", "La arcilla.", "La pizarra."] },
+{ q: "47. ¿Qué roca sedimentaria detrítica tiene fragmentos de tamaño medio?", correct: "La arenisca.", options: ["La arenisca.", "El conglomerado.", "La arcilla.", "La caliza."] },
+{ q: "48. ¿Qué roca sedimentaria detrítica tiene fragmentos muy pequeños?", correct: "La arcilla.", options: ["La arcilla.", "El conglomerado.", "La arenisca.", "La sal gema."] },
+{ q: "49. ¿Cómo se forman las rocas sedimentarias de origen químico?", correct: "Se forman cuando sustancias disueltas en el agua precipitan y forman depósitos.", options: ["Se forman cuando sustancias disueltas en el agua precipitan y forman depósitos.", "Por fragmentos grandes de otras rocas.", "Al enfriarse el magma.", "Por restos de dinosaurios."] },
+{ q: "50. ¿Qué roca sedimentaria se forma al evaporarse el agua del mar?", correct: "La sal gema.", options: ["La sal gema.", "La caliza.", "El carbón.", "La arcilla."] },
+{ q: "51. ¿Qué roca puede formar estalactitas y estalagmitas?", correct: "La caliza.", options: ["La caliza.", "La sal gema.", "El mármol.", "El granito."] },
+{ q: "52. ¿Cómo se forman las rocas sedimentarias de origen orgánico?", correct: "Se forman a partir de restos de seres vivos que quedan enterrados durante millones de años.", options: ["Se forman a partir de restos de seres vivos que quedan enterrados durante millones de años.", "Por precipitación de sustancias químicas.", "Por la erosión del viento.", "Por metamorfismo de presión."] },
+{ q: "53. ¿De qué restos procede el petróleo?", correct: "De restos de organismos marinos.", options: ["De restos de organismos marinos.", "De restos de árboles.", "De dinosaurios gigantes.", "De lava volcánica."] },
+{ q: "54. ¿De qué restos procede el carbón?", correct: "De restos vegetales.", options: ["De restos vegetales.", "De organismos marinos.", "De peces antiguos.", "De magma cristalizado."] },
+{ q: "55. ¿Cómo se forman las rocas magmáticas?", correct: "Se forman cuando el magma del interior de la Tierra se enfría y se solidifica.", options: ["Se forman cuando el magma del interior de la Tierra se enfría y se solidifica.", "Por la erosión de las rocas.", "Por presión en el manto.", "Por los depósitos de sal en el mar."] },
+{ q: "56. ¿Qué dos tipos principales de rocas magmáticas existen?", correct: "Rocas plutónicas y rocas volcánicas.", options: ["Rocas plutónicas y rocas volcánicas.", "Rocas detríticas y químicas.", "Rocas foliadas y no foliadas.", "Rocas orgánicas e inorgánicas."] },
+{ q: "57. ¿Cómo se forman las rocas plutónicas?", correct: "Se forman cuando el magma se enfría lentamente en el interior de la Tierra.", options: ["Se forman cuando el magma se enfría lentamente en el interior de la Tierra.", "Cuando el magma sale como lava.", "Por la presión de los sedimentos.", "Por restos de animales en el subsuelo."] },
+{ q: "58. ¿Por qué las rocas plutónicas tienen cristales visibles?", correct: "Porque el magma se enfría despacio y da tiempo a que se formen cristales visibles.", options: ["Porque el magma se enfría despacio y da tiempo a que se formen cristales visibles.", "Porque se enfrían en 5 minutos.", "Porque están hechas de vidrio puro.", "Porque tienen mucha sal gema."] },
+{ q: "59. ¿Qué roca plutónica aparece como ejemplo?", correct: "El granito.", options: ["El granito.", "La riolita.", "El conglomerado.", "El mármol."] },
+{ q: "60. ¿Cómo se forman las rocas volcánicas?", correct: "Se forman cuando el magma sale a la superficie y se enfría rápidamente.", options: ["Se forman cuando el magma sale a la superficie y se enfría rápidamente.", "Cuando el magma se enfría despacio bajo tierra.", "Por fragmentos de otras rocas.", "Por la descomposición de vegetales."] },
+{ q: "61. ¿Con qué fenómeno geológico están asociadas las rocas volcánicas?", correct: "Con las erupciones volcánicas.", options: ["Con las erupciones volcánicas.", "Con los huracanes.", "Con las lluvias torrenciales.", "Con las mareas del mar."] },
+{ q: "62. ¿Qué roca volcánica aparece como ejemplo?", correct: "La riolita.", options: ["La riolita.", "El granito.", "La caliza.", "El carbón."] },
+{ q: "63. ¿Cómo se forman las rocas metamórficas?", correct: "Se forman cuando una roca ya existente cambia por estar sometida a altas temperaturas y presiones.", options: ["Se forman cuando una roca ya existente cambia por estar sometida a altas temperaturas y presiones.", "Al derretirse completamente y volverse magma.", "Al evaporarse el agua del mar.", "Por restos de plantas enterradas."] },
+{ q: "64. ¿Qué factores provocan el metamorfismo?", correct: "Las altas temperaturas y las presiones.", options: ["Las altas temperaturas y las presiones.", "El viento y la lluvia.", "La gravedad lunar.", "El hielo y la nieve."] },
+{ q: "65. ¿La roca se funde durante el metamorfismo?", correct: "No, cambia su composición o estructura, pero no llega a fundirse.", options: ["No, cambia su composición o estructura, pero no llega a fundirse.", "Sí, se funde por completo en magma.", "Sí, pero solo por unos segundos.", "Solo se funde si es de origen marino."] },
+{ q: "66. ¿Qué roca metamórfica se forma a partir de la caliza?", correct: "El mármol.", options: ["El mármol.", "La cuarcita.", "La pizarra.", "El carbón."] },
+{ q: "67. ¿Qué procesos transforman las rocas en sedimentos?", correct: "La meteorización, la erosión, el transporte y la sedimentación.", options: ["La meteorización, la erosión, el transporte y la sedimentación.", "La presión y la temperatura.", "La cristalización y la fusión.", "La diagénesis."] },
+{ q: "68. ¿Qué proceso convierte los sedimentos en rocas sedimentarias?", correct: "La diagénesis, mediante compactación y cementación.", options: ["La diagénesis, mediante compactación y cementación.", "El metamorfismo regional.", "La fusión lenta.", "El enfriamiento brusco."] },
+{ q: "69. ¿Qué proceso convierte una roca en magma?", correct: "La fusión.", options: ["La fusión.", "La solidificación.", "La meteorización.", "El transporte."] },
+{ q: "70. ¿Qué proceso convierte el magma en roca ígnea?", correct: "El enfriamiento y la solidificación del magma.", options: ["El enfriamiento y la solidificación del magma.", "La erosión y el transporte.", "La presión extrema.", "La compactación de sedimentos."] }
+];
+
+// =====================================
+// ESTADOS Y VARIABLES
+// =====================================
+let currentQuestions = [];
+let currentIndex = 0;
+let correctAnswers = 0;
+let wrongAnswers = 0;
+let mistakes = [];
+let reviewMode = false;
+const QUESTIONS_PER_TEST = 30;
+
+// Elementos DOM
+const questionText = document.getElementById("question-text");
+const optionsContainer = document.getElementById("options-container");
+const nextBtn = document.getElementById("next-btn");
+const correctCount = document.getElementById("correct-count");
+const wrongCount = document.getElementById("wrong-count");
+const questionNumber = document.getElementById("question-number");
+const questionTotal = document.getElementById("question-total");
+const progressBar = document.getElementById("progress-bar");
+const quizScreen = document.getElementById("quiz-screen");
+const resultScreen = document.getElementById("result-screen");
+const resultTitle = document.getElementById("result-title");
+const finalScore = document.getElementById("final-score");
+const finalPercentage = document.getElementById("final-percentage");
+const mistakesSection = document.getElementById("mistakes-section");
+const mistakesList = document.getElementById("mistakes-list");
+const reviewBtn = document.getElementById("review-btn");
+const restartBtn = document.getElementById("restart-btn");
+const modeBadge = document.getElementById("mode-badge");
+
+// =====================================
+// UTILIDADES
+// =====================================
+function shuffle(array){
+const arr = [...array];
+for(let i = arr.length - 1; i > 0; i--){
+const j = Math.floor(Math.random() * (i + 1));
+[arr[i], arr[j]] = [arr[j], arr[i]];
+}
+return arr;
+}
+
+// =====================================
+// LÓGICA DEL TEST
+// =====================================
+function startMainTest(){
+currentIndex = 0; correctAnswers = 0; wrongAnswers = 0; mistakes = [];
+currentQuestions = shuffle(questionPool).slice(0, QUESTIONS_PER_TEST);
+reviewMode = false;
+
+questionTotal.textContent = currentQuestions.length;
+showQuizScreen();
+renderQuestion();
+}
+
+function startReviewMode(){
+currentIndex = 0; correctAnswers = 0; wrongAnswers = 0;
+currentQuestions = shuffle(mistakes);
+reviewMode = true;
+
+questionTotal.textContent = currentQuestions.length;
+showQuizScreen();
+renderQuestion();
+}
+
+function renderQuestion(){
+nextBtn.classList.add("hidden");
+updateStats();
+
+const item = currentQuestions[currentIndex];
+questionText.textContent = item.q;
+questionNumber.textContent = currentIndex + 1;
+progressBar.style.width = `${((currentIndex) / currentQuestions.length) * 100}%`;
+
+const shuffledOptions = shuffle(item.options);
+optionsContainer.innerHTML = "";
+
+shuffledOptions.forEach(option => {
+const btn = document.createElement("button");
+btn.className = "option-btn";
+btn.innerHTML = `<span>${option}</span>`;
+
+btn.addEventListener("click", () => {
+const buttons = document.querySelectorAll(".option-btn");
+buttons.forEach(b => {
+b.disabled = true;
+if(b.textContent === item.correct){
+b.classList.add("correct-answer");
+}
+});
+
+if(option === item.correct){
+correctAnswers++;
+} else {
+wrongAnswers++;
+btn.classList.add("wrong-answer");
+
+if(!mistakes.includes(item)){
+mistakes.push(item);
+}
+}
+updateStats();
+nextBtn.classList.remove("hidden");
+});
+optionsContainer.appendChild(btn);
+});
+}
+
+function nextQuestion(){
+currentIndex++;
+if(currentIndex < currentQuestions.length){
+renderQuestion();
+} else {
+showResults();
+}
+}
+
+function showResults(){
+quizScreen.classList.add("hidden");
+resultScreen.classList.remove("hidden");
+
+const total = currentQuestions.length;
+const percentage = Math.round((correctAnswers / total) * 100);
+
+finalScore.textContent = `${correctAnswers} / ${total}`;
+finalPercentage.textContent = `${percentage}%`;
+
+if(percentage >= 85){
+resultTitle.textContent = "🏆 ¡Impresionante, Dani!";
+resultTitle.className = "result-title success";
+} else {
+resultTitle.textContent = "❌ ¡Repasa los conceptos fallados!";
+resultTitle.className = "result-title fail";
+}
+
+if(mistakes.length > 0 && !reviewMode){
+mistakesSection.classList.remove("hidden");
+mistakesList.innerHTML = "";
+mistakes.forEach(questionObj => {
+const li = document.createElement("li");
+li.innerHTML = `<strong>${questionObj.q}</strong><br>Respuesta correcta: <span class="correct">${questionObj.correct}</span>`;
+mistakesList.appendChild(li);
+});
+} else {
+mistakesSection.classList.add("hidden");
+}
+}
+
+function updateStats(){
+correctCount.textContent = correctAnswers;
+wrongCount.textContent = wrongAnswers;
+modeBadge.textContent = reviewMode ? "MODO REPASO DE ERRORES" : "TEST PRINCIPAL (30 PREGUNTAS)";
+}
+
+function showQuizScreen(){
+resultScreen.classList.add("hidden");
+quizScreen.classList.remove("hidden");
+}
+
+nextBtn.addEventListener("click", nextQuestion);
+restartBtn.addEventListener("click", startMainTest);
+reviewBtn.addEventListener("click", startReviewMode);
+
+startMainTest();
+</script>
+</body>
+</html>
