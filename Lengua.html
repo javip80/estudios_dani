@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Test: Morfología - Tipos de Palabras</title>
+<title>Test: Palabras Invariables y Conjunciones</title>
 <style>
 *{ box-sizing:border-box; }
 body{ margin:0; padding:20px; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#fdf6e3; color:#333; }
@@ -37,7 +37,7 @@ button{ border:none; border-radius:12px; padding:18px; cursor:pointer; font-size
 <div class="container">
     <div id="quiz-screen">
         <div class="top-bar">
-            <h1>📚 Test: Palabras Invariables y Repaso</h1>
+            <h1>📚 Test: Palabras Invariables (Especial Conjunciones)</h1>
             <div class="mode-badge" id="mode-badge">TEST PRINCIPAL</div>
         </div>
         <div class="top-bar">
@@ -68,83 +68,50 @@ button{ border:none; border-radius:12px; padding:18px; cursor:pointer; font-size
 
 <script>
 // =====================================
-// BASE 1: REPASO (PALABRAS VARIABLES) 
-// Se elegirán 10 de aquí
-// =====================================
-const poolReview = [
-    { q: "¿Cuáles son las palabras VARIABLES (las que cambian de género, número, persona...)?", c: "Sustantivo, adjetivo, determinante, pronombre y verbo.", o: ["Sustantivo, adjetivo, determinante, pronombre y verbo.", "Adverbio, preposición, conjunción e interjección.", "Solo los verbos y los adverbios.", "Sustantivo, adjetivo, preposición y conjunción."], h: "Tienen masculino/femenino o singular/plural." },
-    { q: "¿Cuáles son las palabras INVARIABLES (aquellas que NO cambian su forma)?", c: "Adverbio, preposición, conjunción e interjección.", o: ["Adverbio, preposición, conjunción e interjección.", "Sustantivo, adjetivo, determinante y pronombre.", "Determinantes y pronombres exclusivamente.", "Los verbos y adjetivos."], h: "No tienen género ni número." },
-    { q: "El verbo pertenece al grupo de las palabras...", c: "Variables.", o: ["Variables.", "Invariables.", "Defectivas.", "Simples."], h: "Cambia según la persona." },
-    { q: "El sustantivo y el adjetivo pertenecen al grupo de las palabras...", c: "Variables.", o: ["Variables.", "Invariables.", "Atributivas.", "Nexos."], h: "Ambos tienen género y número." },
-    { q: "Las palabras variables pueden cambiar de...", c: "Género, número, persona, tiempo...", o: ["Género, número, persona, tiempo...", "Lugar, modo, tiempo y cantidad.", "Copulativa, disyuntiva y adversativa.", "Propios, comunes y abstractos."], h: "Se les llama accidentes gramaticales." },
-    { q: "¿Qué tipo de palabra nombra personas, animales, objetos, lugares o sentimientos?", c: "El sustantivo.", o: ["El sustantivo.", "El adjetivo.", "El verbo.", "El adverbio."], h: "Responde a la pregunta ¿qué es?" },
-    { q: "¿Cuáles son los tipos de sustantivos según los apuntes?", c: "Comunes/propios, concretos/abstractos, individuales/colectivos, contables/incontables.", o: ["Comunes/propios, concretos/abstractos, individuales/colectivos, contables/incontables.", "Especificativos y explicativos.", "Lugar, tiempo, modo y cantidad.", "Demostrativos, posesivos y numerales."], h: "Se agrupan en parejas opuestas." },
-    { q: "Un truco infalible para reconocer un sustantivo es...", c: "Poner delante un determinante como el, la, los, las o mucho/mucha.", o: ["Poner delante un determinante como el, la, los, las o mucho/mucha.", "Poner delante la palabra 'muy'.", "Intentar cambiarlo de tiempo verbal.", "Comprobar si va entre signos de exclamación."], h: "Por ejemplo: 'la' silla, 'mucho' miedo." },
-    { q: "Las palabras 'estupidez' y 'valentía' son ejemplos de sustantivos...", c: "Abstractos.", o: ["Abstractos.", "Concretos.", "Colectivos.", "Propios."], h: "No se pueden tocar físicamente, son conceptos." },
-    { q: "La palabra 'pingüino' es un sustantivo de tipo...", c: "Común, concreto, individual y contable.", o: ["Común, concreto, individual y contable.", "Propio, abstracto, colectivo e incontable.", "Adjetivo calificativo explicativo.", "Sustantivo incontable y abstracto."], h: "Puedes verlo, tocarlo y contarlo." },
-    { q: "¿Qué clase de palabra nombra cualidades, estado o procedencia?", c: "El adjetivo.", o: ["El adjetivo.", "El sustantivo.", "El pronombre.", "El adverbio."], h: "Sirve para decir CÓMO es o está algo." },
-    { q: "Además de género y número, el adjetivo tiene...", c: "Grado positivo, comparativo o superlativo.", o: ["Grado positivo, comparativo o superlativo.", "Modo indicativo y subjuntivo.", "Persona (1ª, 2ª o 3ª).", "Tiempo (presente, pasado o futuro)."], h: "Piensa en: listo, más listo que, listísimo." },
-    { q: "Un truco para reconocer un adjetivo es...", c: "Poner delante la palabra 'muy'.", o: ["Poner delante la palabra 'muy'.", "Poner delante un pronombre personal.", "Comprobar si va seguido de una preposición.", "Poner delante los artículos el, la, los, las."], h: "Ejemplo: [____] guapa, [____] gracioso." },
-    { q: "¿A qué preguntas responde el adjetivo?", c: "¿Cómo es? ¿Cómo está? ¿De dónde es?", o: ["¿Cómo es? ¿Cómo está? ¿De dónde es?", "¿Qué es? ¿Quién es?", "¿Cuándo? ¿Dónde? ¿Cuánto?", "¿Por qué? ¿Para qué?"], h: "Busca describir o decir la procedencia." },
-    { q: "En los apuntes, 'flamenca' y 'malagueña' son...", c: "Adjetivos.", o: ["Adjetivos.", "Sustantivos propios.", "Adverbios de lugar.", "Determinantes indefinidos."], h: "Indican de dónde es alguien." },
-    { q: "¿Qué clase de palabra acompaña al sustantivo para concretarlo o cuantificándolo?", c: "El determinante.", o: ["El determinante.", "El pronombre.", "El adverbio.", "La preposición."], h: "Siempre va de la mano de un nombre." },
-    { q: "Un truco para reconocer el determinante es...", c: "Normalmente suele estar delante del sustantivo al que acompaña.", o: ["Normalmente suele estar delante del sustantivo al que acompaña.", "Sustituye al sustantivo haciéndolo desaparecer.", "Va siempre al final de la oración.", "No cambia ni de género ni de número."], h: "Va 'determinando' al nombre." },
-    { q: "Diferencia clave: los determinantes ACOMPAÑAN al sustantivo, mientras que los pronombres...", c: "Lo sustituyen para evitar su repetición.", o: ["Lo sustituyen para evitar su repetición.", "Acompañan al verbo.", "No tienen género ni número.", "Unen oraciones."], h: "Uno es amigo del nombre, el otro se hace pasar por él." },
-    { q: "Ejemplos de determinantes según los apuntes son...", c: "el, un, estas, varias, vuestros, primero, tres...", o: ["el, un, estas, varias, vuestros, primero, tres...", "yo, ella, qué, cómo, demás...", "cerca, ayer, bien, nada, sí, no...", "a, ante, bajo, con..."], h: "Sirven para presentar a un sustantivo." },
-    { q: "¿Qué clase de palabra sustituye al sustantivo para evitar su repetición?", c: "El pronombre.", o: ["El pronombre.", "El determinante.", "El adjetivo.", "La preposición."], h: "Toma el lugar del nombre." },
-    { q: "Un truco para reconocer un pronombre es...", c: "Hace desaparecer a un sustantivo que ya ha aparecido antes en el contexto.", o: ["Hace desaparecer a un sustantivo que ya ha aparecido antes en el contexto.", "Siempre va delante de un sustantivo.", "Se le puede poner 'muy' delante.", "Suele terminar en -ando."], h: "Ocupa el sitio de la palabra que borramos." },
-    { q: "Ejemplos de pronombres según los apuntes son...", c: "yo, ella, mío, qué, cómo, bastantes, demás...", o: ["yo, ella, mío, qué, cómo, bastantes, demás...", "el, un, estas, varias, vuestros...", "bien, mal, cerca, lejos...", "pero, mas, sino..."], h: "Palabras que pueden funcionar solas." },
-    { q: "En la frase 'La libertad es para quien piensa diferente', 'quien' es...", c: "Un pronombre.", o: ["Un pronombre.", "Un determinante.", "Una conjunción.", "Un adjetivo."], h: "Sustituye a 'la persona que'." },
-    { q: "En 'Este coche es rojo', 'Este' es determinante. Pero en 'Este es rojo', 'Este' es...", c: "Un pronombre.", o: ["Un pronombre.", "Un adjetivo.", "Un adverbio.", "Un sustantivo."], h: "El coche ha desaparecido y ocupa su lugar." },
-    { q: "¿Qué clase de palabra sirve para nombrar las cosas que hacemos?", c: "El verbo.", o: ["El verbo.", "El adverbio.", "El sustantivo.", "El adjetivo."], h: "Indica acción o estado." },
-    { q: "¿De qué maneras pueden estar formados los verbos?", c: "Simples, compuestos, en voz pasiva o perífrasis verbales.", o: ["Simples, compuestos, en voz pasiva o perífrasis verbales.", "Concretos o abstractos.", "Especificativos o explicativos.", "Copulativos o disyuntivos."], h: "Pueden usar el verbo 'haber' o 'ser'." },
-    { q: "Un truco para reconocer un verbo en forma personal es...", c: "Poner delante un pronombre personal como yo, tú, él/ella...", o: ["Poner delante un pronombre personal como yo, tú, él/ella...", "Poner la palabra 'muy' delante.", "Poner un artículo delante.", "Ver si va entre exclamaciones."], h: "Si puedes decir 'yo [____]', es esa palabra." },
-    { q: "Si el verbo no acepta un pronombre personal delante, se trata de una...", c: "Forma NO personal (infinitivo, gerundio o participio).", o: ["Forma NO personal (infinitivo, gerundio o participio).", "Preposición.", "Conjunción copulativa.", "Interjección."], h: "Terminan en -ar, -ando, -ado." },
-    { q: "¿Cuáles son las terminaciones del Infinitivo?", c: "-ar, -er, -ir.", o: ["-ar, -er, -ir.", "-ando, -endo, -iendo.", "-ado, -ido, -so, -to, -cho.", "-aba, -ía, -aré."], h: "Es el nombre del verbo." },
-    { q: "¿Cuáles son las terminaciones del Gerundio y el Participio?", c: "Gerundio (-ando, -endo) y Participio (-ado, -ido).", o: ["Gerundio (-ando, -endo) y Participio (-ado, -ido).", "Gerundio (-ar, -er, -ir) y Participio (-ando, -iendo).", "Ambos terminan en -ar, -er, -ir.", "Gerundio (-aba) y Participio (-ía)."], h: "Ejemplo: cantANDO, cantADO." }
-];
-
-// =====================================
-// BASE 2: PALABRAS INVARIABLES Y PRÁCTICA
-// Se elegirán 30 de aquí
+// BASE ÚNICA: PALABRAS INVARIABLES Y CONJUNCIONES
+// (40 Preguntas en total)
 // =====================================
 const poolInvariables = [
     { q: "El adverbio pertenece al grupo de las palabras...", c: "Invariables.", o: ["Invariables.", "Variables.", "Flexivas.", "Nominales."], h: "No puedes poner un adverbio en plural." },
     { q: "La preposición y la conjunción pertenecen al grupo de las palabras...", c: "Invariables.", o: ["Invariables.", "Variables.", "Cuantitativas.", "Demostrativas."], h: "Sirven de enlaces y no cambian nunca." },
     { q: "¿Qué clase de palabra expresa las circunstancias de un verbo, adjetivo u otro adverbio?", c: "El adverbio.", o: ["El adverbio.", "El determinante.", "La preposición.", "La conjunción."], h: "Responde a cuándo, dónde, cómo..." },
     { q: "¿El adverbio es variable o invariable?", c: "Es invariable: no puedes cambiarlo de género ni de número.", o: ["Es invariable: no puedes cambiarlo de género ni de número.", "Es variable: concuerda con el verbo.", "Es variable: tiene masculino y femenino.", "Es la palabra más variable junto al verbo."], h: "No existe el plural de 'cerca'." },
-    { q: "¿Qué tipos de adverbios existen según la teoría?", c: "Lugar, tiempo, modo, cantidad, afirmación, negación, duda, relativos, exclamativos e interrogativos.", o: ["Lugar, tiempo, modo, cantidad, afirmación, negación, duda, relativos, exclamativos e interrogativos.", "Copulativos, disyuntivos y adversativos.", "Demostrativos, posesivos y numerales.", "Comunes, propios y abstractos."], h: "Piensa en 'aquí, mañana, así, mucho...'." },
+    { q: "¿Qué tipos de adverbios existen según la teoría?", c: "Lugar, tiempo, modo, cantidad, afirmación, negación, duda...", o: ["Lugar, tiempo, modo, cantidad, afirmación, negación, duda...", "Copulativos, disyuntivos y adversativos.", "Demostrativos, posesivos y numerales.", "Comunes, propios y abstractos."], h: "Piensa en 'aquí, mañana, así, mucho...'." },
     { q: "¿Qué es una locución adverbial?", c: "Son palabras que se presentan juntas y equivalen a un solo adverbio.", o: ["Son palabras que se presentan juntas y equivalen a un solo adverbio.", "Un adverbio que acompaña a un pronombre.", "Un adverbio terminado en -mente.", "Un verbo que funciona como adverbio."], h: "Dos o más palabras trabajando como una." },
     { q: "Las palabras 'cerca', 'ayer', 'bien', 'nada', 'sí', 'no', 'quizá' son ejemplos de...", c: "Adverbios.", o: ["Adverbios.", "Preposiciones.", "Conjunciones.", "Pronombres."], h: "Son invariables y expresan circunstancias." },
     { q: "En la frase 'Dormir temprano para soñarte más tiempo', 'temprano' y 'más' son...", c: "Adverbios (de tiempo y de cantidad).", o: ["Adverbios (de tiempo y de cantidad).", "Adjetivos especificativos.", "Conjunciones.", "Preposiciones."], h: "Indican cuándo y cuánto." },
-    { q: "En 'El mundo cambia con tu ejemplo, no con tu opinión', la palabra 'no' es...", c: "Un adverbio de negación.", o: ["Un adverbio de negación.", "Una conjunción adversativa.", "Una preposición.", "Una interjección."], h: "Niega la acción." },
-    { q: "En '¡Me voy de aquí!', la palabra 'aquí' funciona como...", c: "Adverbio de lugar.", o: ["Adverbio de lugar.", "Pronombre demostrativo.", "Determinante.", "Sustantivo propio."], h: "Indica el espacio." },
     { q: "¿Qué clase de palabra sirve para UNIR a otras palabras DENTRO de una oración?", c: "La preposición.", o: ["La preposición.", "El adverbio.", "La interjección.", "El pronombre."], h: "Es el enlace básico de las palabras." },
     { q: "¿Las preposiciones son variables o invariables?", c: "Invariables, no cambian.", o: ["Invariables, no cambian.", "Variables, tienen género y número.", "Solo cambian de plural a singular.", "Son verbales."], h: "No tienen forma plural." },
     { q: "Completa la lista de preposiciones: a, ante, bajo, con, contra...", c: "de, desde, durante, en, entre, hacia, hasta...", o: ["de, desde, durante, en, entre, hacia, hasta...", "pero, mas, sino, aunque...", "y, e, ni, o, u...", "el, la, los, las, un..."], h: "Es la famosa lista que se aprende de memoria." },
-    { q: "¿Cuáles son las últimas preposiciones de la lista?", c: "mediante, para, por, según, sin, sobre, tras, versus, vía.", o: ["mediante, para, por, según, sin, sobre, tras, versus, vía.", "bien, mal, cerca, lejos, aquí, allá.", "yo, tú, él, nosotros, vosotros, ellos.", "ar, er, ir, ando, iendo."], h: "Incluye 'versus' y 'vía'." },
     { q: "¿Qué son las locuciones preposicionales?", c: "Dos o más palabras que equivalen a una preposición.", o: ["Dos o más palabras que equivalen a una preposición.", "Preposiciones que se pueden conjugar.", "La suma de un adverbio y un verbo.", "Preposiciones que expresan emoción."], h: "Ejemplos: a base de, a causa de..." },
-    { q: "Ejemplos de locuciones preposicionales son...", c: "A base de, a causa de, con arreglo a, a través de, en lugar de...", o: ["A base de, a causa de, con arreglo a, a través de, en lugar de...", "Y, e, ni, o, u, pero, mas, sino...", "¡Caramba!, ¡Oiga!, ¡Toma!, ¡Ay!...", "Mío, tuyo, suyo, nuestro..."], h: "Formadas por varias palabras que terminan en 'de' o 'a'." },
     { q: "¿Qué clase de palabra une a otras palabras y ADEMÁS une oraciones entre sí?", c: "La conjunción.", o: ["La conjunción.", "La preposición.", "El adverbio.", "La interjección."], h: "Es un nexo más potente que la preposición." },
-    { q: "¿Las conjunciones son variables o invariables?", c: "Son invariables, no cambian.", o: ["Son invariables, no cambian.", "Son variables.", "Depende de la oración a la que acompañen.", "Se conjugan en los tiempos verbales."], h: "Nunca cambian de forma." },
-    { q: "Las conjunciones COPULATIVAS son...", c: "y, e, ni.", o: ["y, e, ni.", "o, u, o bien.", "pero, mas, sino.", "porque, ya que."], h: "Sirven para sumar elementos." },
-    { q: "Las conjunciones DISYUNTIVAS son...", c: "o, u, o bien.", o: ["o, u, o bien.", "y, e, ni.", "así, así que.", "para, para que."], h: "Sirven para dar a elegir entre opciones." },
-    { q: "Las conjunciones ADVERSATIVAS (que indican oposición) son...", c: "pero, mas, sino, sin embargo, no obstante...", o: ["pero, mas, sino, sin embargo, no obstante...", "ya...ya, bien...bien.", "si, como o sino, a condición de que...", "aunque, a pesar de..."], h: "Indican un contratiempo o contraste." },
+    { q: "Diferencia principal entre preposición y conjunción:", c: "La conjunción puede unir oraciones enteras, la preposición normalmente solo une palabras.", o: ["La conjunción puede unir oraciones enteras, la preposición normalmente solo une palabras.", "La conjunción es variable y la preposición invariable.", "La preposición une verbos y la conjunción sustantivos.", "No hay ninguna diferencia, son lo mismo."], h: "Piensa en el poder de unión." },
+    { q: "Las conjunciones COPULATIVAS (que suman o añaden) son...", c: "y, e, ni.", o: ["y, e, ni.", "o, u, o bien.", "pero, mas, sino.", "porque, ya que."], h: "Sirven para sumar elementos." },
+    { q: "¿Qué regla usamos para cambiar la conjunción 'y' por la conjunción 'e'?", c: "Se usa 'e' cuando la siguiente palabra empieza por 'i-' o 'hi-'.", o: ["Se usa 'e' cuando la siguiente palabra empieza por 'i-' o 'hi-'.", "Se usa 'e' para hacer la frase más formal.", "Se usa 'e' solo delante de nombres propios.", "Se usa 'e' si la palabra anterior termina en vocal."], h: "Ejemplo: padres e hijos." },
+    { q: "Las conjunciones DISYUNTIVAS (que dan a elegir) son...", c: "o, u, o bien.", o: ["o, u, o bien.", "y, e, ni.", "así, así que.", "para, para que."], h: "Sirven para dar a elegir entre opciones." },
+    { q: "¿Qué regla usamos para cambiar la conjunción 'o' por la conjunción 'u'?", c: "Se usa 'u' cuando la siguiente palabra empieza por 'o-' u 'ho-'.", o: ["Se usa 'u' cuando la siguiente palabra empieza por 'o-' u 'ho-'.", "Se usa 'u' delante de verbos.", "Se usa 'u' para enfatizar.", "Se usa 'u' si la palabra es plural."], h: "Ejemplo: siete u ocho." },
+    { q: "Las conjunciones ADVERSATIVAS (que indican oposición o contratiempo) son...", c: "pero, mas, sino, sin embargo, no obstante...", o: ["pero, mas, sino, sin embargo, no obstante...", "ya...ya, bien...bien.", "si, como o sino, a condición de que...", "aunque, a pesar de..."], h: "Indican un contraste." },
+    { q: "La conjunción 'mas' (sin tilde) equivale exactamente a la conjunción...", c: "'pero' (Adversativa).", o: ["'pero' (Adversativa).", "'y' (Copulativa).", "'o' (Disyuntiva).", "'porque' (Causal)."], h: "Ejemplo: Quiso ir, mas no pudo." },
+    { q: "En la oración 'No quiero té, SINO café', la palabra 'sino' es una conjunción...", c: "Adversativa.", o: ["Adversativa.", "Disyuntiva.", "Copulativa.", "Condicional."], h: "Contrapone dos opciones." },
     { q: "Las conjunciones CAUSALES (indican el motivo) son...", c: "porque, ya que, puesto que...", o: ["porque, ya que, puesto que...", "así, así que, por lo tanto...", "como, más que, menos que...", "es decir, o sea, mejor dicho..."], h: "Responden a la pregunta ¿por qué?" },
     { q: "Las conjunciones CONDICIONALES son...", c: "si, a condición de que, a menos que, con tal de que...", o: ["si, a condición de que, a menos que, con tal de que...", "para, para que, con la intención de...", "aunque, a pesar de, por más que...", "y, e, ni."], h: "Imponen una regla para que algo ocurra." },
-    { q: "En la frase 'No tenía ganas, no obstante terminó el trabajo', 'no obstante' es...", c: "Locución conjuntiva adversativa.", o: ["Locución conjuntiva adversativa.", "Locución preposicional.", "Conjunción copulativa.", "Adverbio de tiempo."], h: "Equivale a un 'pero'." },
-    { q: "La conjunción 'aunque' (ej: 'aunque llueva iremos') es de tipo...", c: "Concesiva.", o: ["Concesiva.", "Adversativa.", "Copulativa.", "Causal."], h: "Expresa una dificultad que no impide la acción." },
+    { q: "En la frase 'Iremos al parque SI no llueve', la palabra 'si' es una conjunción...", c: "Condicional.", o: ["Condicional.", "Adversativa.", "Copulativa.", "Afirmativa."], h: "Pone una condición para ir." },
+    { q: "En la frase 'No tenía ganas, NO OBSTANTE terminó el trabajo', 'no obstante' es...", c: "Locución conjuntiva adversativa.", o: ["Locución conjuntiva adversativa.", "Locución preposicional.", "Conjunción copulativa.", "Adverbio de tiempo."], h: "Equivale a un 'pero'." },
+    { q: "La conjunción 'AUNQUE' (ej: 'aunque llueva iremos') es de tipo...", c: "Concesiva.", o: ["Concesiva.", "Adversativa.", "Copulativa.", "Causal."], h: "Expresa una dificultad que no impide la acción." },
     { q: "Las locuciones 'es decir', 'o sea', 'mejor dicho' pertenecen a las conjunciones...", c: "Explicativas.", o: ["Explicativas.", "Disyuntivas.", "Condicionales.", "Causales."], h: "Sirven para aclarar algo." },
-    { q: "¿Qué son las interjecciones?", c: "Palabras que equivalen a un grito, una emoción, impresión repentina o estado de ánimo.", o: ["Palabras que equivalen a un grito, una emoción, impresión repentina o estado de ánimo.", "Palabras que unen oraciones compuestas.", "Palabras que sustituyen a un nombre propio.", "Verbos en forma de mandato."], h: "¡Ay! ¡Qué susto!" },
+    { q: "Las locuciones conjuntivas 'PARA QUE' y 'A FIN DE QUE' indican el propósito, por tanto son...", c: "Finales.", o: ["Finales.", "Causales.", "Condicionales.", "Concesivas."], h: "Marcan la meta o fin de algo." },
+    { q: "Conjunciones como 'BIEN... BIEN' o 'YA... YA' (ej: 'Ya ríe, ya llora') se llaman...", c: "Distributivas.", o: ["Distributivas.", "Copulativas.", "Adversativas.", "Finales."], h: "Distribuyen acciones alternas." },
+    { q: "En 'Pienso, LUEGO existo', la palabra 'luego' funciona como conjunción...", c: "Consecutiva (o ilativa).", o: ["Consecutiva (o ilativa).", "Causal.", "Adversativa.", "Copulativa."], h: "Indica la consecuencia de algo." },
+    { q: "¿Qué son las interjecciones?", c: "Palabras que equivalen a un grito, emoción o estado de ánimo.", o: ["Palabras que equivalen a un grito, emoción o estado de ánimo.", "Palabras que unen oraciones compuestas.", "Palabras que sustituyen a un nombre propio.", "Verbos en forma de mandato."], h: "¡Ay! ¡Qué susto!" },
     { q: "¿Qué TRUCO es útil para reconocer las interjecciones?", c: "Se pueden quitar y la oración queda igual, y suelen ir entre exclamaciones.", o: ["Se pueden quitar y la oración queda igual, y suelen ir entre exclamaciones.", "Ponerles el pronombre 'yo' delante.", "Sustituirlas por la palabra 'muy'.", "Intentar pasarlas a plural."], h: "No interfieren en sujeto ni predicado." },
     { q: "Las expresiones ¡Ah!, ¡Ay!, ¡Caramba!, ¡Ojo!, ¡Venga!, ¡Cáspita! son ejemplos de...", c: "Interjecciones.", o: ["Interjecciones.", "Adverbios de modo.", "Conjunciones.", "Preposiciones."], h: "Son expresiones de emoción o sorpresa." },
     { q: "En la frase '¡Arre unicornio!', la palabra '¡Arre!' es...", c: "Una interjección.", o: ["Una interjección.", "Un sustantivo.", "Un adverbio de lugar.", "Una preposición."], h: "Es un grito para animar." },
     { q: "En 'Gritaron en favor de los presos', la expresión 'en favor de' es...", c: "Locución preposicional.", o: ["Locución preposicional.", "Conjunción explicativa.", "Interjección.", "Locución adverbial."], h: "Termina en 'de' y funciona como enlace." },
-    { q: "En 'Luis juega al tenis y al fútbol', la letra 'y' es...", c: "Conjunción copulativa.", o: ["Conjunción copulativa.", "Preposición.", "Adverbio de afirmación.", "Pronombre."], h: "Suma las dos cosas a las que juega." },
+    { q: "En 'Luis juega al tenis Y al fútbol', la letra 'y' es...", c: "Conjunción copulativa.", o: ["Conjunción copulativa.", "Preposición.", "Adverbio de afirmación.", "Pronombre."], h: "Suma las dos cosas a las que juega." },
     { q: "En 'Pasamos por México rumbo a Guatemala', las palabras 'por' y 'a' son...", c: "Preposiciones.", o: ["Preposiciones.", "Conjunciones.", "Adverbios.", "Determinantes."], h: "Pertenecen a la lista de a, ante, bajo, cabe..." },
-    { q: "En 'No sé si saldré o me quedaré', la palabra 'o' es...", c: "Conjunción disyuntiva.", o: ["Conjunción disyuntiva.", "Conjunción copulativa.", "Preposición.", "Interjección."], h: "Obliga a elegir." },
+    { q: "En 'No sé si saldré O me quedaré', la palabra 'o' es...", c: "Conjunción disyuntiva.", o: ["Conjunción disyuntiva.", "Conjunción copulativa.", "Preposición.", "Interjección."], h: "Obliga a elegir." },
     { q: "En 'Encima de la mesa hay varios ceniceros', 'Encima de' es...", c: "Locución preposicional.", o: ["Locución preposicional.", "Conjunción copulativa.", "Adverbio de cantidad.", "Interjección."], h: "Funciona como una preposición de lugar compuesta." },
-    { q: "En 'Se encontraron junto al río', 'junto a' es...", c: "Locución preposicional.", o: ["Locución preposicional.", "Conjunción adversativa.", "Adjetivo explicativo.", "Sustantivo común."], h: "Formada por dos palabras que actúan como un enlace de posición." }
+    { q: "En 'Se encontraron junto al río', 'junto a' es...", c: "Locución preposicional.", o: ["Locución preposicional.", "Conjunción adversativa.", "Adjetivo explicativo.", "Sustantivo común."], h: "Formada por dos palabras que actúan como un enlace." }
 ];
 
 let cq=[], ci=0, ca=0, wa=0, mistakes=[], rm=false;
@@ -170,12 +137,8 @@ function shuffle(arr){
 function startTest(){
     ci=0; ca=0; wa=0; mistakes=[]; rm=false;
     
-    // Robamos 10 preguntas de repaso y 30 de invariables
-    const selectedReview = shuffle(poolReview).slice(0, 10);
-    const selectedInvariables = shuffle(poolInvariables).slice(0, 30);
-    
-    // Las unimos y las barajamos para que salgan mezcladas
-    cq = shuffle([...selectedReview, ...selectedInvariables]);
+    // Barajamos y cogemos las 40 preguntas sobre palabras invariables y conjunciones
+    cq = shuffle(poolInvariables).slice(0, Q_LIMIT);
     
     qtot.textContent=cq.length;
     qs.classList.remove("hidden"); rs.classList.add("hidden");
