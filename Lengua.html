@@ -435,13 +435,29 @@ ms.classList.add("hidden");
 }
 }
 
-// Retrasamos el inicio hasta asegurarnos de que la página ha cargado por completo
-document.addEventListener("DOMContentLoaded", () => {
-el("next-btn").addEventListener("click", nextQ);
-el("restart-btn").addEventListener("click", startTest);
-el("review-btn").addEventListener("click", startRM);
-startTest();
-});
+// Inicialización robusta: funciona si el DOM aún carga o si este script
+// se ejecuta después de DOMContentLoaded.
+function initTest() {
+  const nextBtn = el("next-btn");
+  const restartBtn = el("restart-btn");
+  const reviewBtn = el("review-btn");
+
+  if (!nextBtn || !restartBtn || !reviewBtn || !el("question-text")) {
+    console.error("No se han encontrado los elementos del test en el HTML.");
+    return;
+  }
+
+  nextBtn.addEventListener("click", nextQ);
+  restartBtn.addEventListener("click", startTest);
+  reviewBtn.addEventListener("click", startRM);
+  startTest();
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initTest, { once: true });
+} else {
+  initTest();
+}
 
 </script>
 </body>
