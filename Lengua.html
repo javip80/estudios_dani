@@ -35,395 +35,414 @@ button{ border:none; border-radius:12px; padding:18px; cursor:pointer; font-size
 </head>
 <body>
 <div class="container">
-    <div id="quiz-screen">
-        <div class="top-bar">
-            <h1>📚 Test: Propiedades del Texto (Coherencia y Cohesión)</h1>
-            <div class="mode-badge" id="mode-badge">TEST PRINCIPAL</div>
-        </div>
-        <div class="top-bar">
-            <div>Pregunta <strong><span id="question-number">1</span> / <span id="question-total">40</span></strong></div>
-            <div class="stats">
-                <span class="correct">✅ <span id="correct-count">0</span></span>
-                <span class="wrong">❌ <span id="wrong-count">0</span></span>
-            </div>
-        </div>
-        <div class="progress-wrapper"><div class="progress-bar" id="progress-bar"></div></div>
-        <div class="question" id="question-text">Cargando...</div>
-        <div class="options" id="options-container"></div>
-        <button class="next-btn hidden" id="next-btn">Siguiente Pregunta →</button>
-    </div>
+<div id="quiz-screen">
+<div class="top-bar">
+<h1>📚 Test: Propiedades del Texto (Coherencia y Cohesión)</h1>
+<div class="mode-badge" id="mode-badge">TEST PRINCIPAL</div>
+</div>
+<div class="top-bar">
+<div>Pregunta <strong><span id="question-number">1</span> / <span id="question-total">40</span></strong></div>
+<div class="stats">
+<span class="correct">✅ <span id="correct-count">0</span></span>
+<span class="wrong">❌ <span id="wrong-count">0</span></span>
+</div>
+</div>
+<div class="progress-wrapper"><div class="progress-bar" id="progress-bar"></div></div>
+<div class="question" id="question-text">Cargando...</div>
+<div class="options" id="options-container"></div>
+<button class="next-btn hidden" id="next-btn">Siguiente Pregunta →</button>
+</div>
 
-    <div id="result-screen" class="hidden">
-        <h2 class="result-title" id="result-title"></h2>
-        <p style="font-size:1.5rem">Aciertos: <strong id="final-score"></strong></p>
-        <p style="font-size:1.5rem">Porcentaje: <strong id="final-percentage"></strong></p>
-        <div id="mistakes-section" class="hidden">
-            <h3>Conceptos a repasar:</h3>
-            <ul class="error-list" id="mistakes-list"></ul>
-            <button class="review-btn" id="review-btn">Practicar Errores</button>
-        </div>
-        <button class="restart-btn" id="restart-btn">Generar Nuevo Test de 40 Preguntas</button>
-    </div>
+<div id="result-screen" class="hidden">
+<h2 class="result-title" id="result-title"></h2>
+<p style="font-size:1.5rem">Aciertos: <strong id="final-score"></strong></p>
+<p style="font-size:1.5rem">Porcentaje: <strong id="final-percentage"></strong></p>
+<div id="mistakes-section" class="hidden">
+<h3>Conceptos a repasar:</h3>
+<ul class="error-list" id="mistakes-list"></ul>
+<button class="review-btn" id="review-btn">Practicar Errores</button>
+</div>
+<button class="restart-btn" id="restart-btn">Generar Nuevo Test de 40 Preguntas</button>
+</div>
 </div>
 
 <script>
-// ========================================================
-// BASE DE PREGUNTAS: PROPIEDADES DEL TEXTO, COHERENCIA Y COHESIÓN
-// ========================================================
+// Detector global de errores para que no se quede colgado sin avisar
+window.onerror = function(msg, url, lineNo, columnNo, error) {
+var qt = document.getElementById("question-text");
+if(qt) {
+qt.innerHTML = `<span style="color:#c0392b;">⚠️ Ha ocurrido un error al cargar. Por favor, refresca la página.<br><small>${msg}</small></span>`;
+}
+return false;
+};
+
 const poolCohesion = [
-    { 
-        q: "¿Cuáles son las tres propiedades que debe cumplir un texto para ser válido?", 
-        c: "Adecuación, coherencia y cohesión.", 
-        o: ["Adecuación, coherencia y cohesión.", "Introducción, nudo y desenlace.", "Sustantivos, adjetivos y verbos.", "Ortografía, caligrafía y gramática."], 
-        h: "Son las tres propiedades textuales fundamentales." 
-    },
-    { 
-        q: "¿Qué propiedad textual da unidad y sentido global al texto para transmitir un mensaje completo?", 
-        c: "La coherencia.", 
-        o: ["La coherencia.", "La cohesión.", "La adecuación.", "El ritmo."], 
-        h: "Se encarga del fondo, del tema común y del orden lógico." 
-    },
-    { 
-        q: "¿Qué propiedad textual se encarga de las relaciones lingüísticas que conectan los enunciados entre sí?", 
-        c: "La cohesión.", 
-        o: ["La cohesión.", "La adecuación.", "La métrica.", "El registro."], 
-        h: "Es la 'red de cables' (pronombres, sinónimos, conectores) que unen las frases." 
-    },
-    { 
-        q: "¿En qué consiste la adecuación de un texto?", 
-        c: "En la adaptación de la lengua a los elementos y situación de la comunicación.", 
-        o: ["En la adaptación de la lengua a los elementos y situación de la comunicación.", "En conectar los párrafos únicamente con comas.", "En no cometer faltas de ortografía.", "En hacer un esquema con dibujos."], 
-        h: "Tiene que ver con usar el registro oportuno según quién te escuche o lea." 
-    },
-    { 
-        q: "Para que un texto sea coherente, ¿qué dos requisitos deben cumplirse?", 
-        c: "Tener un tema común y presentar las ideas en orden lógico sin contradicciones.", 
-        o: ["Tener un tema común y presentar las ideas en orden lógico sin contradicciones.", "Tener rima consonante y figuras retóricas.", "Estar escrito en verso y en primera persona.", "Carecer de conectores para no alargar la lectura."], 
-        h: "Un único hilo temático estructurado con lógica." 
-    },
-    { 
-        q: "¿Qué prueba o técnica nos confirma que un texto es verdaderamente coherente?", 
-        c: "Ser capaces de hacer un resumen del texto o un esquema de sus ideas.", 
-        o: ["Ser capaces de hacer un resumen del texto o un esquema de sus ideas.", "Contar cuántas letras tiene cada renglón.", "Comprobar que todas las palabras son llanas.", "Pasar todas las oraciones a voz pasiva."], 
-        h: "Si se puede sintetizar con claridad, las ideas tienen orden y sentido." 
-    },
-    { 
-        q: "¿Cuál de las siguientes es una anomalía que ROMPE la coherencia de un texto?", 
-        c: "Que existan contradicciones o vacíos entre las ideas.", 
-        o: ["Que existan contradicciones o vacíos entre las ideas.", "El uso de pronombres para no repetir nombres.", "El empleo de sinónimos variados.", "La presencia de conectores de ordenación."], 
-        h: "Si el texto se contradice o da saltos sin sentido, pierde la coherencia." 
-    },
-    { 
-        q: "Si un texto presenta ideas desordenadas o repeticiones innecesarias, sufre un fallo de...", 
-        c: "Coherencia.", 
-        o: ["Coherencia.", "Morfología básica.", "Acentuación diacrítica.", "Adecuación métrica."], 
-        h: "Las repeticiones superfluas y el caos de ideas arruinan el sentido global." 
-    },
-    { 
-        q: "En: 'Muchos hogares carecen de alimentos. Si quieres colaborar, dona alimentos', ¿qué recurso de cohesión se usa?", 
-        c: "Repetición total.", 
-        o: ["Repetición total.", "Repetición parcial.", "Elipsis.", "Antónimo."], 
-        h: "Se vuelve a utilizar exactamente la misma palabra idéntica." 
-    },
-    { 
-        q: "En: 'Tenemos que combatir la pobreza. Una sociedad no es justa si hay personas pobres', ¿qué mecanismo une 'pobreza' y 'pobres'?", 
-        c: "Repetición parcial (palabras de la misma familia).", 
-        o: ["Repetición parcial (palabras de la misma familia).", "Repetición total.", "Elipsis nominal.", "Anáfora pronominal."], 
-        h: "No es la palabra idéntica, sino una variación léxica derivada de la misma raíz." 
-    },
-    { 
-        q: "En el texto sobre salud: '...hacer ejercicio diario... cuando nos ejercitamos...', encontramos un caso de:", 
-        c: "Repetición parcial.", 
-        o: ["Repetición parcial.", "Repetición total.", "Hiperonimia.", "Conector adversativo."], 
-        h: "Pasa de un sustantivo ('ejercicio') a un verbo de su misma familia ('ejercitamos')." 
-    },
-    { 
-        q: "¿Qué mecanismo de cohesión consiste en sustituir una palabra por otra con un significado idéntico o equivalente?", 
-        c: "Sinonimia (sustitución por sinónimo).", 
-        o: ["Sinonimia (sustitución por sinónimo).", "Elipsis.", "Antonimia.", "Hiperonimia."], 
-        h: "Evita repetir un término usando otro que significa prácticamente lo mismo." 
-    },
-    { 
-        q: "En: 'Ayuda a las personas con necesidades. Colabora con tu aportación', ¿qué relación cohesiva hay entre 'ayuda' y 'colabora'?", 
-        c: "Sustitución por sinónimo.", 
-        o: ["Sustitución por sinónimo.", "Antonimia.", "Repetición total.", "Conector causal."], 
-        h: "Ambos términos expresan la misma acción solidaria." 
-    },
-    { 
-        q: "¿Qué es un HIPERÓNIMO en los mecanismos de cohesión?", 
-        c: "Una palabra de significado general que engloba a otras más concretas (el todo o la clase).", 
-        o: ["Una palabra de significado general que engloba a otras más concretas (el todo o la clase).", "Una palabra de significado opuesto.", "Un pronombre que sustituye a un verbo.", "Una palabra con significado muy específico."], 
-        h: "El hiperónimo actúa como la categoría superior (el paraguas)." 
-    },
-    { 
-        q: "¿Qué es un HIPÓNIMO?", 
-        c: "Una palabra con significado concreto que forma parte de una categoría más amplia (la especie o la parte).", 
-        o: ["Una palabra con significado concreto que forma parte de una categoría más amplia (la especie o la parte).", "El término que engloba a todos los demás.", "Una conjunción distributiva.", "Un marcador discursivo de cierre."], 
-        h: "El hipónimo es el elemento particular incluido dentro del hiperónimo." 
-    },
-    { 
-        q: "En: 'Tengo varios paquetes de macarrones y de galletas... Son para la recogida de alimentos', la palabra 'alimentos' actúa como...", 
-        c: "Hiperónimo (engloba a macarrones y galletas).", 
-        o: ["Hiperónimo (engloba a macarrones y galletas).", "Hipónimo de galletas.", "Antónimo de paquetes.", "Pronombre anafórico."], 
-        h: "'Alimento' es el conjunto amplio que abarca a la pasta y las galletas." 
-    },
-    { 
-        q: "En: 'Se recogerán alimentos: puedes aportar arroz y pasta', los términos 'arroz' y 'pasta' son...", 
-        c: "Hipónimos de 'alimentos'.", 
-        o: ["Hipónimos de 'alimentos'.", "Hiperónimos de 'alimentos'.", "Sinónimos totales de comida.", "Marcadores de opinión."], 
-        h: "Son alimentos concretos (la parte o especie)." 
-    },
-    { 
-        q: "Si en la frase 'Ha vuelto a triunfar con una nueva canción' cambiamos 'canción' por un HIPERÓNIMO, ¿cuál encaja mejor?", 
-        c: "'Tema musical' o 'composición'.", 
-        o: ["'Tema musical' o 'composición'.", "'Balada acústica'.", "'Guerra'.", "'Micrófono'."], 
-        h: "Debe ser una categoría más amplia que abarque a la canción." 
-    },
-    { 
-        q: "¿En qué consiste la ANÁFORA como mecanismo de cohesión?", 
-        c: "En emplear un pronombre o adverbio para referirse a algo ya mencionado en el texto.", 
-        o: ["En emplear un pronombre o adverbio para referirse a algo ya mencionado en el texto.", "En suprimir palabras para dejar huecos.", "En usar palabras de significado contrario.", "En enumerar usando conectores numéricos."], 
-        h: "Evita la repetición remitiendo a un elemento anterior mediante pronombres (él, los, esto...) o adverbios (allí)." 
-    },
-    { 
-        q: "En: 'Los alimentos se depositarán junto a conserjería. El alumnado LOS recogerá', la palabra 'LOS' es...", 
-        c: "Un pronombre anafórico (se refiere a 'los alimentos').", 
-        o: ["Un pronombre anafórico (se refiere a 'los alimentos').", "Un determinante posesivo.", "Un conector de adición.", "Una elipsis nominal."], 
-        h: "Sustituye a 'los alimentos' citados en la primera oración." 
-    },
-    { 
-        q: "En: 'Iremos a la conserjería del instituto. ALLÍ habrá diferentes cajas', la palabra 'ALLÍ' funciona como...", 
-        c: "Un adverbio anafórico (remite a 'la conserjería del instituto').", 
-        o: ["Un adverbio anafórico (remite a 'la conserjería del instituto').", "Un hiperónimo de conserjería.", "Un conector de oposición.", "Una repetición parcial."], 
-        h: "Hace referencia directa al lugar mencionado previamente." 
-    },
-    { 
-        q: "¿Qué es la ELIPSIS en la cohesión de un texto?", 
-        c: "La supresión u omisión deliberada de un elemento que se sobreentiende con facilidad.", 
-        o: ["La supresión u omisión deliberada de un elemento que se sobreentiende con facilidad.", "La sustitución por un antónimo.", "La adición de explicaciones redundantes.", "La repetición exacta de un verbo."], 
-        h: "Consiste en dejar el hueco (Ø) porque el emisor y el receptor saben de qué se trata." 
-    },
-    { 
-        q: "En: 'El vigilante encendió los monitores. (Ø) Repasó todas las cámaras', el sujeto que falta es un caso de...", 
-        c: "Elipsis.", 
-        o: ["Elipsis.", "Hiponimia.", "Conector consecutivo.", "Repetición total."], 
-        h: "Se prescinde de repetir 'El vigilante' en la segunda oración." 
-    },
-    { 
-        q: "En: 'Hemos de acabar con la pobreza si queremos vivir en un mundo con riqueza', 'pobreza' y 'riqueza' se cohesionan por...", 
-        c: "Antonimia (significados opuestos).", 
-        o: ["Antonimia (significados opuestos).", "Sinonimia total.", "Hiperonimia.", "Elipsis verbal."], 
-        h: "Asocia dos ideas enfrentadas mediante palabras contrarias." 
-    },
-    { 
-        q: "Para sustituir la repetición en 'No toleramos más guerras. Queremos un mundo sin guerras' mediante un ANTÓNIMO, diremos:", 
-        c: "'Queremos un mundo con paz'.", 
-        o: ["'Queremos un mundo con paz'.", "'Queremos un mundo sin conflictos'.", "'Queremos un mundo sin ellas'.", "'Queremos un mundo desierto'."], 
-        h: "Paz es el antónimo directo de guerra." 
-    },
-    { 
-        q: "¿Qué es un CAMPO CONCEPTUAL en la cohesión textual?", 
-        c: "Un conjunto de palabras de distinta categoría asociadas por referirse a una misma realidad o tema.", 
-        o: ["Un conjunto de palabras de distinta categoría asociadas por referirse a una misma realidad o tema.", "Una lista de palabras que riman obligatoriamente.", "Un párrafo formado únicamente por verbos.", "Un bloque de conectores adversativos."], 
-        h: "Por ejemplo, en torno a la salud: alimentación, nutrición, recursos, dieta, saludable..." 
-    },
-    { 
-        q: "Las palabras 'correr, montar en bici, bailar, patinar, baloncesto, tenis' forman un...", 
-        c: "Campo conceptual (actividades físicas y deportes).", 
-        o: ["Campo conceptual (actividades físicas y deportes).", "Grupo de marcadores de opinión.", "Ejemplo de elipsis consecutiva.", "Conjunto de antónimos."], 
-        h: "Comparten el ámbito de los ejercicios y la actividad física." 
-    },
-    { 
-        q: "¿Cuál es la función principal de los CONECTORES Y MARCADORES textuales?", 
-        c: "Guiar la lectura y explicitar las relaciones lógicas entre las ideas y los párrafos.", 
-        o: ["Guiar la lectura y explicitar las relaciones lógicas entre las ideas y los párrafos.", "Sustituir obligatoriamente a los nombres propios.", "Indicar si un adjetivo concuerda en plural.", "Abreviar la longitud del texto."], 
-        h: "Son señales que conectan y orientan el sentido (orden, contraste, adición...)." 
-    },
-    { 
-        q: "Los conectores 'y', 'además', 'también', 'incluso' y 'asimismo' son conectores de...", 
-        c: "Adición (suma de ideas).", 
-        o: ["Adición (suma de ideas).", "Oposición (contraste).", "Tópico (tematización).", "Opinión subjetiva."], 
-        h: "Añaden nueva información que apoya la anterior." 
-    },
-    { 
-        q: "Los enlaces 'sin embargo', 'no obstante', 'por el contrario' y 'en cambio' son conectores de...", 
-        c: "Oposición o contraste.", 
-        o: ["Oposición o contraste.", "Adición o suma.", "Consecuencia o resultado.", "Ejemplificación."], 
-        h: "Señalan un contratiempo o contraposición de ideas." 
-    },
-    { 
-        q: "En: 'Estudió mucho; POR TANTO, obtuvo una gran calificación', el conector 'por tanto' indica...", 
-        c: "Consecuencia (o resultado).", 
-        o: ["Consecuencia (o resultado).", "Oposición.", "Tópico.", "Opinión personal."], 
-        h: "Aprobar es el efecto derivado de estudiar." 
-    },
-    { 
-        q: "¿Cuáles de los siguientes son conectores de CONSECUENCIA?", 
-        c: "Por tanto, así pues, en consecuencia, por ello...", 
-        o: ["Por tanto, así pues, en consecuencia, por ello...", "En primer lugar, por otro lado, por último...", "En mi opinión, desde mi punto de vista...", "Por ejemplo, pongamos por caso..."], 
-        h: "Introducen la conclusión o el resultado de un enunciado previo." 
-    },
-    { 
-        q: "Marcadores como 'en cuanto a', 'respecto a', 'en relación con' o 'en lo referente a' sirven para...", 
-        c: "Introducir o acotar un tópico (tematización).", 
-        o: ["Introducir o acotar un tópico (tematización).", "Dar una orden tajante.", "Formular una hipótesis improbable.", "Cerrar con una moraleja."], 
-        h: "Señalan de qué tema o asunto concreto se va a hablar." 
-    },
-    { 
-        q: "Marcadores como 'en primer lugar', 'por otro lado', 'por último' y 'en definitiva' sirven para...", 
-        c: "Estructurar y ordenar las partes del texto (ordenación).", 
-        o: ["Estructurar y ordenar las partes del texto (ordenación).", "Ejemplificar un concepto.", "Mostrar una duda profunda.", "Crear una metáfora."], 
-        h: "Organizan la secuencia y el orden cronológico o argumental del discurso." 
-    },
-    { 
-        q: "Expresiones como 'por ejemplo' o 'pongamos por caso' son marcadores de...", 
-        c: "Ejemplificación.", 
-        o: ["Ejemplificación.", "Oposición radical.", "Conclusión negativa.", "Adición acumulativa."], 
-        h: "Ilustran una idea abstracta con un caso concreto." 
-    },
-    { 
-        q: "Fórmulas como 'en mi opinión', 'desde mi punto de vista', 'a mi parecer' o 'a mi juicio' expresan...", 
-        c: "Opinión (el punto de vista del emisor).", 
-        o: ["Opinión (el punto de vista del emisor).", "Consecuencia objetiva.", "Ordenación cronológica.", "Tematización neutra."], 
-        h: "Introducen una postura o juicio subjetivo de la persona que habla o escribe." 
-    },
-    { 
-        q: "En el texto del ejercicio: 'Por un lado... Por otro lado...', estos marcadores cumplen la función de:", 
-        c: "Ordenación de las ideas.", 
-        o: ["Ordenación de las ideas.", "Ejemplificación aislada.", "Expresión de opinión.", "Adición copulativa simple."], 
-        h: "Distribuyen y estructuran los dos bloques de beneficios del ejercicio." 
-    },
-    { 
-        q: "En: 'Así pues, nuestro consejo es que combatas el sedentarismo', el conector 'Así pues' es de tipo...", 
-        c: "Consecuencia (o resultado).", 
-        o: ["Consecuencia (o resultado).", "Tópico.", "Oposición.", "Ejemplificación."], 
-        h: "Equivale a 'por lo tanto' e introduce la recomendación final." 
-    },
-    { 
-        q: "Si en 'Este batido es dulce; no te recomiendo el batido' decimos 'no TE LO recomiendo', el pronombre 'LO' es...", 
-        c: "Una anáfora (sustituye a 'el batido').", 
-        o: ["Una anáfora (sustituye a 'el batido').", "Un hiperónimo general.", "Una elipsis absoluta.", "Un conector de adición."], 
-        h: "Recupera la palabra dicha anteriormente sin repetirla literalmente." 
-    },
-    { 
-        q: "Si un texto tiene palabras correctas pero en una línea dice que adora el deporte y tres líneas después dice que lo detesta, falla en...", 
-        c: "La coherencia (se produce una contradicción interna).", 
-        o: ["La coherencia (se produce una contradicción interna).", "La ortografía de los verbos.", "La adecuación del receptor.", "La falta de hipónimos."], 
-        h: "Una contradicción destruye el sentido lógico y global del texto." 
-    }
+{ 
+q: "¿Cuáles son las tres propiedades que debe cumplir un texto para ser válido?", 
+c: "Adecuación, coherencia y cohesión.", 
+o: ["Adecuación, coherencia y cohesión.", "Introducción, nudo y desenlace.", "Sustantivos, adjetivos y verbos.", "Ortografía, caligrafía y gramática."], 
+h: "Son las tres propiedades textuales fundamentales." 
+},
+{ 
+q: "¿Qué propiedad textual da unidad y sentido global al texto para transmitir un mensaje completo?", 
+c: "La coherencia.", 
+o: ["La coherencia.", "La cohesión.", "La adecuación.", "El ritmo."], 
+h: "Se encarga del fondo, del tema común y del orden lógico." 
+},
+{ 
+q: "¿Qué propiedad textual se encarga de las relaciones lingüísticas que conectan los enunciados entre sí?", 
+c: "La cohesión.", 
+o: ["La cohesión.", "La adecuación.", "La métrica.", "El registro."], 
+h: "Es la 'red de cables' (pronombres, sinónimos, conectores) que unen las frases." 
+},
+{ 
+q: "¿En qué consiste la adecuación de un texto?", 
+c: "En la adaptación de la lengua a los elementos y situación de la comunicación.", 
+o: ["En la adaptación de la lengua a los elementos y situación de la comunicación.", "En conectar los párrafos únicamente con comas.", "En no cometer faltas de ortografía.", "En hacer un esquema con dibujos."], 
+h: "Tiene que ver con usar el registro oportuno según quién te escuche o lea." 
+},
+{ 
+q: "Para que un texto sea coherente, ¿qué dos requisitos deben cumplirse?", 
+c: "Tener un tema común y presentar las ideas en orden lógico sin contradicciones.", 
+o: ["Tener un tema común y presentar las ideas en orden lógico sin contradicciones.", "Tener rima consonante y figuras retóricas.", "Estar escrito en verso y en primera persona.", "Carecer de conectores para no alargar la lectura."], 
+h: "Un único hilo temático estructurado con lógica." 
+},
+{ 
+q: "¿Qué prueba o técnica nos confirma que un texto es verdaderamente coherente?", 
+c: "Ser capaces de hacer un resumen del texto o un esquema de sus ideas.", 
+o: ["Ser capaces de hacer un resumen del texto o un esquema de sus ideas.", "Contar cuántas letras tiene cada renglón.", "Comprobar que todas las palabras son llanas.", "Pasar todas las oraciones a voz pasiva."], 
+h: "Si se puede sintetizar con claridad, las ideas tienen orden y sentido." 
+},
+{ 
+q: "¿Cuál de las siguientes es una anomalía que ROMPE la coherencia de un texto?", 
+c: "Que existan contradicciones o vacíos entre las ideas.", 
+o: ["Que existan contradicciones o vacíos entre las ideas.", "El uso de pronombres para no repetir nombres.", "El empleo de sinónimos variados.", "La presencia de conectores de ordenación."], 
+h: "Si el texto se contradice o da saltos sin sentido, pierde la coherencia." 
+},
+{ 
+q: "Si un texto presenta ideas desordenadas o repeticiones innecesarias, sufre un fallo de...", 
+c: "Coherencia.", 
+o: ["Coherencia.", "Morfología básica.", "Acentuación diacrítica.", "Adecuación métrica."], 
+h: "Las repeticiones superfluas y el caos de ideas arruinan el sentido global." 
+},
+{ 
+q: "En: 'Muchos hogares carecen de alimentos. Si quieres colaborar, dona alimentos', ¿qué recurso de cohesión se usa?", 
+c: "Repetición total.", 
+o: ["Repetición total.", "Repetición parcial.", "Elipsis.", "Antónimo."], 
+h: "Se vuelve a utilizar exactamente la misma palabra idéntica." 
+},
+{ 
+q: "En: 'Tenemos que combatir la pobreza. Una sociedad no es justa si hay personas pobres', ¿qué mecanismo une 'pobreza' y 'pobres'?", 
+c: "Repetición parcial (palabras de la misma familia).", 
+o: ["Repetición parcial (palabras de la misma familia).", "Repetición total.", "Elipsis nominal.", "Anáfora pronominal."], 
+h: "No es la palabra idéntica, sino una variación léxica derivada de la misma raíz." 
+},
+{ 
+q: "En el texto sobre salud: '...hacer ejercicio diario... cuando nos ejercitamos...', encontramos un caso de:", 
+c: "Repetición parcial.", 
+o: ["Repetición parcial.", "Repetición total.", "Hiperonimia.", "Conector adversativo."], 
+h: "Pasa de un sustantivo ('ejercicio') a un verbo de su misma familia ('ejercitamos')." 
+},
+{ 
+q: "¿Qué mecanismo de cohesión consiste en sustituir una palabra por otra con un significado idéntico o equivalente?", 
+c: "Sinonimia (sustitución por sinónimo).", 
+o: ["Sinonimia (sustitución por sinónimo).", "Elipsis.", "Antonimia.", "Hiperonimia."], 
+h: "Evita repetir un término usando otro que significa prácticamente lo mismo." 
+},
+{ 
+q: "En: 'Ayuda a las personas con necesidades. Colabora con tu aportación', ¿qué relación cohesiva hay entre 'ayuda' y 'colabora'?", 
+c: "Sustitución por sinónimo.", 
+o: ["Sustitución por sinónimo.", "Antonimia.", "Repetición total.", "Conector causal."], 
+h: "Ambos términos expresan la misma acción solidaria." 
+},
+{ 
+q: "¿Qué es un HIPERÓNIMO en los mecanismos de cohesión?", 
+c: "Una palabra de significado general que engloba a otras más concretas (el todo o la clase).", 
+o: ["Una palabra de significado general que engloba a otras más concretas (el todo o la clase).", "Una palabra de significado opuesto.", "Un pronombre que sustituye a un verbo.", "Una palabra con significado muy específico."], 
+h: "El hiperónimo actúa como la categoría superior (el paraguas)." 
+},
+{ 
+q: "¿Qué es un HIPÓNIMO?", 
+c: "Una palabra con significado concreto que forma parte de una categoría más amplia (la especie o la parte).", 
+o: ["Una palabra con significado concreto que forma parte de una categoría más amplia (la especie o la parte).", "El término que engloba a todos los demás.", "Una conjunción distributiva.", "Un marcador discursivo de cierre."], 
+h: "El hipónimo es el elemento particular incluido dentro del hiperónimo." 
+},
+{ 
+q: "En: 'Tengo varios paquetes de macarrones y de galletas... Son para la recogida de alimentos', la palabra 'alimentos' actúa como...", 
+c: "Hiperónimo (engloba a macarrones y galletas).", 
+o: ["Hiperónimo (engloba a macarrones y galletas).", "Hipónimo de galletas.", "Antónimo de paquetes.", "Pronombre anafórico."], 
+h: "'Alimento' es el conjunto amplio que abarca a la pasta y las galletas." 
+},
+{ 
+q: "En: 'Se recogerán alimentos: puedes aportar arroz y pasta', los términos 'arroz' y 'pasta' son...", 
+c: "Hipónimos de 'alimentos'.", 
+o: ["Hipónimos de 'alimentos'.", "Hiperónimos de 'alimentos'.", "Sinónimos totales de comida.", "Marcadores de opinión."], 
+h: "Son alimentos concretos (la parte o especie)." 
+},
+{ 
+q: "Si en la frase 'Ha vuelto a triunfar con una nueva canción' cambiamos 'canción' por un HIPERÓNIMO, ¿cuál encaja mejor?", 
+c: "'Tema musical' o 'composición'.", 
+o: ["'Tema musical' o 'composición'.", "'Balada acústica'.", "'Guerra'.", "'Micrófono'."], 
+h: "Debe ser una categoría más amplia que abarque a la canción." 
+},
+{ 
+q: "¿En qué consiste la ANÁFORA como mecanismo de cohesión?", 
+c: "En emplear un pronombre o adverbio para referirse a algo ya mencionado en el texto.", 
+o: ["En emplear un pronombre o adverbio para referirse a algo ya mencionado en el texto.", "En suprimir palabras para dejar huecos.", "En usar palabras de significado contrario.", "En enumerar usando conectores numéricos."], 
+h: "Evita la repetición remitiendo a un elemento anterior mediante pronombres (él, los, esto...) o adverbios (allí)." 
+},
+{ 
+q: "En: 'Los alimentos se depositarán junto a conserjería. El alumnado LOS recogerá', la palabra 'LOS' es...", 
+c: "Un pronombre anafórico (se refiere a 'los alimentos').", 
+o: ["Un pronombre anafórico (se refiere a 'los alimentos').", "Un determinante posesivo.", "Un conector de adición.", "Una elipsis nominal."], 
+h: "Sustituye a 'los alimentos' citados en la primera oración." 
+},
+{ 
+q: "En: 'Iremos a la conserjería del instituto. ALLÍ habrá diferentes cajas', la palabra 'ALLÍ' funciona como...", 
+c: "Un adverbio anafórico (remite a 'la conserjería del instituto').", 
+o: ["Un adverbio anafórico (remite a 'la conserjería del instituto').", "Un hiperónimo de conserjería.", "Un conector de oposición.", "Una repetición parcial."], 
+h: "Hace referencia directa al lugar mencionado previamente." 
+},
+{ 
+q: "¿Qué es la ELIPSIS en la cohesión de un texto?", 
+c: "La supresión u omisión deliberada de un elemento que se sobreentiende con facilidad.", 
+o: ["La supresión u omisión deliberada de un elemento que se sobreentiende con facilidad.", "La sustitución por un antónimo.", "La adición de explicaciones redundantes.", "La repetición exacta de un verbo."], 
+h: "Consiste en dejar el hueco (Ø) porque el emisor y el receptor saben de qué se trata." 
+},
+{ 
+q: "En: 'El vigilante encendió los monitores. (Ø) Repasó todas las cámaras', el sujeto que falta es un caso de...", 
+c: "Elipsis.", 
+o: ["Elipsis.", "Hiponimia.", "Conector consecutivo.", "Repetición total."], 
+h: "Se prescinde de repetir 'El vigilante' en la segunda oración." 
+},
+{ 
+q: "En: 'Hemos de acabar con la pobreza si queremos vivir en un mundo con riqueza', 'pobreza' y 'riqueza' se cohesionan por...", 
+c: "Antonimia (significados opuestos).", 
+o: ["Antonimia (significados opuestos).", "Sinonimia total.", "Hiperonimia.", "Elipsis verbal."], 
+h: "Asocia dos ideas enfrentadas mediante palabras contrarias." 
+},
+{ 
+q: "Para sustituir la repetición en 'No toleramos más guerras. Queremos un mundo sin guerras' mediante un ANTÓNIMO, diremos:", 
+c: "'Queremos un mundo con paz'.", 
+o: ["'Queremos un mundo con paz'.", "'Queremos un mundo sin conflictos'.", "'Queremos un mundo sin ellas'.", "'Queremos un mundo desierto'."], 
+h: "Paz es el antónimo directo de guerra." 
+},
+{ 
+q: "¿Qué es un CAMPO CONCEPTUAL en la cohesión textual?", 
+c: "Un conjunto de palabras de distinta categoría asociadas por referirse a una misma realidad o tema.", 
+o: ["Un conjunto de palabras de distinta categoría asociadas por referirse a una misma realidad o tema.", "Una lista de palabras que riman obligatoriamente.", "Un párrafo formado únicamente por verbos.", "Un bloque de conectores adversativos."], 
+h: "Por ejemplo, en torno a la salud: alimentación, nutrición, recursos, dieta, saludable..." 
+},
+{ 
+q: "Las palabras 'correr, montar en bici, bailar, patinar, baloncesto, tenis' forman un...", 
+c: "Campo conceptual (actividades físicas y deportes).", 
+o: ["Campo conceptual (actividades físicas y deportes).", "Grupo de marcadores de opinión.", "Ejemplo de elipsis consecutiva.", "Conjunto de antónimos."], 
+h: "Comparten el ámbito de los ejercicios y la actividad física." 
+},
+{ 
+q: "¿Cuál es la función principal de los CONECTORES Y MARCADORES textuales?", 
+c: "Guiar la lectura y explicitar las relaciones lógicas entre las ideas y los párrafos.", 
+o: ["Guiar la lectura y explicitar las relaciones lógicas entre las ideas y los párrafos.", "Sustituir obligatoriamente a los nombres propios.", "Indicar si un adjetivo concuerda en plural.", "Abreviar la longitud del texto."], 
+h: "Son señales que conectan y orientan el sentido (orden, contraste, adición...)." 
+},
+{ 
+q: "Los conectores 'y', 'además', 'también', 'incluso' y 'asimismo' son conectores de...", 
+c: "Adición (suma de ideas).", 
+o: ["Adición (suma de ideas).", "Oposición (contraste).", "Tópico (tematización).", "Opinión subjetiva."], 
+h: "Añaden nueva información que apoya la anterior." 
+},
+{ 
+q: "Los enlaces 'sin embargo', 'no obstante', 'por el contrario' y 'en cambio' son conectores de...", 
+c: "Oposición o contraste.", 
+o: ["Oposición o contraste.", "Adición o suma.", "Consecuencia o resultado.", "Ejemplificación."], 
+h: "Señalan un contratiempo o contraposición de ideas." 
+},
+{ 
+q: "En: 'Estudió mucho; POR TANTO, obtuvo una gran calificación', el conector 'por tanto' indica...", 
+c: "Consecuencia (o resultado).", 
+o: ["Consecuencia (o resultado).", "Oposición.", "Tópico.", "Opinión personal."], 
+h: "Aprobar es el efecto derivado de estudiar." 
+},
+{ 
+q: "¿Cuáles de los siguientes son conectores de CONSECUENCIA?", 
+c: "Por tanto, así pues, en consecuencia, por ello...", 
+o: ["Por tanto, así pues, en consecuencia, por ello...", "En primer lugar, por otro lado, por último...", "En mi opinión, desde mi punto de vista...", "Por ejemplo, pongamos por caso..."], 
+h: "Introducen la conclusión o el resultado de un enunciado previo." 
+},
+{ 
+q: "Marcadores como 'en cuanto a', 'respecto a', 'en relación con' o 'en lo referente a' sirven para...", 
+c: "Introducir o acotar un tópico (tematización).", 
+o: ["Introducir o acotar un tópico (tematización).", "Dar una orden tajante.", "Formular una hipótesis improbable.", "Cerrar con una moraleja."], 
+h: "Señalan de qué tema o asunto concreto se va a hablar." 
+},
+{ 
+q: "Marcadores como 'en primer lugar', 'por otro lado', 'por último' y 'en definitiva' sirven para...", 
+c: "Estructurar y ordenar las partes del texto (ordenación).", 
+o: ["Estructurar y ordenar las partes del texto (ordenación).", "Ejemplificar un concepto.", "Mostrar una duda profunda.", "Crear una metáfora."], 
+h: "Organizan la secuencia y el orden cronológico o argumental del discurso." 
+},
+{ 
+q: "Expresiones como 'por ejemplo' o 'pongamos por caso' son marcadores de...", 
+c: "Ejemplificación.", 
+o: ["Ejemplificación.", "Oposición radical.", "Conclusión negativa.", "Adición acumulativa."], 
+h: "Ilustran una idea abstracta con un caso concreto." 
+},
+{ 
+q: "Fórmulas como 'en mi opinión', 'desde mi punto de vista', 'a mi parecer' o 'a mi juicio' expresan...", 
+c: "Opinión (el punto de vista del emisor).", 
+o: ["Opinión (el punto de vista del emisor).", "Consecuencia objetiva.", "Ordenación cronológica.", "Tematización neutra."], 
+h: "Introducen una postura o juicio subjetivo de la persona que habla o escribe." 
+},
+{ 
+q: "En el texto del ejercicio: 'Por un lado... Por otro lado...', estos marcadores cumplen la función de:", 
+c: "Ordenación de las ideas.", 
+o: ["Ordenación de las ideas.", "Ejemplificación aislada.", "Expresión de opinión.", "Adición copulativa simple."], 
+h: "Distribuyen y estructuran los dos bloques de beneficios del ejercicio." 
+},
+{ 
+q: "En: 'Así pues, nuestro consejo es que combatas el sedentarismo', el conector 'Así pues' es de tipo...", 
+c: "Consecuencia (o resultado).", 
+o: ["Consecuencia (o resultado).", "Tópico.", "Oposición.", "Ejemplificación."], 
+h: "Equivale a 'por lo tanto' e introduce la recomendación final." 
+},
+{ 
+q: "Si en 'Este batido es dulce; no te recomiendo el batido' decimos 'no TE LO recomiendo', el pronombre 'LO' es...", 
+c: "Una anáfora (sustituye a 'el batido').", 
+o: ["Una anáfora (sustituye a 'el batido').", "Un hiperónimo general.", "Una elipsis absoluta.", "Un conector de adición."], 
+h: "Recupera la palabra dicha anteriormente sin repetirla literalmente." 
+},
+{ 
+q: "Si un texto tiene palabras correctas pero en una línea dice que adora el deporte y tres líneas después dice que lo detesta, falla en...", 
+c: "La coherencia (se produce una contradicción interna).", 
+o: ["La coherencia (se produce una contradicción interna).", "La ortografía de los verbos.", "La adecuación del receptor.", "La falta de hipónimos."], 
+h: "Una contradicción destruye el sentido lógico y global del texto." 
+}
 ];
 
 let cq=[], ci=0, ca=0, wa=0, mistakes=[], rm=false;
 const Q_LIMIT=40;
 
-const el = id => document.getElementById(id);
-const qt=el("question-text"), oc=el("options-container"), nbtn=el("next-btn"),
-      cc=el("correct-count"), wc=el("wrong-count"), qnum=el("question-number"),
-      qtot=el("question-total"), pbar=el("progress-bar"), qs=el("quiz-screen"),
-      rs=el("result-screen"), rtitle=el("result-title"), fscore=el("final-score"),
-      fperc=el("final-percentage"), ms=el("mistakes-section"), mlist=el("mistakes-list"),
-      mbadge=el("mode-badge");
+// Nueva función de búsqueda segura para evitar bloqueos del DOM
+function el(id) {
+return document.getElementById(id);
+}
 
 function shuffle(arr){
-    const a=[...arr];
-    for(let i=a.length-1; i>0; i--){
-        const j=Math.floor(Math.random()*(i+1));
-        [a[i], a[j]]=[a[j], a[i]];
-    }
-    return a;
+const a=[...arr];
+for(let i=a.length-1; i>0; i--){
+const j=Math.floor(Math.random()*(i+1));
+[a[i], a[j]]=[a[j], a[i]];
+}
+return a;
 }
 
 function startTest(){
-    ci=0; ca=0; wa=0; mistakes=[]; rm=false;
-    cq = shuffle(poolCohesion).slice(0, Q_LIMIT);
-    qtot.textContent=cq.length;
-    qs.classList.remove("hidden"); rs.classList.add("hidden");
-    renderQ();
+ci=0; ca=0; wa=0; mistakes=[]; rm=false;
+cq = shuffle(poolCohesion).slice(0, Q_LIMIT);
+el("question-total").textContent = cq.length;
+el("quiz-screen").classList.remove("hidden"); 
+el("result-screen").classList.add("hidden");
+renderQ();
 }
 
 function startRM(){
-    ci=0; ca=0; wa=0; rm=true;
-    cq=shuffle(mistakes);
-    qtot.textContent=cq.length;
-    qs.classList.remove("hidden"); rs.classList.add("hidden");
-    renderQ();
+ci=0; ca=0; wa=0; rm=true;
+cq = shuffle(mistakes);
+el("question-total").textContent = cq.length;
+el("quiz-screen").classList.remove("hidden"); 
+el("result-screen").classList.add("hidden");
+renderQ();
 }
 
 function renderQ(){
-    nbtn.classList.add("hidden");
-    cc.textContent=ca; wc.textContent=wa;
-    mbadge.textContent = rm ? "MODO REPASO" : TEST PRINCIPAL (${cq.length} PREGUNTAS);
-    
-    const it=cq[ci];
-    qt.textContent=it.q;
-    qnum.textContent=ci+1;
-    pbar.style.width=${(ci/cq.length)*100}%;
-    oc.innerHTML="";
+el("next-btn").classList.add("hidden");
+el("correct-count").textContent = ca; 
+el("wrong-count").textContent = wa;
+el("mode-badge").textContent = rm ? "MODO REPASO" : `TEST PRINCIPAL (${cq.length} PREGUNTAS)`;
 
-    shuffle(it.o).forEach(opt => {
-        const b=document.createElement("button");
-        b.className="option-btn"; b.innerHTML=<span>${opt}</span>;
-        b.onclick = () => {
-            document.querySelectorAll(".option-btn").forEach(btn => {
-                btn.disabled=true;
-                if(btn.textContent===it.c) btn.classList.add("correct-answer");
-            });
-            if(opt===it.c){ 
-                ca++; 
-            } else {
-                wa++; 
-                b.classList.add("wrong-answer");
-                const hs=document.createElement("span");
-                hs.className="hint"; 
-                hs.innerHTML=💡 <strong>Pista:</strong> ${it.h};
-                document.querySelectorAll(".option-btn").forEach(btn=>{
-                    if(btn.textContent===it.c) btn.appendChild(hs);
-                });
-                if(!mistakes.includes(it)) mistakes.push(it);
-            }
-            cc.textContent=ca; wc.textContent=wa;
-            nbtn.classList.remove("hidden");
-        };
-        oc.appendChild(b);
-    });
+const it = cq[ci];
+el("question-text").textContent = it.q;
+el("question-number").textContent = ci + 1;
+el("progress-bar").style.width = `${(ci/cq.length)*100}%`;
+
+const oc = el("options-container");
+oc.innerHTML = "";
+
+shuffle(it.o).forEach(opt => {
+const b = document.createElement("button");
+b.className = "option-btn"; 
+b.innerHTML = `<span>${opt}</span>`;
+b.onclick = () => {
+document.querySelectorAll(".option-btn").forEach(btn => {
+btn.disabled = true;
+if(btn.textContent === it.c) btn.classList.add("correct-answer");
+});
+if(opt === it.c){ 
+ca++; 
+} else {
+wa++; 
+b.classList.add("wrong-answer");
+const hs = document.createElement("span");
+hs.className = "hint"; 
+hs.innerHTML = `💡 <strong>Pista:</strong> ${it.h}`;
+document.querySelectorAll(".option-btn").forEach(btn=>{
+if(btn.textContent === it.c) btn.appendChild(hs);
+});
+if(!mistakes.includes(it)) mistakes.push(it);
+}
+el("correct-count").textContent = ca; 
+el("wrong-count").textContent = wa;
+el("next-btn").classList.remove("hidden");
+};
+oc.appendChild(b);
+});
 }
 
 function nextQ(){
-    ci++;
-    if(ci<cq.length) renderQ();
-    else showRes();
+ci++;
+if(ci < cq.length) renderQ();
+else showRes();
 }
 
 function showRes(){
-    qs.classList.add("hidden"); rs.classList.remove("hidden");
-    const p=Math.round((ca/cq.length)*100);
-    fscore.textContent=${ca} / ${cq.length}; fperc.textContent=${p}%;
-    
-    if(p>=85){ 
-        rtitle.textContent="🏆 ¡Impresionante, Dani!"; 
-        rtitle.style.color="#27ae60"; 
-    } else { 
-        rtitle.textContent="❌ ¡A repasar los fallos!"; 
-        rtitle.style.color="#c0392b"; 
-    }
+el("quiz-screen").classList.add("hidden"); 
+el("result-screen").classList.remove("hidden");
+const p = Math.round((ca/cq.length)*100);
+el("final-score").textContent = `${ca} / ${cq.length}`; 
+el("final-percentage").textContent = `${p}%`;
 
-    if(mistakes.length>0 && !rm){
-        ms.classList.remove("hidden"); mlist.innerHTML="";
-        mistakes.forEach(m=>{
-            const l=document.createElement("li");
-            l.innerHTML=<strong>${m.q}</strong><br>Respuesta correcta: <span class="correct">${m.c}</span>;
-            mlist.appendChild(l);
-        });
-    } else { 
-        ms.classList.add("hidden"); 
-    }
+const rtitle = el("result-title");
+if(p >= 85){ 
+rtitle.textContent = "🏆 ¡Impresionante, Dani!"; 
+rtitle.style.color = "#27ae60"; 
+} else { 
+rtitle.textContent = "❌ ¡A repasar los fallos!"; 
+rtitle.style.color = "#c0392b"; 
 }
 
-nbtn.addEventListener("click", nextQ);
+const ms = el("mistakes-section");
+const mlist = el("mistakes-list");
+if(mistakes.length > 0 && !rm){
+ms.classList.remove("hidden"); 
+mlist.innerHTML = "";
+mistakes.forEach(m=>{
+const l = document.createElement("li");
+l.innerHTML = `<strong>${m.q}</strong><br>Respuesta correcta: <span class="correct">${m.c}</span>`;
+mlist.appendChild(l);
+});
+} else { 
+ms.classList.add("hidden"); 
+}
+}
+
+// Retrasamos el inicio hasta asegurarnos de que la página ha cargado por completo
+document.addEventListener("DOMContentLoaded", () => {
+el("next-btn").addEventListener("click", nextQ);
 el("restart-btn").addEventListener("click", startTest);
 el("review-btn").addEventListener("click", startRM);
-
 startTest();
+});
+
 </script>
 </body>
 </html>
