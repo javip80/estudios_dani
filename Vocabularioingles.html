@@ -1,11 +1,10 @@
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Dani - English Vocabulary Trainer</title>
+<title>Dani - English Vocabulary Trainer | 2.º ESO</title>
 
 <style>
 
@@ -202,17 +201,61 @@ button{
   }
 }
 
+
+/* Mejoras compatibles con la plantilla original */
+.subtitle { margin: -4px 0 18px; color: #607387; font-size: .93rem; }
+.filters { display: grid; grid-template-columns: 1fr 1fr auto; align-items: end; gap: 12px; margin: 16px 0; padding: 14px; border: 1px solid #dce6f0; border-radius: 12px; background: #f7faff; }
+.filter-label { display: flex; flex-direction: column; gap: 5px; font-size: .86rem; font-weight: 700; color: #435a72; }
+.filters select { width: 100%; border-radius: 8px; border: 1px solid #b7c8da; padding: 11px 10px; background: white; color: #1a344c; font: inherit; font-size: .94rem; }
+.action-btn { background: #1f6fb2; color: white; padding: 11px 16px; font-weight: 700; white-space: nowrap; }
+.bank-info { font-size: .84rem; color: #576a7c; margin-top: 8px; }
+.question-tag { margin: 8px 0 0; color: #627488; font-size: .84rem; font-weight: 600; }
+.option-btn { overflow-wrap: anywhere; line-height: 1.4; padding: 13px; }
+.feedback { margin-top: 16px; border-radius: 10px; padding: 12px 14px; background: #eff7fd; color: #24425d; font-size: .96rem; line-height: 1.5; }
+.feedback.ok { background: #e9f8ef; color: #146232; }
+.feedback.bad { background: #fff0ed; color: #922e26; }
+.result-extra { color: #607387; }
+.no-mistakes { color: #1e9b50; font-weight: 700; }
+.btn-secondary { background: #687b8d; color: #fff; }
+button:focus-visible, select:focus-visible { outline: 3px solid #ffae3d; outline-offset: 3px; }
+@media(max-width:650px){
+  .filters{grid-template-columns:1fr;}
+  .action-btn{width:100%;}
+  .container{padding:18px;}
+  body{padding:10px;}
+}
+
 </style>
 </head>
 
 <body>
 
 <div class="container">
-
+  <h1>🇬🇧 English Vocabulary Trainer</h1>
+  <p class="subtitle">2.º ESO · Burlington Options · Introduction + Modules 1–2 · Frases útiles</p>
+  <div class="filters" role="group" aria-label="Configuración del test">
+    <label class="filter-label" for="module-filter">Contenido
+      <select id="module-filter">
+        <option value="all">Todo el temario</option>
+        <option value="intro">Introduction</option>
+        <option value="m1">Module 1</option>
+        <option value="m2">Module 2</option>
+        <option value="extra">Frases adicionales</option>
+      </select>
+    </label>
+    <label class="filter-label" for="type-filter">Preguntas
+      <select id="type-filter">
+        <option value="all">Palabras + frases</option>
+        <option value="word">Solo vocabulario</option>
+        <option value="phrase">Solo frases</option>
+      </select>
+    </label>
+    <button class="action-btn" id="new-test-btn" type="button">Nuevo test (40)</button>
+  </div>
+  <div class="bank-info" id="bank-info" aria-live="polite"></div>
   <div id="quiz-screen">
 
     <div class="top-bar">
-      <h1>🇬🇧 English Vocabulary Trainer</h1>
       <div class="mode-badge" id="mode-badge">
         Main Test
       </div>
@@ -244,11 +287,15 @@ button{
       <div class="progress-bar" id="progress-bar"></div>
     </div>
 
+    <div class="question-tag" id="question-tag"></div>
+
     <div class="question" id="question-text">
       Loading...
     </div>
 
     <div class="options" id="options-container"></div>
+
+    <div class="feedback hidden" id="feedback" aria-live="polite"></div>
 
     <button class="next-btn hidden" id="next-btn">
       Next Question →
@@ -270,20 +317,22 @@ button{
       <strong id="final-percentage"></strong>
     </p>
 
+    <p class="result-extra" id="result-message"></p>
+
     <div id="mistakes-section" class="hidden">
 
-      <h3>Words to review:</h3>
+      <h3>Palabras y frases para repasar:</h3>
 
       <ul class="error-list" id="mistakes-list"></ul>
 
       <button class="review-btn" id="review-btn">
-        Practice Mistakes
+        Repasar errores
       </button>
 
     </div>
 
     <button class="restart-btn" id="restart-btn">
-      Restart Full Test
+      Nuevo test de 40 preguntas
     </button>
 
   </div>
@@ -293,578 +342,3098 @@ button{
 <script>
 
 // =====================================
-// CONFIG
+// AJUSTES Y BANCO DE PREGUNTAS
 // =====================================
-
 const MAIN_TEST_QUESTIONS = 40;
 const PASS_PERCENTAGE = 85;
-
-// =====================================
-// FULL VOCABULARY
-// =====================================
-
+// Las palabras siguen el vocabulario del libro y algunas actividades.
+// Las frases se adaptan a 2.º ESO y se amplían con expresiones de uso frecuente.
 const vocabulary = [
-
-  // M6
-  { es:"normal, corriente", en:"average", category:"m6" },
-  { es:"globo", en:"balloon", category:"m6" },
-  { es:"tiza", en:"chalk", category:"m6" },
-  { es:"cubierta, capa", en:"covering", category:"m6" },
-  { es:"sucio/a", en:"dirty", category:"m6" },
-  { es:"mercadillo", en:"market", category:"m6" },
-  { es:"¿Sabes qué?", en:"Guess what!", category:"m6" },
-  { es:"tumbarse", en:"lie down", category:"m6" },
-  { es:"acera", en:"pavement", category:"m6" },
-  { es:"de calidad", en:"quality", category:"m6" },
-  { es:"maleta", en:"suitcase", category:"m6" },
-  { es:"tostada", en:"toast", category:"m6" },
-  { es:"más importante", en:"top", category:"m6" },
-  { es:"lavar", en:"wash", category:"m6" },
-  { es:"¡Ñam ñam!", en:"Yum!", category:"m6" },
-
-  // SCHOOL
-  { es:"asamblea", en:"assembly", category:"school" },
-  { es:"descanso", en:"break", category:"school" },
-  { es:"cerrado/a", en:"closed", category:"school" },
-  { es:"centrarse", en:"focus", category:"school" },
-  { es:"director/a", en:"head teacher", category:"school" },
-  { es:"aprendizaje", en:"learning", category:"school" },
-  { es:"clase", en:"lesson", category:"school" },
-  { es:"comida", en:"meal", category:"school" },
-  { es:"echarse una siesta", en:"nap", category:"school" },
-  { es:"cápsula", en:"pod", category:"school" },
-  { es:"asignatura", en:"subject", category:"school" },
-  { es:"adolescente", en:"teenager", category:"school" },
-  { es:"horario", en:"timetable", category:"school" },
-  { es:"encuesta", en:"poll", category:"school" },
-  { es:"aviso", en:"notice", category:"school" },
-  { es:"castigo", en:"punishment", category:"school" },
-
-  // EVENTS
-  { es:"cita", en:"appointment", category:"events" },
-  { es:"concurso", en:"competition", category:"events" },
-  { es:"exposición", en:"exhibition", category:"events" },
-  { es:"representación", en:"production", category:"events" },
-  { es:"búsqueda del tesoro", en:"treasure hunt", category:"events" },
-  { es:"campeonato", en:"championship", category:"events" },
-  { es:"partido", en:"match", category:"events" },
-  { es:"carrera", en:"race", category:"events" },
-  { es:"inauguración", en:"opening", category:"events" },
-  { es:"encuentro", en:"meeting", category:"events" },
-
-  // PEOPLE
-  { es:"coleccionista", en:"collector", category:"people" },
-  { es:"criminal", en:"criminal", category:"people" },
-  { es:"protagonista", en:"main character", category:"people" },
-  { es:"bruja", en:"witch", category:"people" },
-  { es:"patrocinador", en:"sponsor", category:"people" },
-  { es:"cliente", en:"customer", category:"people" },
-  { es:"payaso", en:"clown", category:"people" },
-  { es:"granjero/a", en:"farmer", category:"people" },
-
-  // ADJECTIVES
-  { es:"increíble", en:"amazing", category:"adjectives" },
-  { es:"antiguo/a", en:"ancient", category:"adjectives" },
-  { es:"cuidadoso/a", en:"careful", category:"adjectives" },
-  { es:"peligroso/a", en:"dangerous", category:"adjectives" },
-  { es:"disfrazado/a", en:"disguised", category:"adjectives" },
-  { es:"enfermo/a", en:"ill", category:"adjectives" },
-  { es:"ruidoso/a", en:"noisy", category:"adjectives" },
-  { es:"rico/a", en:"rich", category:"adjectives" },
-  { es:"exitoso/a", en:"successful", category:"adjectives" },
-  { es:"húmedo/a", en:"wet", category:"adjectives" },
-  { es:"cómodo/a", en:"comfortable", category:"adjectives" },
-  { es:"recargado/a", en:"elaborate", category:"adjectives" },
-  { es:"gótico/a", en:"gothic", category:"adjectives" },
-  { es:"ecologista", en:"green", category:"adjectives" },
-  { es:"inusual", en:"unusual", category:"adjectives" },
-  { es:"griego/a", en:"Greek", category:"adjectives" },
-  { es:"de larga duración", en:"long-life", category:"adjectives" },
-  { es:"en peligro de extinción", en:"endangered", category:"adjectives" },
-  { es:"sorprendido/a", en:"shocked", category:"adjectives" },
-
-  // VERBS
-  { es:"odiar", en:"hate", category:"verbs" },
-  { es:"divertirse", en:"have fun", category:"verbs" },
-  { es:"esconderse", en:"hide", category:"verbs" },
-  { es:"asustar", en:"scare", category:"verbs" },
-  { es:"trepar", en:"climb", category:"verbs" },
-  { es:"lamer", en:"lick", category:"verbs" },
-  { es:"despertarse", en:"wake up", category:"verbs" },
-  { es:"guiñar el ojo", en:"wink", category:"verbs" },
-  { es:"ganar a", en:"beat", category:"verbs" },
-  { es:"arrastrar", en:"drag", category:"verbs" },
-  { es:"poner en peligro", en:"endanger", category:"verbs" },
-  { es:"esperar", en:"expect", category:"verbs" },
-  { es:"permitir", en:"let", category:"verbs" },
-  { es:"conseguir", en:"succeed", category:"verbs" },
-  { es:"pesar", en:"weigh", category:"verbs" },
-  { es:"dejar caer", en:"drop", category:"verbs" },
-  { es:"señalar", en:"point to", category:"verbs" },
-  { es:"huir", en:"run away", category:"verbs" },
-  { es:"recordar a", en:"remind of", category:"verbs" },
-
-  // NATURE
-  { es:"rama", en:"branch", category:"nature" },
-  { es:"suelo", en:"ground", category:"nature" },
-  { es:"suciedad", en:"dirt", category:"nature" },
-  { es:"tierra", en:"earth", category:"nature" },
-  { es:"manada", en:"herd", category:"nature" },
-  { es:"supervivencia", en:"survival", category:"nature" },
-  { es:"campo", en:"field", category:"nature" },
-  { es:"tierra firme", en:"dry land", category:"nature" },
-  { es:"vista", en:"view", category:"nature" },
-
-  // FOOD
-  { es:"plato", en:"dish", category:"food" },
-  { es:"sabor", en:"flavour", category:"food" },
-  { es:"gastroneta", en:"food truck", category:"food" },
-  { es:"guarnición", en:"side dish", category:"food" },
-  { es:"entrada", en:"starter", category:"food" },
-  { es:"sabroso/a", en:"tasty", category:"food" },
-  { es:"chicle", en:"chewing gum", category:"food" },
-  { es:"mermelada", en:"jam", category:"food" },
-
-  // SPACE
-  { es:"luna", en:"moon", category:"space" },
-  { es:"espacio", en:"space", category:"space" },
-  { es:"planeta", en:"planet", category:"space" },
-  { es:"Tierra", en:"Earth", category:"space" },
-  { es:"contaminación", en:"pollution", category:"space" },
-  { es:"clima", en:"weather", category:"space" },
-  { es:"océano", en:"ocean", category:"space" },
-
-  // BASIC TRANSPORT
-  { es:"avión", en:"aeroplane", category:"transport" },
-  { es:"barco", en:"boat", category:"transport" },
-  { es:"conducir", en:"drive", category:"transport" },
-  { es:"bici eléctrica", en:"electric bike", category:"transport" },
-  { es:"patinete eléctrico", en:"electric scooter", category:"transport" },
-  { es:"ferri", en:"ferry", category:"transport" },
-  { es:"helicóptero", en:"helicopter", category:"transport" },
-  { es:"camión", en:"lorry", category:"transport" },
-  { es:"moto", en:"motorbike", category:"transport" },
-  { es:"montar", en:"ride", category:"transport" },
-  { es:"navegar", en:"sail", category:"transport" },
-  { es:"tren", en:"train", category:"transport" },
-  { es:"tranvía", en:"tram", category:"transport" },
-  { es:"metro", en:"underground", category:"transport" },
-
-  // FAMILY
-  { es:"tía", en:"aunt", category:"family" },
-  { es:"hermano", en:"brother", category:"family" },
-  { es:"primo/a", en:"cousin", category:"family" },
-  { es:"papá", en:"dad", category:"family" },
-  { es:"abuelo", en:"grandfather", category:"family" },
-  { es:"abuela", en:"grandmother", category:"family" },
-  { es:"mamá", en:"mum", category:"family" },
-  { es:"hermana", en:"sister", category:"family" },
-  { es:"tío", en:"uncle", category:"family" },
-  { es:"esposa", en:"wife", category:"family" },
-
-  // BODY
-  { es:"brazo", en:"arm", category:"body" },
-  { es:"oreja", en:"ear", category:"body" },
-  { es:"ojo", en:"eye", category:"body" },
-  { es:"pie", en:"foot", category:"body" },
-  { es:"pelo", en:"hair", category:"body" },
-  { es:"mano", en:"hand", category:"body" },
-  { es:"pierna", en:"leg", category:"body" },
-  { es:"boca", en:"mouth", category:"body" },
-  { es:"nariz", en:"nose", category:"body" },
-  { es:"dientes", en:"teeth", category:"body" }
-
+  {
+    "es": "panadería",
+    "en": "bakery",
+    "group": "intro",
+    "category": "Lugares de la ciudad",
+    "kind": "word"
+  },
+  {
+    "es": "banco",
+    "en": "bank",
+    "group": "intro",
+    "category": "Lugares de la ciudad",
+    "kind": "word"
+  },
+  {
+    "es": "librería (tienda)",
+    "en": "bookshop",
+    "group": "intro",
+    "category": "Lugares de la ciudad",
+    "kind": "word"
+  },
+  {
+    "es": "farmacia",
+    "en": "chemist's",
+    "group": "intro",
+    "category": "Lugares de la ciudad",
+    "kind": "word"
+  },
+  {
+    "es": "cine",
+    "en": "cinema",
+    "group": "intro",
+    "category": "Lugares de la ciudad",
+    "kind": "word"
+  },
+  {
+    "es": "hospital",
+    "en": "hospital",
+    "group": "intro",
+    "category": "Lugares de la ciudad",
+    "kind": "word"
+  },
+  {
+    "es": "hotel",
+    "en": "hotel",
+    "group": "intro",
+    "category": "Lugares de la ciudad",
+    "kind": "word"
+  },
+  {
+    "es": "biblioteca",
+    "en": "library",
+    "group": "intro",
+    "category": "Lugares de la ciudad",
+    "kind": "word"
+  },
+  {
+    "es": "puerto",
+    "en": "port",
+    "group": "intro",
+    "category": "Lugares de la ciudad",
+    "kind": "word"
+  },
+  {
+    "es": "oficina de correos",
+    "en": "post office",
+    "group": "intro",
+    "category": "Lugares de la ciudad",
+    "kind": "word"
+  },
+  {
+    "es": "restaurante",
+    "en": "restaurant",
+    "group": "intro",
+    "category": "Lugares de la ciudad",
+    "kind": "word"
+  },
+  {
+    "es": "centro comercial",
+    "en": "shopping centre",
+    "group": "intro",
+    "category": "Lugares de la ciudad",
+    "kind": "word"
+  },
+  {
+    "es": "polideportivo",
+    "en": "sports centre",
+    "group": "intro",
+    "category": "Lugares de la ciudad",
+    "kind": "word"
+  },
+  {
+    "es": "teatro",
+    "en": "theatre",
+    "group": "intro",
+    "category": "Lugares de la ciudad",
+    "kind": "word"
+  },
+  {
+    "es": "cuarto de baño",
+    "en": "bathroom",
+    "group": "intro",
+    "category": "La casa",
+    "kind": "word"
+  },
+  {
+    "es": "dormitorio",
+    "en": "bedroom",
+    "group": "intro",
+    "category": "La casa",
+    "kind": "word"
+  },
+  {
+    "es": "silla",
+    "en": "chair",
+    "group": "intro",
+    "category": "La casa",
+    "kind": "word"
+  },
+  {
+    "es": "cocina (aparato)",
+    "en": "cooker",
+    "group": "intro",
+    "category": "La casa",
+    "kind": "word"
+  },
+  {
+    "es": "escritorio",
+    "en": "desk",
+    "group": "intro",
+    "category": "La casa",
+    "kind": "word"
+  },
+  {
+    "es": "comedor",
+    "en": "dining room",
+    "group": "intro",
+    "category": "La casa",
+    "kind": "word"
+  },
+  {
+    "es": "nevera",
+    "en": "fridge",
+    "group": "intro",
+    "category": "La casa",
+    "kind": "word"
+  },
+  {
+    "es": "cocina (habitación)",
+    "en": "kitchen",
+    "group": "intro",
+    "category": "La casa",
+    "kind": "word"
+  },
+  {
+    "es": "salón",
+    "en": "living room",
+    "group": "intro",
+    "category": "La casa",
+    "kind": "word"
+  },
+  {
+    "es": "alfombra",
+    "en": "rug",
+    "group": "intro",
+    "category": "La casa",
+    "kind": "word"
+  },
+  {
+    "es": "ducha",
+    "en": "shower",
+    "group": "intro",
+    "category": "La casa",
+    "kind": "word"
+  },
+  {
+    "es": "fregadero o lavabo",
+    "en": "sink",
+    "group": "intro",
+    "category": "La casa",
+    "kind": "word"
+  },
+  {
+    "es": "sofá",
+    "en": "sofa",
+    "group": "intro",
+    "category": "La casa",
+    "kind": "word"
+  },
+  {
+    "es": "mesa",
+    "en": "table",
+    "group": "intro",
+    "category": "La casa",
+    "kind": "word"
+  },
+  {
+    "es": "inodoro",
+    "en": "toilet",
+    "group": "intro",
+    "category": "La casa",
+    "kind": "word"
+  },
+  {
+    "es": "nublado",
+    "en": "cloudy",
+    "group": "intro",
+    "category": "El tiempo",
+    "kind": "word"
+  },
+  {
+    "es": "frío",
+    "en": "cold",
+    "group": "intro",
+    "category": "El tiempo",
+    "kind": "word"
+  },
+  {
+    "es": "fresco",
+    "en": "cool",
+    "group": "intro",
+    "category": "El tiempo",
+    "kind": "word"
+  },
+  {
+    "es": "seco",
+    "en": "dry",
+    "group": "intro",
+    "category": "El tiempo",
+    "kind": "word"
+  },
+  {
+    "es": "caluroso",
+    "en": "hot",
+    "group": "intro",
+    "category": "El tiempo",
+    "kind": "word"
+  },
+  {
+    "es": "helado (temperatura)",
+    "en": "icy",
+    "group": "intro",
+    "category": "El tiempo",
+    "kind": "word"
+  },
+  {
+    "es": "relámpago",
+    "en": "lightning",
+    "group": "intro",
+    "category": "El tiempo",
+    "kind": "word"
+  },
+  {
+    "es": "lluvia",
+    "en": "rain",
+    "group": "intro",
+    "category": "El tiempo",
+    "kind": "word"
+  },
+  {
+    "es": "lluvioso",
+    "en": "rainy",
+    "group": "intro",
+    "category": "El tiempo",
+    "kind": "word"
+  },
+  {
+    "es": "nieve",
+    "en": "snow",
+    "group": "intro",
+    "category": "El tiempo",
+    "kind": "word"
+  },
+  {
+    "es": "nevado",
+    "en": "snowy",
+    "group": "intro",
+    "category": "El tiempo",
+    "kind": "word"
+  },
+  {
+    "es": "soleado",
+    "en": "sunny",
+    "group": "intro",
+    "category": "El tiempo",
+    "kind": "word"
+  },
+  {
+    "es": "cálido",
+    "en": "warm",
+    "group": "intro",
+    "category": "El tiempo",
+    "kind": "word"
+  },
+  {
+    "es": "mojado",
+    "en": "wet",
+    "group": "intro",
+    "category": "El tiempo",
+    "kind": "word"
+  },
+  {
+    "es": "ventoso",
+    "en": "windy",
+    "group": "intro",
+    "category": "El tiempo",
+    "kind": "word"
+  },
+  {
+    "es": "cinturón",
+    "en": "belt",
+    "group": "intro",
+    "category": "Ropa y accesorios",
+    "kind": "word"
+  },
+  {
+    "es": "botas",
+    "en": "boots",
+    "group": "intro",
+    "category": "Ropa y accesorios",
+    "kind": "word"
+  },
+  {
+    "es": "pulsera",
+    "en": "bracelet",
+    "group": "intro",
+    "category": "Ropa y accesorios",
+    "kind": "word"
+  },
+  {
+    "es": "abrigo",
+    "en": "coat",
+    "group": "intro",
+    "category": "Ropa y accesorios",
+    "kind": "word"
+  },
+  {
+    "es": "vestido",
+    "en": "dress",
+    "group": "intro",
+    "category": "Ropa y accesorios",
+    "kind": "word"
+  },
+  {
+    "es": "pendientes",
+    "en": "earrings",
+    "group": "intro",
+    "category": "Ropa y accesorios",
+    "kind": "word"
+  },
+  {
+    "es": "gafas",
+    "en": "glasses",
+    "group": "intro",
+    "category": "Ropa y accesorios",
+    "kind": "word"
+  },
+  {
+    "es": "sombrero",
+    "en": "hat",
+    "group": "intro",
+    "category": "Ropa y accesorios",
+    "kind": "word"
+  },
+  {
+    "es": "chaqueta",
+    "en": "jacket",
+    "group": "intro",
+    "category": "Ropa y accesorios",
+    "kind": "word"
+  },
+  {
+    "es": "vaqueros",
+    "en": "jeans",
+    "group": "intro",
+    "category": "Ropa y accesorios",
+    "kind": "word"
+  },
+  {
+    "es": "collar",
+    "en": "necklace",
+    "group": "intro",
+    "category": "Ropa y accesorios",
+    "kind": "word"
+  },
+  {
+    "es": "anillo",
+    "en": "ring",
+    "group": "intro",
+    "category": "Ropa y accesorios",
+    "kind": "word"
+  },
+  {
+    "es": "sandalias",
+    "en": "sandals",
+    "group": "intro",
+    "category": "Ropa y accesorios",
+    "kind": "word"
+  },
+  {
+    "es": "camisa",
+    "en": "shirt",
+    "group": "intro",
+    "category": "Ropa y accesorios",
+    "kind": "word"
+  },
+  {
+    "es": "zapatos",
+    "en": "shoes",
+    "group": "intro",
+    "category": "Ropa y accesorios",
+    "kind": "word"
+  },
+  {
+    "es": "pantalones cortos",
+    "en": "shorts",
+    "group": "intro",
+    "category": "Ropa y accesorios",
+    "kind": "word"
+  },
+  {
+    "es": "falda",
+    "en": "skirt",
+    "group": "intro",
+    "category": "Ropa y accesorios",
+    "kind": "word"
+  },
+  {
+    "es": "calcetines",
+    "en": "socks",
+    "group": "intro",
+    "category": "Ropa y accesorios",
+    "kind": "word"
+  },
+  {
+    "es": "jersey",
+    "en": "sweater",
+    "group": "intro",
+    "category": "Ropa y accesorios",
+    "kind": "word"
+  },
+  {
+    "es": "bañador",
+    "en": "swimsuit",
+    "group": "intro",
+    "category": "Ropa y accesorios",
+    "kind": "word"
+  },
+  {
+    "es": "zapatillas de deporte",
+    "en": "trainers",
+    "group": "intro",
+    "category": "Ropa y accesorios",
+    "kind": "word"
+  },
+  {
+    "es": "pantalones largos",
+    "en": "trousers",
+    "group": "intro",
+    "category": "Ropa y accesorios",
+    "kind": "word"
+  },
+  {
+    "es": "camiseta",
+    "en": "T-shirt",
+    "group": "intro",
+    "category": "Ropa y accesorios",
+    "kind": "word"
+  },
+  {
+    "es": "carne de vacuno",
+    "en": "beef",
+    "group": "intro",
+    "category": "Comida y utensilios",
+    "kind": "word"
+  },
+  {
+    "es": "cuenco",
+    "en": "bowl",
+    "group": "intro",
+    "category": "Comida y utensilios",
+    "kind": "word"
+  },
+  {
+    "es": "pan",
+    "en": "bread",
+    "group": "intro",
+    "category": "Comida y utensilios",
+    "kind": "word"
+  },
+  {
+    "es": "tarta",
+    "en": "cake",
+    "group": "intro",
+    "category": "Comida y utensilios",
+    "kind": "word"
+  },
+  {
+    "es": "queso",
+    "en": "cheese",
+    "group": "intro",
+    "category": "Comida y utensilios",
+    "kind": "word"
+  },
+  {
+    "es": "pollo",
+    "en": "chicken",
+    "group": "intro",
+    "category": "Comida y utensilios",
+    "kind": "word"
+  },
+  {
+    "es": "patatas fritas",
+    "en": "chips",
+    "group": "intro",
+    "category": "Comida y utensilios",
+    "kind": "word"
+  },
+  {
+    "es": "café",
+    "en": "coffee",
+    "group": "intro",
+    "category": "Comida y utensilios",
+    "kind": "word"
+  },
+  {
+    "es": "taza",
+    "en": "cup",
+    "group": "intro",
+    "category": "Comida y utensilios",
+    "kind": "word"
+  },
+  {
+    "es": "huevo",
+    "en": "egg",
+    "group": "intro",
+    "category": "Comida y utensilios",
+    "kind": "word"
+  },
+  {
+    "es": "pescado",
+    "en": "fish",
+    "group": "intro",
+    "category": "Comida y utensilios",
+    "kind": "word"
+  },
+  {
+    "es": "tenedor",
+    "en": "fork",
+    "group": "intro",
+    "category": "Comida y utensilios",
+    "kind": "word"
+  },
+  {
+    "es": "vaso",
+    "en": "glass",
+    "group": "intro",
+    "category": "Comida y utensilios",
+    "kind": "word"
+  },
+  {
+    "es": "jamón",
+    "en": "ham",
+    "group": "intro",
+    "category": "Comida y utensilios",
+    "kind": "word"
+  },
+  {
+    "es": "hamburguesa",
+    "en": "hamburger",
+    "group": "intro",
+    "category": "Comida y utensilios",
+    "kind": "word"
+  },
+  {
+    "es": "helado",
+    "en": "ice cream",
+    "group": "intro",
+    "category": "Comida y utensilios",
+    "kind": "word"
+  },
+  {
+    "es": "zumo",
+    "en": "juice",
+    "group": "intro",
+    "category": "Comida y utensilios",
+    "kind": "word"
+  },
+  {
+    "es": "cuchillo",
+    "en": "knife",
+    "group": "intro",
+    "category": "Comida y utensilios",
+    "kind": "word"
+  },
+  {
+    "es": "aceite",
+    "en": "oil",
+    "group": "intro",
+    "category": "Comida y utensilios",
+    "kind": "word"
+  },
+  {
+    "es": "cebolla",
+    "en": "onion",
+    "group": "intro",
+    "category": "Comida y utensilios",
+    "kind": "word"
+  },
+  {
+    "es": "plato",
+    "en": "plate",
+    "group": "intro",
+    "category": "Comida y utensilios",
+    "kind": "word"
+  },
+  {
+    "es": "carne de cerdo",
+    "en": "pork",
+    "group": "intro",
+    "category": "Comida y utensilios",
+    "kind": "word"
+  },
+  {
+    "es": "patata",
+    "en": "potato",
+    "group": "intro",
+    "category": "Comida y utensilios",
+    "kind": "word"
+  },
+  {
+    "es": "arroz",
+    "en": "rice",
+    "group": "intro",
+    "category": "Comida y utensilios",
+    "kind": "word"
+  },
+  {
+    "es": "ensalada",
+    "en": "salad",
+    "group": "intro",
+    "category": "Comida y utensilios",
+    "kind": "word"
+  },
+  {
+    "es": "sal",
+    "en": "salt",
+    "group": "intro",
+    "category": "Comida y utensilios",
+    "kind": "word"
+  },
+  {
+    "es": "salchicha",
+    "en": "sausage",
+    "group": "intro",
+    "category": "Comida y utensilios",
+    "kind": "word"
+  },
+  {
+    "es": "sopa",
+    "en": "soup",
+    "group": "intro",
+    "category": "Comida y utensilios",
+    "kind": "word"
+  },
+  {
+    "es": "cuchara",
+    "en": "spoon",
+    "group": "intro",
+    "category": "Comida y utensilios",
+    "kind": "word"
+  },
+  {
+    "es": "azúcar",
+    "en": "sugar",
+    "group": "intro",
+    "category": "Comida y utensilios",
+    "kind": "word"
+  },
+  {
+    "es": "tomate",
+    "en": "tomato",
+    "group": "intro",
+    "category": "Comida y utensilios",
+    "kind": "word"
+  },
+  {
+    "es": "aire acondicionado",
+    "en": "air conditioner",
+    "group": "m1",
+    "category": "Objetos de casa",
+    "kind": "word"
+  },
+  {
+    "es": "manta",
+    "en": "blanket",
+    "group": "m1",
+    "category": "Objetos de casa",
+    "kind": "word"
+  },
+  {
+    "es": "ventilador de techo",
+    "en": "ceiling fan",
+    "group": "m1",
+    "category": "Objetos de casa",
+    "kind": "word"
+  },
+  {
+    "es": "cargador",
+    "en": "charger",
+    "group": "m1",
+    "category": "Objetos de casa",
+    "kind": "word"
+  },
+  {
+    "es": "secadora",
+    "en": "dryer",
+    "group": "m1",
+    "category": "Objetos de casa",
+    "kind": "word"
+  },
+  {
+    "es": "auriculares",
+    "en": "headphones",
+    "group": "m1",
+    "category": "Objetos de casa",
+    "kind": "word"
+  },
+  {
+    "es": "calefactor",
+    "en": "heater",
+    "group": "m1",
+    "category": "Objetos de casa",
+    "kind": "word"
+  },
+  {
+    "es": "hervidor de agua",
+    "en": "kettle",
+    "group": "m1",
+    "category": "Objetos de casa",
+    "kind": "word"
+  },
+  {
+    "es": "llave",
+    "en": "key",
+    "group": "m1",
+    "category": "Objetos de casa",
+    "kind": "word"
+  },
+  {
+    "es": "lámpara",
+    "en": "lamp",
+    "group": "m1",
+    "category": "Objetos de casa",
+    "kind": "word"
+  },
+  {
+    "es": "microondas",
+    "en": "microwave",
+    "group": "m1",
+    "category": "Objetos de casa",
+    "kind": "word"
+  },
+  {
+    "es": "almohada",
+    "en": "pillow",
+    "group": "m1",
+    "category": "Objetos de casa",
+    "kind": "word"
+  },
+  {
+    "es": "champú",
+    "en": "shampoo",
+    "group": "m1",
+    "category": "Objetos de casa",
+    "kind": "word"
+  },
+  {
+    "es": "jabón",
+    "en": "soap",
+    "group": "m1",
+    "category": "Objetos de casa",
+    "kind": "word"
+  },
+  {
+    "es": "pasta de dientes",
+    "en": "toothpaste",
+    "group": "m1",
+    "category": "Objetos de casa",
+    "kind": "word"
+  },
+  {
+    "es": "cepillo de dientes",
+    "en": "toothbrush",
+    "group": "m1",
+    "category": "Objetos de casa",
+    "kind": "word"
+  },
+  {
+    "es": "toalla",
+    "en": "towel",
+    "group": "m1",
+    "category": "Objetos de casa",
+    "kind": "word"
+  },
+  {
+    "es": "aspiradora",
+    "en": "vacuum cleaner",
+    "group": "m1",
+    "category": "Objetos de casa",
+    "kind": "word"
+  },
+  {
+    "es": "lavadora",
+    "en": "washing machine",
+    "group": "m1",
+    "category": "Objetos de casa",
+    "kind": "word"
+  },
+  {
+    "es": "diccionario",
+    "en": "dictionary",
+    "group": "m1",
+    "category": "Material escolar",
+    "kind": "word"
+  },
+  {
+    "es": "memoria USB",
+    "en": "flash drive",
+    "group": "m1",
+    "category": "Material escolar",
+    "kind": "word"
+  },
+  {
+    "es": "carpeta",
+    "en": "folder",
+    "group": "m1",
+    "category": "Material escolar",
+    "kind": "word"
+  },
+  {
+    "es": "pegamento",
+    "en": "glue",
+    "group": "m1",
+    "category": "Material escolar",
+    "kind": "word"
+  },
+  {
+    "es": "microscopio",
+    "en": "microscope",
+    "group": "m1",
+    "category": "Material escolar",
+    "kind": "word"
+  },
+  {
+    "es": "pincel",
+    "en": "paintbrush",
+    "group": "m1",
+    "category": "Material escolar",
+    "kind": "word"
+  },
+  {
+    "es": "pinturas",
+    "en": "paints",
+    "group": "m1",
+    "category": "Material escolar",
+    "kind": "word"
+  },
+  {
+    "es": "proyector",
+    "en": "projector",
+    "group": "m1",
+    "category": "Material escolar",
+    "kind": "word"
+  },
+  {
+    "es": "grapadora",
+    "en": "stapler",
+    "group": "m1",
+    "category": "Material escolar",
+    "kind": "word"
+  },
+  {
+    "es": "cinta adhesiva",
+    "en": "sticky tape",
+    "group": "m1",
+    "category": "Material escolar",
+    "kind": "word"
+  },
+  {
+    "es": "pizarra blanca",
+    "en": "whiteboard",
+    "group": "m1",
+    "category": "Material escolar",
+    "kind": "word"
+  },
+  {
+    "es": "hacer galletas",
+    "en": "bake biscuits",
+    "group": "m1",
+    "category": "Actividades",
+    "kind": "word"
+  },
+  {
+    "es": "hacer un dibujo",
+    "en": "draw a picture",
+    "group": "m1",
+    "category": "Actividades",
+    "kind": "word"
+  },
+  {
+    "es": "hacer ejercicio",
+    "en": "exercise",
+    "group": "m1",
+    "category": "Actividades",
+    "kind": "word"
+  },
+  {
+    "es": "explorar",
+    "en": "explore",
+    "group": "m1",
+    "category": "Actividades",
+    "kind": "word"
+  },
+  {
+    "es": "ir de acampada",
+    "en": "go camping",
+    "group": "m1",
+    "category": "Actividades",
+    "kind": "word"
+  },
+  {
+    "es": "ir a patinar sobre hielo",
+    "en": "go ice skating",
+    "group": "m1",
+    "category": "Actividades",
+    "kind": "word"
+  },
+  {
+    "es": "hacer turismo",
+    "en": "go sightseeing",
+    "group": "m1",
+    "category": "Actividades",
+    "kind": "word"
+  },
+  {
+    "es": "celebrar una fiesta",
+    "en": "have a party",
+    "group": "m1",
+    "category": "Actividades",
+    "kind": "word"
+  },
+  {
+    "es": "hacer senderismo",
+    "en": "hike",
+    "group": "m1",
+    "category": "Actividades",
+    "kind": "word"
+  },
+  {
+    "es": "ver un espectáculo",
+    "en": "see a show",
+    "group": "m1",
+    "category": "Actividades",
+    "kind": "word"
+  },
+  {
+    "es": "hacer una visita guiada",
+    "en": "take a tour",
+    "group": "m1",
+    "category": "Actividades",
+    "kind": "word"
+  },
+  {
+    "es": "aburrido",
+    "en": "boring",
+    "group": "m2",
+    "category": "Adjetivos",
+    "kind": "word"
+  },
+  {
+    "es": "difícil",
+    "en": "difficult",
+    "group": "m2",
+    "category": "Adjetivos",
+    "kind": "word"
+  },
+  {
+    "es": "avergonzado",
+    "en": "embarrassed",
+    "group": "m2",
+    "category": "Adjetivos",
+    "kind": "word"
+  },
+  {
+    "es": "aterrador",
+    "en": "frightening",
+    "group": "m2",
+    "category": "Adjetivos",
+    "kind": "word"
+  },
+  {
+    "es": "enorme",
+    "en": "huge",
+    "group": "m2",
+    "category": "Adjetivos",
+    "kind": "word"
+  },
+  {
+    "es": "hambriento",
+    "en": "hungry",
+    "group": "m2",
+    "category": "Adjetivos",
+    "kind": "word"
+  },
+  {
+    "es": "interesante",
+    "en": "interesting",
+    "group": "m2",
+    "category": "Adjetivos",
+    "kind": "word"
+  },
+  {
+    "es": "pobre",
+    "en": "poor",
+    "group": "m2",
+    "category": "Adjetivos",
+    "kind": "word"
+  },
+  {
+    "es": "rico (con dinero)",
+    "en": "rich",
+    "group": "m2",
+    "category": "Adjetivos",
+    "kind": "word"
+  },
+  {
+    "es": "sediento",
+    "en": "thirsty",
+    "group": "m2",
+    "category": "Adjetivos",
+    "kind": "word"
+  },
+  {
+    "es": "diminuto",
+    "en": "tiny",
+    "group": "m2",
+    "category": "Adjetivos",
+    "kind": "word"
+  },
+  {
+    "es": "único",
+    "en": "unique",
+    "group": "m2",
+    "category": "Adjetivos",
+    "kind": "word"
+  },
+  {
+    "es": "maravilloso",
+    "en": "wonderful",
+    "group": "m2",
+    "category": "Adjetivos",
+    "kind": "word"
+  },
+  {
+    "es": "limpiador",
+    "en": "cleaner",
+    "group": "m2",
+    "category": "Profesiones",
+    "kind": "word"
+  },
+  {
+    "es": "programador informático",
+    "en": "computer programmer",
+    "group": "m2",
+    "category": "Profesiones",
+    "kind": "word"
+  },
+  {
+    "es": "conductor",
+    "en": "driver",
+    "group": "m2",
+    "category": "Profesiones",
+    "kind": "word"
+  },
+  {
+    "es": "bombero",
+    "en": "firefighter",
+    "group": "m2",
+    "category": "Profesiones",
+    "kind": "word"
+  },
+  {
+    "es": "peluquero",
+    "en": "hairdresser",
+    "group": "m2",
+    "category": "Profesiones",
+    "kind": "word"
+  },
+  {
+    "es": "técnico informático",
+    "en": "IT technician",
+    "group": "m2",
+    "category": "Profesiones",
+    "kind": "word"
+  },
+  {
+    "es": "abogado",
+    "en": "lawyer",
+    "group": "m2",
+    "category": "Profesiones",
+    "kind": "word"
+  },
+  {
+    "es": "bibliotecario",
+    "en": "librarian",
+    "group": "m2",
+    "category": "Profesiones",
+    "kind": "word"
+  },
+  {
+    "es": "mecánico",
+    "en": "mechanic",
+    "group": "m2",
+    "category": "Profesiones",
+    "kind": "word"
+  },
+  {
+    "es": "enfermero",
+    "en": "nurse",
+    "group": "m2",
+    "category": "Profesiones",
+    "kind": "word"
+  },
+  {
+    "es": "fotógrafo",
+    "en": "photographer",
+    "group": "m2",
+    "category": "Profesiones",
+    "kind": "word"
+  },
+  {
+    "es": "piloto",
+    "en": "pilot",
+    "group": "m2",
+    "category": "Profesiones",
+    "kind": "word"
+  },
+  {
+    "es": "dependiente de tienda",
+    "en": "salesperson",
+    "group": "m2",
+    "category": "Profesiones",
+    "kind": "word"
+  },
+  {
+    "es": "cantante",
+    "en": "singer",
+    "group": "m2",
+    "category": "Profesiones",
+    "kind": "word"
+  },
+  {
+    "es": "camarero",
+    "en": "waiter",
+    "group": "m2",
+    "category": "Profesiones",
+    "kind": "word"
+  },
+  {
+    "es": "competir",
+    "en": "compete",
+    "group": "m2",
+    "category": "Verbos y expresiones verbales",
+    "kind": "word"
+  },
+  {
+    "es": "disfrutar",
+    "en": "enjoy",
+    "group": "m2",
+    "category": "Verbos y expresiones verbales",
+    "kind": "word"
+  },
+  {
+    "es": "caerse",
+    "en": "fall",
+    "group": "m2",
+    "category": "Verbos y expresiones verbales",
+    "kind": "word"
+  },
+  {
+    "es": "terminar",
+    "en": "finish",
+    "group": "m2",
+    "category": "Verbos y expresiones verbales",
+    "kind": "word"
+  },
+  {
+    "es": "sujetar",
+    "en": "hold",
+    "group": "m2",
+    "category": "Verbos y expresiones verbales",
+    "kind": "word"
+  },
+  {
+    "es": "tumbarse",
+    "en": "lie down",
+    "group": "m2",
+    "category": "Verbos y expresiones verbales",
+    "kind": "word"
+  },
+  {
+    "es": "perder",
+    "en": "lose",
+    "group": "m2",
+    "category": "Verbos y expresiones verbales",
+    "kind": "word"
+  },
+  {
+    "es": "tirar de algo",
+    "en": "pull",
+    "group": "m2",
+    "category": "Verbos y expresiones verbales",
+    "kind": "word"
+  },
+  {
+    "es": "empujar",
+    "en": "push",
+    "group": "m2",
+    "category": "Verbos y expresiones verbales",
+    "kind": "word"
+  },
+  {
+    "es": "descansar",
+    "en": "rest",
+    "group": "m2",
+    "category": "Verbos y expresiones verbales",
+    "kind": "word"
+  },
+  {
+    "es": "ponerse de pie",
+    "en": "stand up",
+    "group": "m2",
+    "category": "Verbos y expresiones verbales",
+    "kind": "word"
+  },
+  {
+    "es": "entrenar",
+    "en": "train",
+    "group": "m2",
+    "category": "Verbos y expresiones verbales",
+    "kind": "word"
+  },
+  {
+    "es": "ganar",
+    "en": "win",
+    "group": "m2",
+    "category": "Verbos y expresiones verbales",
+    "kind": "word"
+  },
+  {
+    "es": "desayuno",
+    "en": "breakfast",
+    "group": "intro",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "almuerzo",
+    "en": "lunch",
+    "group": "intro",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "cena",
+    "en": "dinner",
+    "group": "intro",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "comprar",
+    "en": "buy",
+    "group": "intro",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "vender",
+    "en": "sell",
+    "group": "intro",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "leer",
+    "en": "read",
+    "group": "intro",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "escribir",
+    "en": "write",
+    "group": "intro",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "escuchar",
+    "en": "listen",
+    "group": "intro",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "hablar",
+    "en": "speak",
+    "group": "intro",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "preguntar",
+    "en": "ask",
+    "group": "intro",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "responder",
+    "en": "answer",
+    "group": "intro",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "estudiar",
+    "en": "study",
+    "group": "intro",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "aprender",
+    "en": "learn",
+    "group": "intro",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "profesor",
+    "en": "teacher",
+    "group": "intro",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "alumno",
+    "en": "student",
+    "group": "intro",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "amigo",
+    "en": "friend",
+    "group": "intro",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "padres",
+    "en": "parents",
+    "group": "intro",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "familia",
+    "en": "family",
+    "group": "intro",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "casa (hogar)",
+    "en": "home",
+    "group": "intro",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "jardín",
+    "en": "garden",
+    "group": "intro",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "calle",
+    "en": "street",
+    "group": "intro",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "ciudad",
+    "en": "city",
+    "group": "intro",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "siempre",
+    "en": "always",
+    "group": "m1",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "normalmente",
+    "en": "usually",
+    "group": "m1",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "a menudo",
+    "en": "often",
+    "group": "m1",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "a veces",
+    "en": "sometimes",
+    "group": "m1",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "nunca",
+    "en": "never",
+    "group": "m1",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "ahora mismo",
+    "en": "right now",
+    "group": "m1",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "entre semana",
+    "en": "on weekdays",
+    "group": "m1",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "los fines de semana",
+    "en": "at weekends",
+    "group": "m1",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "antes",
+    "en": "before",
+    "group": "m1",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "después",
+    "en": "after",
+    "group": "m1",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "tarea escolar",
+    "en": "homework",
+    "group": "m1",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "asignatura",
+    "en": "subject",
+    "group": "m1",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "ordenador",
+    "en": "computer",
+    "group": "m1",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "pantalla",
+    "en": "screen",
+    "group": "m1",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "teclado",
+    "en": "keyboard",
+    "group": "m1",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "limpiar",
+    "en": "clean",
+    "group": "m1",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "lavar",
+    "en": "wash",
+    "group": "m1",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "preparar",
+    "en": "prepare",
+    "group": "m1",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "organizar",
+    "en": "organise",
+    "group": "m1",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "usar",
+    "en": "use",
+    "group": "m1",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "recompensa",
+    "en": "reward",
+    "group": "m1",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "puntos (de juego)",
+    "en": "points",
+    "group": "m1",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "ayer",
+    "en": "yesterday",
+    "group": "m2",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "la semana pasada",
+    "en": "last week",
+    "group": "m2",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "el año pasado",
+    "en": "last year",
+    "group": "m2",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "hace mucho tiempo",
+    "en": "a long time ago",
+    "group": "m2",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "historia",
+    "en": "history",
+    "group": "m2",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "pasado (tiempo anterior)",
+    "en": "past",
+    "group": "m2",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "siglo",
+    "en": "century",
+    "group": "m2",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "investigación",
+    "en": "research",
+    "group": "m2",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "accidente",
+    "en": "accident",
+    "group": "m2",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "sueño (al dormir)",
+    "en": "dream",
+    "group": "m2",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "campeón",
+    "en": "champion",
+    "group": "m2",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "carrera deportiva",
+    "en": "race",
+    "group": "m2",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "medalla",
+    "en": "medal",
+    "group": "m2",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "reto",
+    "en": "challenge",
+    "group": "m2",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "ayudar",
+    "en": "help",
+    "group": "m2",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "construir",
+    "en": "build",
+    "group": "m2",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "crear",
+    "en": "create",
+    "group": "m2",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "conseguir",
+    "en": "achieve",
+    "group": "m2",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "cambiar",
+    "en": "change",
+    "group": "m2",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "nacer",
+    "en": "be born",
+    "group": "m2",
+    "category": "Vocabulario en contexto",
+    "kind": "word"
+  },
+  {
+    "es": "¿Quién sabe la respuesta?",
+    "en": "Who knows the answer?",
+    "group": "intro",
+    "category": "Frases útiles: aula",
+    "kind": "phrase"
+  },
+  {
+    "es": "No lo sé.",
+    "en": "I don't know.",
+    "group": "intro",
+    "category": "Frases útiles: aula",
+    "kind": "phrase"
+  },
+  {
+    "es": "No entiendo.",
+    "en": "I don't understand.",
+    "group": "intro",
+    "category": "Frases útiles: aula",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿Puedes repetirlo, por favor?",
+    "en": "Can you repeat that, please?",
+    "group": "intro",
+    "category": "Frases útiles: aula",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿Qué significa esta palabra?",
+    "en": "What does this word mean?",
+    "group": "intro",
+    "category": "Frases útiles: aula",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿Cómo se dice esto en inglés?",
+    "en": "How do you say this in English?",
+    "group": "intro",
+    "category": "Frases útiles: aula",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿Cómo se escribe?",
+    "en": "How do you spell it?",
+    "group": "intro",
+    "category": "Frases útiles: aula",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿Puedo hacer una pregunta?",
+    "en": "Can I ask a question?",
+    "group": "intro",
+    "category": "Frases útiles: aula",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿Puedo ir al baño?",
+    "en": "Can I go to the toilet?",
+    "group": "intro",
+    "category": "Frases útiles: aula",
+    "kind": "phrase"
+  },
+  {
+    "es": "Abre el libro, por favor.",
+    "en": "Open your book, please.",
+    "group": "intro",
+    "category": "Frases útiles: aula",
+    "kind": "phrase"
+  },
+  {
+    "es": "Cierra la puerta.",
+    "en": "Close the door.",
+    "group": "intro",
+    "category": "Frases útiles: aula",
+    "kind": "phrase"
+  },
+  {
+    "es": "Escucha con atención.",
+    "en": "Listen carefully.",
+    "group": "intro",
+    "category": "Frases útiles: aula",
+    "kind": "phrase"
+  },
+  {
+    "es": "Levanta la mano.",
+    "en": "Put your hand up.",
+    "group": "intro",
+    "category": "Frases útiles: aula",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿En qué página estamos?",
+    "en": "What page are we on?",
+    "group": "intro",
+    "category": "Frases útiles: aula",
+    "kind": "phrase"
+  },
+  {
+    "es": "Estoy listo.",
+    "en": "I'm ready.",
+    "group": "intro",
+    "category": "Frases útiles: aula",
+    "kind": "phrase"
+  },
+  {
+    "es": "No he terminado.",
+    "en": "I haven't finished.",
+    "group": "intro",
+    "category": "Frases útiles: aula",
+    "kind": "phrase"
+  },
+  {
+    "es": "Es mi turno.",
+    "en": "It's my turn.",
+    "group": "intro",
+    "category": "Frases útiles: aula",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿Es correcto?",
+    "en": "Is that correct?",
+    "group": "intro",
+    "category": "Frases útiles: aula",
+    "kind": "phrase"
+  },
+  {
+    "es": "Buena pregunta.",
+    "en": "Good question.",
+    "group": "intro",
+    "category": "Frases útiles: aula",
+    "kind": "phrase"
+  },
+  {
+    "es": "Vamos a empezar.",
+    "en": "Let's start.",
+    "group": "intro",
+    "category": "Frases útiles: aula",
+    "kind": "phrase"
+  },
+  {
+    "es": "Tengo un perro.",
+    "en": "I have got a dog.",
+    "group": "intro",
+    "category": "Frases útiles: posesión y presente",
+    "kind": "phrase"
+  },
+  {
+    "es": "Tengo un hermano.",
+    "en": "I have got a brother.",
+    "group": "intro",
+    "category": "Frases útiles: posesión y presente",
+    "kind": "phrase"
+  },
+  {
+    "es": "No tengo una bicicleta.",
+    "en": "I haven't got a bike.",
+    "group": "intro",
+    "category": "Frases útiles: posesión y presente",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿Tienes un lápiz?",
+    "en": "Have you got a pencil?",
+    "group": "intro",
+    "category": "Frases útiles: posesión y presente",
+    "kind": "phrase"
+  },
+  {
+    "es": "Ella tiene dos hermanas.",
+    "en": "She has got two sisters.",
+    "group": "intro",
+    "category": "Frases útiles: posesión y presente",
+    "kind": "phrase"
+  },
+  {
+    "es": "Él no tiene un móvil.",
+    "en": "He hasn't got a mobile phone.",
+    "group": "intro",
+    "category": "Frases útiles: posesión y presente",
+    "kind": "phrase"
+  },
+  {
+    "es": "Este es mi libro.",
+    "en": "This is my book.",
+    "group": "intro",
+    "category": "Frases útiles: posesión y presente",
+    "kind": "phrase"
+  },
+  {
+    "es": "Ese bolígrafo es mío.",
+    "en": "That pen is mine.",
+    "group": "intro",
+    "category": "Frases útiles: posesión y presente",
+    "kind": "phrase"
+  },
+  {
+    "es": "Es la mochila de Ana.",
+    "en": "It's Ana's schoolbag.",
+    "group": "intro",
+    "category": "Frases útiles: posesión y presente",
+    "kind": "phrase"
+  },
+  {
+    "es": "Somos estudiantes.",
+    "en": "We are students.",
+    "group": "intro",
+    "category": "Frases útiles: posesión y presente",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿Eres de España?",
+    "en": "Are you from Spain?",
+    "group": "intro",
+    "category": "Frases útiles: posesión y presente",
+    "kind": "phrase"
+  },
+  {
+    "es": "No estoy cansado.",
+    "en": "I'm not tired.",
+    "group": "intro",
+    "category": "Frases útiles: posesión y presente",
+    "kind": "phrase"
+  },
+  {
+    "es": "Hay un gato en el jardín.",
+    "en": "There is a cat in the garden.",
+    "group": "intro",
+    "category": "Frases útiles: posesión y presente",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿Dónde está el hospital?",
+    "en": "Where is the hospital?",
+    "group": "intro",
+    "category": "Frases útiles: posesión y presente",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿Dónde vives?",
+    "en": "Where do you live?",
+    "group": "intro",
+    "category": "Frases útiles: posesión y presente",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿Cuántos años tienes?",
+    "en": "How old are you?",
+    "group": "intro",
+    "category": "Frases útiles: posesión y presente",
+    "kind": "phrase"
+  },
+  {
+    "es": "Hace frío hoy.",
+    "en": "It's cold today.",
+    "group": "intro",
+    "category": "Frases útiles: posesión y presente",
+    "kind": "phrase"
+  },
+  {
+    "es": "Está lloviendo.",
+    "en": "It's raining.",
+    "group": "intro",
+    "category": "Frases útiles: posesión y presente",
+    "kind": "phrase"
+  },
+  {
+    "es": "Tengo hambre.",
+    "en": "I'm hungry.",
+    "group": "intro",
+    "category": "Frases útiles: posesión y presente",
+    "kind": "phrase"
+  },
+  {
+    "es": "Tengo sed.",
+    "en": "I'm thirsty.",
+    "group": "intro",
+    "category": "Frases útiles: posesión y presente",
+    "kind": "phrase"
+  },
+  {
+    "es": "Hago los deberes después del colegio.",
+    "en": "I do my homework after school.",
+    "group": "m1",
+    "category": "Frases: casa, colegio y rutinas",
+    "kind": "phrase"
+  },
+  {
+    "es": "Me levanto a las siete.",
+    "en": "I get up at seven.",
+    "group": "m1",
+    "category": "Frases: casa, colegio y rutinas",
+    "kind": "phrase"
+  },
+  {
+    "es": "Desayuno todos los días.",
+    "en": "I have breakfast every day.",
+    "group": "m1",
+    "category": "Frases: casa, colegio y rutinas",
+    "kind": "phrase"
+  },
+  {
+    "es": "Voy al colegio en autobús.",
+    "en": "I go to school by bus.",
+    "group": "m1",
+    "category": "Frases: casa, colegio y rutinas",
+    "kind": "phrase"
+  },
+  {
+    "es": "Me acuesto a las diez.",
+    "en": "I go to bed at ten.",
+    "group": "m1",
+    "category": "Frases: casa, colegio y rutinas",
+    "kind": "phrase"
+  },
+  {
+    "es": "Mi hermano juega al fútbol.",
+    "en": "My brother plays football.",
+    "group": "m1",
+    "category": "Frases: casa, colegio y rutinas",
+    "kind": "phrase"
+  },
+  {
+    "es": "No veo la televisión por la mañana.",
+    "en": "I don't watch TV in the morning.",
+    "group": "m1",
+    "category": "Frases: casa, colegio y rutinas",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿Te gusta la música?",
+    "en": "Do you like music?",
+    "group": "m1",
+    "category": "Frases: casa, colegio y rutinas",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿A qué hora empieza la clase?",
+    "en": "What time does the lesson start?",
+    "group": "m1",
+    "category": "Frases: casa, colegio y rutinas",
+    "kind": "phrase"
+  },
+  {
+    "es": "Normalmente estudio por la tarde.",
+    "en": "I usually study in the afternoon.",
+    "group": "m1",
+    "category": "Frases: casa, colegio y rutinas",
+    "kind": "phrase"
+  },
+  {
+    "es": "Nunca llego tarde.",
+    "en": "I'm never late.",
+    "group": "m1",
+    "category": "Frases: casa, colegio y rutinas",
+    "kind": "phrase"
+  },
+  {
+    "es": "A veces juego con mis amigos.",
+    "en": "I sometimes play with my friends.",
+    "group": "m1",
+    "category": "Frases: casa, colegio y rutinas",
+    "kind": "phrase"
+  },
+  {
+    "es": "Siempre me lavo las manos.",
+    "en": "I always wash my hands.",
+    "group": "m1",
+    "category": "Frases: casa, colegio y rutinas",
+    "kind": "phrase"
+  },
+  {
+    "es": "Mi madre está cocinando.",
+    "en": "My mum is cooking.",
+    "group": "m1",
+    "category": "Frases: casa, colegio y rutinas",
+    "kind": "phrase"
+  },
+  {
+    "es": "Estoy leyendo un libro.",
+    "en": "I'm reading a book.",
+    "group": "m1",
+    "category": "Frases: casa, colegio y rutinas",
+    "kind": "phrase"
+  },
+  {
+    "es": "Ahora mismo están jugando.",
+    "en": "They are playing right now.",
+    "group": "m1",
+    "category": "Frases: casa, colegio y rutinas",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿Qué estás haciendo?",
+    "en": "What are you doing?",
+    "group": "m1",
+    "category": "Frases: casa, colegio y rutinas",
+    "kind": "phrase"
+  },
+  {
+    "es": "No estoy escuchando música.",
+    "en": "I'm not listening to music.",
+    "group": "m1",
+    "category": "Frases: casa, colegio y rutinas",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿Está durmiendo tu hermano?",
+    "en": "Is your brother sleeping?",
+    "group": "m1",
+    "category": "Frases: casa, colegio y rutinas",
+    "kind": "phrase"
+  },
+  {
+    "es": "Hoy no vamos al colegio.",
+    "en": "We aren't going to school today.",
+    "group": "m1",
+    "category": "Frases: casa, colegio y rutinas",
+    "kind": "phrase"
+  },
+  {
+    "es": "Hay una lámpara en mi habitación.",
+    "en": "There is a lamp in my bedroom.",
+    "group": "m1",
+    "category": "Frases: objetos, cantidades y actividades",
+    "kind": "phrase"
+  },
+  {
+    "es": "Hay tres sillas en la cocina.",
+    "en": "There are three chairs in the kitchen.",
+    "group": "m1",
+    "category": "Frases: objetos, cantidades y actividades",
+    "kind": "phrase"
+  },
+  {
+    "es": "No hay leche en la nevera.",
+    "en": "There isn't any milk in the fridge.",
+    "group": "m1",
+    "category": "Frases: objetos, cantidades y actividades",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿Hay alguna toalla limpia?",
+    "en": "Are there any clean towels?",
+    "group": "m1",
+    "category": "Frases: objetos, cantidades y actividades",
+    "kind": "phrase"
+  },
+  {
+    "es": "No hay muchas personas aquí.",
+    "en": "There aren't many people here.",
+    "group": "m1",
+    "category": "Frases: objetos, cantidades y actividades",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿Cuánta agua necesitas?",
+    "en": "How much water do you need?",
+    "group": "m1",
+    "category": "Frases: objetos, cantidades y actividades",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿Cuántos libros tienes?",
+    "en": "How many books have you got?",
+    "group": "m1",
+    "category": "Frases: objetos, cantidades y actividades",
+    "kind": "phrase"
+  },
+  {
+    "es": "Tengo algunos lápices.",
+    "en": "I've got some pencils.",
+    "group": "m1",
+    "category": "Frases: objetos, cantidades y actividades",
+    "kind": "phrase"
+  },
+  {
+    "es": "No tenemos mucho tiempo.",
+    "en": "We haven't got much time.",
+    "group": "m1",
+    "category": "Frases: objetos, cantidades y actividades",
+    "kind": "phrase"
+  },
+  {
+    "es": "Hay muchas manzanas en la mesa.",
+    "en": "There are a lot of apples on the table.",
+    "group": "m1",
+    "category": "Frases: objetos, cantidades y actividades",
+    "kind": "phrase"
+  },
+  {
+    "es": "Enciende el ventilador, por favor.",
+    "en": "Turn on the fan, please.",
+    "group": "m1",
+    "category": "Frases: objetos, cantidades y actividades",
+    "kind": "phrase"
+  },
+  {
+    "es": "Apaga la luz.",
+    "en": "Turn off the light.",
+    "group": "m1",
+    "category": "Frases: objetos, cantidades y actividades",
+    "kind": "phrase"
+  },
+  {
+    "es": "Necesito cargar el móvil.",
+    "en": "I need to charge my phone.",
+    "group": "m1",
+    "category": "Frases: objetos, cantidades y actividades",
+    "kind": "phrase"
+  },
+  {
+    "es": "Ella está utilizando el ordenador.",
+    "en": "She's using the computer.",
+    "group": "m1",
+    "category": "Frases: objetos, cantidades y actividades",
+    "kind": "phrase"
+  },
+  {
+    "es": "Me gusta hacer senderismo.",
+    "en": "I like hiking.",
+    "group": "m1",
+    "category": "Frases: objetos, cantidades y actividades",
+    "kind": "phrase"
+  },
+  {
+    "es": "Vamos a ir de acampada.",
+    "en": "We're going camping.",
+    "group": "m1",
+    "category": "Frases: objetos, cantidades y actividades",
+    "kind": "phrase"
+  },
+  {
+    "es": "Quiero hacer una visita guiada.",
+    "en": "I want to take a tour.",
+    "group": "m1",
+    "category": "Frases: objetos, cantidades y actividades",
+    "kind": "phrase"
+  },
+  {
+    "es": "Vamos a hacer galletas.",
+    "en": "Let's bake some biscuits.",
+    "group": "m1",
+    "category": "Frases: objetos, cantidades y actividades",
+    "kind": "phrase"
+  },
+  {
+    "es": "Prefiero quedarme en casa.",
+    "en": "I prefer staying at home.",
+    "group": "m1",
+    "category": "Frases: objetos, cantidades y actividades",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿Te gusta patinar sobre hielo?",
+    "en": "Do you like ice skating?",
+    "group": "m1",
+    "category": "Frases: objetos, cantidades y actividades",
+    "kind": "phrase"
+  },
+  {
+    "es": "Ayer fui al cine.",
+    "en": "I went to the cinema yesterday.",
+    "group": "m2",
+    "category": "Frases: pasado simple",
+    "kind": "phrase"
+  },
+  {
+    "es": "Vi una película anoche.",
+    "en": "I watched a film last night.",
+    "group": "m2",
+    "category": "Frases: pasado simple",
+    "kind": "phrase"
+  },
+  {
+    "es": "El sábado pasado jugamos al fútbol.",
+    "en": "We played football last Saturday.",
+    "group": "m2",
+    "category": "Frases: pasado simple",
+    "kind": "phrase"
+  },
+  {
+    "es": "No estudié ayer.",
+    "en": "I didn't study yesterday.",
+    "group": "m2",
+    "category": "Frases: pasado simple",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿Terminaste los deberes?",
+    "en": "Did you finish your homework?",
+    "group": "m2",
+    "category": "Frases: pasado simple",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿Dónde estuviste ayer?",
+    "en": "Where were you yesterday?",
+    "group": "m2",
+    "category": "Frases: pasado simple",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿Cuándo empezó la película?",
+    "en": "When did the film start?",
+    "group": "m2",
+    "category": "Frases: pasado simple",
+    "kind": "phrase"
+  },
+  {
+    "es": "Comí un bocadillo.",
+    "en": "I ate a sandwich.",
+    "group": "m2",
+    "category": "Frases: pasado simple",
+    "kind": "phrase"
+  },
+  {
+    "es": "Ella compró un libro.",
+    "en": "She bought a book.",
+    "group": "m2",
+    "category": "Frases: pasado simple",
+    "kind": "phrase"
+  },
+  {
+    "es": "Él perdió sus llaves.",
+    "en": "He lost his keys.",
+    "group": "m2",
+    "category": "Frases: pasado simple",
+    "kind": "phrase"
+  },
+  {
+    "es": "Ganamos el partido.",
+    "en": "We won the match.",
+    "group": "m2",
+    "category": "Frases: pasado simple",
+    "kind": "phrase"
+  },
+  {
+    "es": "Ella no vino al colegio.",
+    "en": "She didn't come to school.",
+    "group": "m2",
+    "category": "Frases: pasado simple",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿Viste a tus amigos?",
+    "en": "Did you see your friends?",
+    "group": "m2",
+    "category": "Frases: pasado simple",
+    "kind": "phrase"
+  },
+  {
+    "es": "Mi padre trabajó ayer.",
+    "en": "My dad worked yesterday.",
+    "group": "m2",
+    "category": "Frases: pasado simple",
+    "kind": "phrase"
+  },
+  {
+    "es": "Nací en España.",
+    "en": "I was born in Spain.",
+    "group": "m2",
+    "category": "Frases: pasado simple",
+    "kind": "phrase"
+  },
+  {
+    "es": "Éramos muy pequeños.",
+    "en": "We were very young.",
+    "group": "m2",
+    "category": "Frases: pasado simple",
+    "kind": "phrase"
+  },
+  {
+    "es": "Ayer no hizo frío.",
+    "en": "It wasn't cold yesterday.",
+    "group": "m2",
+    "category": "Frases: pasado simple",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿Estaban en casa?",
+    "en": "Were they at home?",
+    "group": "m2",
+    "category": "Frases: pasado simple",
+    "kind": "phrase"
+  },
+  {
+    "es": "Había una escuela aquí.",
+    "en": "There was a school here.",
+    "group": "m2",
+    "category": "Frases: pasado simple",
+    "kind": "phrase"
+  },
+  {
+    "es": "No había ordenadores.",
+    "en": "There weren't any computers.",
+    "group": "m2",
+    "category": "Frases: pasado simple",
+    "kind": "phrase"
+  },
+  {
+    "es": "Antes iba en bicicleta al colegio.",
+    "en": "I used to cycle to school.",
+    "group": "m2",
+    "category": "Frases: hábitos y experiencias",
+    "kind": "phrase"
+  },
+  {
+    "es": "Antes no me gustaban las verduras.",
+    "en": "I didn't use to like vegetables.",
+    "group": "m2",
+    "category": "Frases: hábitos y experiencias",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿Antes jugabas al tenis?",
+    "en": "Did you use to play tennis?",
+    "group": "m2",
+    "category": "Frases: hábitos y experiencias",
+    "kind": "phrase"
+  },
+  {
+    "es": "Mi abuelo solía trabajar de noche.",
+    "en": "My grandfather used to work at night.",
+    "group": "m2",
+    "category": "Frases: hábitos y experiencias",
+    "kind": "phrase"
+  },
+  {
+    "es": "La gente escribía cartas antes.",
+    "en": "People used to write letters.",
+    "group": "m2",
+    "category": "Frases: hábitos y experiencias",
+    "kind": "phrase"
+  },
+  {
+    "es": "Antes no había internet aquí.",
+    "en": "There didn't use to be internet here.",
+    "group": "m2",
+    "category": "Frases: hábitos y experiencias",
+    "kind": "phrase"
+  },
+  {
+    "es": "Quiero ganar la carrera.",
+    "en": "I want to win the race.",
+    "group": "m2",
+    "category": "Frases: hábitos y experiencias",
+    "kind": "phrase"
+  },
+  {
+    "es": "Necesitamos entrenar más.",
+    "en": "We need to train more.",
+    "group": "m2",
+    "category": "Frases: hábitos y experiencias",
+    "kind": "phrase"
+  },
+  {
+    "es": "No te rindas.",
+    "en": "Don't give up.",
+    "group": "m2",
+    "category": "Frases: hábitos y experiencias",
+    "kind": "phrase"
+  },
+  {
+    "es": "Tienes que levantarte.",
+    "en": "You have to stand up.",
+    "group": "m2",
+    "category": "Frases: hábitos y experiencias",
+    "kind": "phrase"
+  },
+  {
+    "es": "Por favor, siéntate.",
+    "en": "Please sit down.",
+    "group": "m2",
+    "category": "Frases: hábitos y experiencias",
+    "kind": "phrase"
+  },
+  {
+    "es": "Descansa después de correr.",
+    "en": "Rest after running.",
+    "group": "m2",
+    "category": "Frases: hábitos y experiencias",
+    "kind": "phrase"
+  },
+  {
+    "es": "Sujeta mi mano.",
+    "en": "Hold my hand.",
+    "group": "m2",
+    "category": "Frases: hábitos y experiencias",
+    "kind": "phrase"
+  },
+  {
+    "es": "Empuja la puerta.",
+    "en": "Push the door.",
+    "group": "m2",
+    "category": "Frases: hábitos y experiencias",
+    "kind": "phrase"
+  },
+  {
+    "es": "Tira de la puerta.",
+    "en": "Pull the door.",
+    "group": "m2",
+    "category": "Frases: hábitos y experiencias",
+    "kind": "phrase"
+  },
+  {
+    "es": "Ella es una gran cantante.",
+    "en": "She is a great singer.",
+    "group": "m2",
+    "category": "Frases: hábitos y experiencias",
+    "kind": "phrase"
+  },
+  {
+    "es": "Mi tía es enfermera.",
+    "en": "My aunt is a nurse.",
+    "group": "m2",
+    "category": "Frases: hábitos y experiencias",
+    "kind": "phrase"
+  },
+  {
+    "es": "Un mecánico repara coches.",
+    "en": "A mechanic repairs cars.",
+    "group": "m2",
+    "category": "Frases: hábitos y experiencias",
+    "kind": "phrase"
+  },
+  {
+    "es": "Me gustaría ser piloto.",
+    "en": "I would like to be a pilot.",
+    "group": "m2",
+    "category": "Frases: hábitos y experiencias",
+    "kind": "phrase"
+  },
+  {
+    "es": "Fue un día maravilloso.",
+    "en": "It was a wonderful day.",
+    "group": "m2",
+    "category": "Frases: hábitos y experiencias",
+    "kind": "phrase"
+  },
+  {
+    "es": "Buenos días.",
+    "en": "Good morning.",
+    "group": "extra",
+    "category": "Frases frecuentes: conversación",
+    "kind": "phrase"
+  },
+  {
+    "es": "Buenas tardes.",
+    "en": "Good afternoon.",
+    "group": "extra",
+    "category": "Frases frecuentes: conversación",
+    "kind": "phrase"
+  },
+  {
+    "es": "Buenas noches (al despedirse).",
+    "en": "Good night.",
+    "group": "extra",
+    "category": "Frases frecuentes: conversación",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿Qué tal estás?",
+    "en": "How are you?",
+    "group": "extra",
+    "category": "Frases frecuentes: conversación",
+    "kind": "phrase"
+  },
+  {
+    "es": "Estoy bien, gracias.",
+    "en": "I'm fine, thanks.",
+    "group": "extra",
+    "category": "Frases frecuentes: conversación",
+    "kind": "phrase"
+  },
+  {
+    "es": "Encantado de conocerte.",
+    "en": "Nice to meet you.",
+    "group": "extra",
+    "category": "Frases frecuentes: conversación",
+    "kind": "phrase"
+  },
+  {
+    "es": "Hasta mañana.",
+    "en": "See you tomorrow.",
+    "group": "extra",
+    "category": "Frases frecuentes: conversación",
+    "kind": "phrase"
+  },
+  {
+    "es": "Nos vemos luego.",
+    "en": "See you later.",
+    "group": "extra",
+    "category": "Frases frecuentes: conversación",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿Puedes ayudarme?",
+    "en": "Can you help me?",
+    "group": "extra",
+    "category": "Frases frecuentes: conversación",
+    "kind": "phrase"
+  },
+  {
+    "es": "Por supuesto.",
+    "en": "Of course.",
+    "group": "extra",
+    "category": "Frases frecuentes: conversación",
+    "kind": "phrase"
+  },
+  {
+    "es": "No hay problema.",
+    "en": "No problem.",
+    "group": "extra",
+    "category": "Frases frecuentes: conversación",
+    "kind": "phrase"
+  },
+  {
+    "es": "Un momento, por favor.",
+    "en": "Just a moment, please.",
+    "group": "extra",
+    "category": "Frases frecuentes: conversación",
+    "kind": "phrase"
+  },
+  {
+    "es": "Lo siento.",
+    "en": "I'm sorry.",
+    "group": "extra",
+    "category": "Frases frecuentes: conversación",
+    "kind": "phrase"
+  },
+  {
+    "es": "No importa.",
+    "en": "It doesn't matter.",
+    "group": "extra",
+    "category": "Frases frecuentes: conversación",
+    "kind": "phrase"
+  },
+  {
+    "es": "Muchas gracias.",
+    "en": "Thank you very much.",
+    "group": "extra",
+    "category": "Frases frecuentes: conversación",
+    "kind": "phrase"
+  },
+  {
+    "es": "De nada.",
+    "en": "You're welcome.",
+    "group": "extra",
+    "category": "Frases frecuentes: conversación",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿Qué hora es?",
+    "en": "What time is it?",
+    "group": "extra",
+    "category": "Frases frecuentes: conversación",
+    "kind": "phrase"
+  },
+  {
+    "es": "No tengo ni idea.",
+    "en": "I have no idea.",
+    "group": "extra",
+    "category": "Frases frecuentes: conversación",
+    "kind": "phrase"
+  },
+  {
+    "es": "Creo que sí.",
+    "en": "I think so.",
+    "group": "extra",
+    "category": "Frases frecuentes: conversación",
+    "kind": "phrase"
+  },
+  {
+    "es": "Creo que no.",
+    "en": "I don't think so.",
+    "group": "extra",
+    "category": "Frases frecuentes: conversación",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿Cuánto cuesta?",
+    "en": "How much is it?",
+    "group": "extra",
+    "category": "Frases frecuentes: vida diaria",
+    "kind": "phrase"
+  },
+  {
+    "es": "Quiero agua, por favor.",
+    "en": "I'd like some water, please.",
+    "group": "extra",
+    "category": "Frases frecuentes: vida diaria",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿Dónde está la estación?",
+    "en": "Where is the station?",
+    "group": "extra",
+    "category": "Frases frecuentes: vida diaria",
+    "kind": "phrase"
+  },
+  {
+    "es": "Estoy buscando a mi amigo.",
+    "en": "I'm looking for my friend.",
+    "group": "extra",
+    "category": "Frases frecuentes: vida diaria",
+    "kind": "phrase"
+  },
+  {
+    "es": "Date prisa.",
+    "en": "Hurry up.",
+    "group": "extra",
+    "category": "Frases frecuentes: vida diaria",
+    "kind": "phrase"
+  },
+  {
+    "es": "Ten cuidado.",
+    "en": "Be careful.",
+    "group": "extra",
+    "category": "Frases frecuentes: vida diaria",
+    "kind": "phrase"
+  },
+  {
+    "es": "¡Buena suerte!",
+    "en": "Good luck!",
+    "group": "extra",
+    "category": "Frases frecuentes: vida diaria",
+    "kind": "phrase"
+  },
+  {
+    "es": "¡Feliz cumpleaños!",
+    "en": "Happy birthday!",
+    "group": "extra",
+    "category": "Frases frecuentes: vida diaria",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿Quieres venir conmigo?",
+    "en": "Do you want to come with me?",
+    "group": "extra",
+    "category": "Frases frecuentes: vida diaria",
+    "kind": "phrase"
+  },
+  {
+    "es": "¿Qué pasa?",
+    "en": "What's happening?",
+    "group": "extra",
+    "category": "Frases frecuentes: vida diaria",
+    "kind": "phrase"
+  },
+  {
+    "es": "Espera un minuto.",
+    "en": "Wait a minute.",
+    "group": "extra",
+    "category": "Frases frecuentes: vida diaria",
+    "kind": "phrase"
+  },
+  {
+    "es": "No te preocupes.",
+    "en": "Don't worry.",
+    "group": "extra",
+    "category": "Frases frecuentes: vida diaria",
+    "kind": "phrase"
+  },
+  {
+    "es": "Tengo que irme.",
+    "en": "I have to go.",
+    "group": "extra",
+    "category": "Frases frecuentes: vida diaria",
+    "kind": "phrase"
+  },
+  {
+    "es": "Estoy de acuerdo.",
+    "en": "I agree.",
+    "group": "extra",
+    "category": "Frases frecuentes: vida diaria",
+    "kind": "phrase"
+  },
+  {
+    "es": "No estoy de acuerdo.",
+    "en": "I disagree.",
+    "group": "extra",
+    "category": "Frases frecuentes: vida diaria",
+    "kind": "phrase"
+  },
+  {
+    "es": "Depende.",
+    "en": "It depends.",
+    "group": "extra",
+    "category": "Frases frecuentes: vida diaria",
+    "kind": "phrase"
+  },
+  {
+    "es": "Me da igual.",
+    "en": "I don't mind.",
+    "group": "extra",
+    "category": "Frases frecuentes: vida diaria",
+    "kind": "phrase"
+  },
+  {
+    "es": "No pasa nada.",
+    "en": "It's all right.",
+    "group": "extra",
+    "category": "Frases frecuentes: vida diaria",
+    "kind": "phrase"
+  },
+  {
+    "es": "Estoy de camino.",
+    "en": "I'm on my way.",
+    "group": "extra",
+    "category": "Frases frecuentes: vida diaria",
+    "kind": "phrase"
+  },
+  {
+    "es": "Nos vemos pronto.",
+    "en": "See you soon.",
+    "group": "extra",
+    "category": "Frases frecuentes: vida diaria",
+    "kind": "phrase"
+  }
 ];
+const GROUP_NAMES = {intro:'Introduction',m1:'Module 1',m2:'Module 2',extra:'Frases adicionales'};
 
 // =====================================
-// STATE
+// ESTADO
 // =====================================
-
 let currentQuestions = [];
 let currentIndex = 0;
 let correctAnswers = 0;
 let wrongAnswers = 0;
 let mistakes = [];
 let reviewMode = false;
+let correctAnswerLocked = false;
+let activePool = vocabulary;
+const byId = id => document.getElementById(id);
+const refs = {
+  questionText: byId('question-text'), questionTag: byId('question-tag'),
+  optionsContainer: byId('options-container'), nextBtn: byId('next-btn'),
+  correctCount: byId('correct-count'), wrongCount: byId('wrong-count'),
+  questionNumber: byId('question-number'), questionTotal: byId('question-total'),
+  progressBar: byId('progress-bar'), quizScreen: byId('quiz-screen'),
+  resultScreen: byId('result-screen'), resultTitle: byId('result-title'),
+  finalScore: byId('final-score'), finalPercentage: byId('final-percentage'),
+  mistakesSection: byId('mistakes-section'), mistakesList: byId('mistakes-list'),
+  reviewBtn: byId('review-btn'), restartBtn: byId('restart-btn'),
+  modeBadge: byId('mode-badge'), moduleFilter: byId('module-filter'),
+  typeFilter: byId('type-filter'), newTestBtn: byId('new-test-btn'),
+  bankInfo: byId('bank-info'), feedback: byId('feedback'),
+  resultMessage: byId('result-message')
+};
 
-// =====================================
-// DOM
-// =====================================
-
-const questionText = document.getElementById("question-text");
-const optionsContainer = document.getElementById("options-container");
-const nextBtn = document.getElementById("next-btn");
-
-const correctCount = document.getElementById("correct-count");
-const wrongCount = document.getElementById("wrong-count");
-
-const questionNumber = document.getElementById("question-number");
-const questionTotal = document.getElementById("question-total");
-
-const progressBar = document.getElementById("progress-bar");
-
-const quizScreen = document.getElementById("quiz-screen");
-const resultScreen = document.getElementById("result-screen");
-
-const resultTitle = document.getElementById("result-title");
-const finalScore = document.getElementById("final-score");
-const finalPercentage = document.getElementById("final-percentage");
-
-const mistakesSection = document.getElementById("mistakes-section");
-const mistakesList = document.getElementById("mistakes-list");
-
-const reviewBtn = document.getElementById("review-btn");
-const restartBtn = document.getElementById("restart-btn");
-
-const modeBadge = document.getElementById("mode-badge");
-
-// =====================================
-// UTILITIES
-// =====================================
-
-function shuffle(array){
-
-  const arr = [...array];
-
-  for(let i = arr.length - 1; i > 0; i--){
-
+function shuffle(values) {
+  const result = [...values];
+  for (let i = result.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+    [result[i], result[j]] = [result[j], result[i]];
   }
-
-  return arr;
+  return result;
 }
 
-function getRandomDirection(){
-
-  return Math.random() < 0.5
-    ? "ES_EN"
-    : "EN_ES";
-}
-
-function getWrongOptions(correctItem, direction){
-
-  const field =
-    direction === "ES_EN"
-      ? "en"
-      : "es";
-
-  const pool = vocabulary.filter(v =>
-    v[field] !== correctItem[field]
+function getPool() {
+  const group = refs.moduleFilter.value;
+  const kind = refs.typeFilter.value;
+  return vocabulary.filter(v =>
+    (group === 'all' || v.group === group) &&
+    (kind === 'all' || v.kind === kind)
   );
-
-  return shuffle(
-    [...new Set(pool.map(v => v[field]))]
-  ).slice(0,5);
 }
 
-// =====================================
-// BUILD TESTS
-// =====================================
-
-function buildMainTest(){
-
-  const selected =
-    shuffle(vocabulary)
-      .slice(0, MAIN_TEST_QUESTIONS);
-
-  currentQuestions =
-    selected.map(item => ({
-      item,
-      direction:getRandomDirection()
-    }));
-
-  reviewMode = false;
+function updatePoolCount() {
+  const pool = getPool();
+  const words = pool.filter(v => v.kind === 'word').length;
+  const phrases = pool.length - words;
+  refs.bankInfo.textContent = `Banco seleccionado: ${pool.length} entradas (${words} palabras y ${phrases} frases). Cada test muestra 40 preguntas aleatorias. Mínimo para aprobar: ${PASS_PERCENTAGE}%.`;
 }
 
-function buildReviewTest(){
-
-  currentQuestions =
-    shuffle(mistakes).map(item => ({
-      item,
-      direction:getRandomDirection()
-    }));
-
-  reviewMode = true;
+function makeMainTest() {
+  activePool = getPool();
+  if (!activePool.length) {
+    refs.bankInfo.textContent = 'Esta combinación de filtros no tiene preguntas. Selecciona otro contenido.';
+    return false;
+  }
+  // En temarios pequeños, una entrada puede salir una vez por cada dirección,
+  // pero nunca se repite exactamente la misma pregunta dentro del test.
+  const words = shuffle(activePool.filter(v => v.kind === 'word'));
+  const phrases = shuffle(activePool.filter(v => v.kind === 'phrase'));
+  // En el test mixto, predominan las palabras: 30 de vocabulario y 10 frases.
+  // Si faltan entradas en un tipo, se completa con el otro.
+  let chosen = [];
+  if (words.length && phrases.length) {
+    chosen = [
+      ...words.slice(0, 30),
+      ...phrases.slice(0, 10)
+    ];
+    const used = new Set(chosen);
+    chosen.push(...shuffle(activePool.filter(v => !used.has(v))).slice(0, MAIN_TEST_QUESTIONS - chosen.length));
+  } else {
+    chosen = shuffle(activePool).slice(0, MAIN_TEST_QUESTIONS);
+  }
+  const first = shuffle(chosen).map(item => ({item, direction: Math.random() < .5 ? 'ES_EN' : 'EN_ES'}));
+  const second = shuffle(first).map(q => ({item:q.item, direction:q.direction === 'ES_EN' ? 'EN_ES' : 'ES_EN'}));
+  currentQuestions = [...first, ...second].slice(0, MAIN_TEST_QUESTIONS);
+  return true;
 }
 
-// =====================================
-// QUIZ FLOW
-// =====================================
+function makeReviewTest() {
+  const retry = shuffle(mistakes);
+  if (!retry.length) return false;
+  currentQuestions = retry.map(item => ({item, direction:Math.random() < .5 ? 'ES_EN' : 'EN_ES'}));
+  activePool = vocabulary;
+  return true;
+}
 
-function startMainTest(){
-
+function resetTestState() {
   currentIndex = 0;
   correctAnswers = 0;
   wrongAnswers = 0;
+  correctAnswerLocked = false;
   mistakes = [];
+  refs.quizScreen.classList.remove('hidden');
+  refs.resultScreen.classList.add('hidden');
+}
 
-  buildMainTest();
+function startMainTest() {
+  if (!makeMainTest()) return;
+  reviewMode = false;
+  resetTestState();
+  refs.questionTotal.textContent = currentQuestions.length;
+  renderQuestion();
+  updatePoolCount();
+}
 
-  questionTotal.textContent =
-    MAIN_TEST_QUESTIONS;
-
-  showQuizScreen();
-
+function startReviewTest() {
+  const previousMistakes = [...mistakes];
+  if (!previousMistakes.length) return;
+  reviewMode = true;
+  // Se generan las preguntas antes de limpiar los errores del intento anterior.
+  makeReviewTest();
+  resetTestState();
+  refs.questionTotal.textContent = currentQuestions.length;
   renderQuestion();
 }
 
-function startReviewMode(){
-
-  currentIndex = 0;
-  correctAnswers = 0;
-  wrongAnswers = 0;
-
-  buildReviewTest();
-
-  questionTotal.textContent =
-    currentQuestions.length;
-
-  showQuizScreen();
-
-  renderQuestion();
+function getDistractors(item, direction) {
+  const field = direction === 'ES_EN' ? 'en' : 'es';
+  const correct = item[field];
+  const seen = new Set([correct.toLocaleLowerCase('es')]);
+  const selected = [];
+  const all = shuffle(vocabulary);
+  // Prioriza respuestas plausibles del mismo ámbito y tipo de pregunta.
+  const tiers = [
+    v => v.kind === item.kind && v.category === item.category && v.group === item.group,
+    v => v.kind === item.kind && v.group === item.group,
+    v => v.kind === item.kind,
+    v => true
+  ];
+  for (const condition of tiers) {
+    for (const candidate of all) {
+      if (selected.length >= 5) break;
+      if (!condition(candidate)) continue;
+      const value = candidate[field];
+      const key = value.toLocaleLowerCase('es');
+      if (seen.has(key)) continue;
+      selected.push({value, item:candidate});
+      seen.add(key);
+    }
+    if (selected.length === 5) break;
+  }
+  return selected;
 }
 
-function renderQuestion(){
-
-  nextBtn.classList.add("hidden");
-
+function renderQuestion() {
+  if (currentIndex >= currentQuestions.length) return showResults();
+  refs.nextBtn.classList.add('hidden');
+  refs.feedback.className = 'feedback hidden';
+  refs.feedback.textContent = '';
+  correctAnswerLocked = false;
   updateStats();
 
-  const current =
-    currentQuestions[currentIndex];
+  const {item, direction} = currentQuestions[currentIndex];
+  const sourceLanguage = direction === 'ES_EN' ? item.es : item.en;
+  const correct = direction === 'ES_EN' ? item.en : item.es;
+  refs.questionText.textContent = direction === 'ES_EN'
+    ? `¿Cómo se dice en inglés «${sourceLanguage}»?`
+    : `¿Qué significa «${sourceLanguage}»?`;
+  refs.questionTag.textContent = `${GROUP_NAMES[item.group]} · ${item.category} · ${item.kind === 'word' ? 'Vocabulario' : 'Frase'} · ${direction === 'ES_EN' ? 'Español → Inglés' : 'Inglés → Español'}`;
+  refs.questionNumber.textContent = currentIndex + 1;
+  refs.progressBar.style.width = `${Math.round(100 * currentIndex / currentQuestions.length)}%`;
 
-  const item =
-    current.item;
+  const choices = shuffle([
+    {value:correct, item, isCorrect:true},
+    ...getDistractors(item, direction).map(d => ({...d,isCorrect:false}))
+  ]);
+  refs.optionsContainer.replaceChildren();
+  for (const choice of choices) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'option-btn';
+    btn.textContent = choice.value;
+    btn.addEventListener('click', () => answerQuestion(choice,btn,choices));
+    refs.optionsContainer.appendChild(btn);
+  }
+}
 
-  const direction =
-    current.direction;
-
-  const correct =
-    direction === "ES_EN"
-      ? item.en
-      : item.es;
-
-  const question =
-    direction === "ES_EN"
-      ? `How do you say "${item.es}" in English?`
-      : `What does "${item.en}" mean?`;
-
-  questionText.textContent =
-    question;
-
-  questionNumber.textContent =
-    currentIndex + 1;
-
-  progressBar.style.width =
-    `${(currentIndex / currentQuestions.length) * 100}%`;
-
-  const wrongOptions =
-    getWrongOptions(item, direction);
-
-  const options =
-    shuffle([correct, ...wrongOptions]);
-
-  optionsContainer.innerHTML = "";
-
-  options.forEach(option => {
-
-    const btn =
-      document.createElement("button");
-
-    btn.className = "option-btn";
-
-    btn.textContent = option;
-
-    btn.addEventListener("click", () => {
-
-      const buttons =
-        document.querySelectorAll(".option-btn");
-
-      buttons.forEach(b => {
-
-        b.disabled = true;
-
-        if(b.textContent === correct){
-
-          b.classList.add("correct-answer");
-        }
-      });
-
-      if(option === correct){
-
-        correctAnswers++;
-
-      }else{
-
-        wrongAnswers++;
-
-        btn.classList.add("wrong-answer");
-
-        const field =
-          direction === "ES_EN"
-            ? "en"
-            : "es";
-
-        const clickedItem =
-          vocabulary.find(v =>
-            v[field] === option
-          );
-
-        if(clickedItem){
-
-          const translation =
-            direction === "ES_EN"
-              ? clickedItem.es
-              : clickedItem.en;
-
-          const hint =
-            document.createElement("span");
-
-          hint.className = "hint";
-
-          hint.textContent =
-            `(Means: ${translation})`;
-
-          btn.appendChild(hint);
-        }
-
-        if(!mistakes.includes(item)){
-
-          mistakes.push(item);
-        }
-      }
-
-      updateStats();
-
-      nextBtn.classList.remove("hidden");
-    });
-
-    optionsContainer.appendChild(btn);
+function answerQuestion(choice, clickedButton, choices) {
+  if (correctAnswerLocked) return;
+  correctAnswerLocked = true;
+  const question = currentQuestions[currentIndex];
+  const item = question.item;
+  const direction = question.direction;
+  const correct = direction === 'ES_EN' ? item.en : item.es;
+  const buttons = [...refs.optionsContainer.querySelectorAll('button')];
+  buttons.forEach((button,i) => {
+    button.disabled = true;
+    if (choices[i].isCorrect) button.classList.add('correct-answer');
   });
+  if (choice.isCorrect) {
+    correctAnswers++;
+    refs.feedback.className = 'feedback ok';
+    refs.feedback.textContent = `✓ ¡Correcto! ${item.es} → ${item.en}`;
+  } else {
+    wrongAnswers++;
+    clickedButton.classList.add('wrong-answer');
+    mistakes.push(item);
+    refs.feedback.className = 'feedback bad';
+    refs.feedback.textContent = `✗ La respuesta correcta es: ${correct}.  ${item.es} → ${item.en}`;
+  }
+  refs.nextBtn.classList.remove('hidden');
+  refs.nextBtn.textContent = currentIndex === currentQuestions.length - 1 ? 'Ver resultado →' : 'Siguiente pregunta →';
+  updateStats();
 }
 
-function nextQuestion(){
+function updateStats() {
+  refs.correctCount.textContent = correctAnswers;
+  refs.wrongCount.textContent = wrongAnswers;
+  refs.modeBadge.textContent = reviewMode ? 'Repaso de errores' : 'Test principal';
+}
 
+function showResults() {
+  refs.progressBar.style.width = '100%';
+  refs.quizScreen.classList.add('hidden');
+  refs.resultScreen.classList.remove('hidden');
+  const total = currentQuestions.length;
+  const percent = Math.round(100 * correctAnswers / total);
+  const passed = percent >= PASS_PERCENTAGE;
+  refs.finalScore.textContent = `${correctAnswers} / ${total}`;
+  refs.finalPercentage.textContent = `${percent}%`;
+  refs.resultTitle.textContent = passed ? '🏆 ¡Buen trabajo!' : '📚 Sigue practicando';
+  refs.resultTitle.className = `result-title ${passed ? 'success' : 'fail'}`;
+  refs.resultMessage.textContent = reviewMode
+    ? `Repaso terminado: ${mistakes.length ? 'puedes repetir las que todavía fallas.' : '¡ya has acertado todas las preguntas de este repaso!'}`
+    : `Necesitas al menos un ${PASS_PERCENTAGE}% (${Math.ceil(total * PASS_PERCENTAGE / 100)} aciertos de ${total}) para superar el test.`;
+  refs.mistakesSection.classList.toggle('hidden', mistakes.length === 0);
+  refs.mistakesList.replaceChildren();
+  mistakes.forEach(item => {
+    const li = document.createElement('li');
+    li.textContent = `${item.es} → ${item.en}`;
+    refs.mistakesList.appendChild(li);
+  });
+  refs.reviewBtn.textContent = reviewMode ? 'Repetir errores pendientes' : 'Repasar errores';
+}
+
+refs.nextBtn.addEventListener('click', () => {
+  if (!correctAnswerLocked) return;
   currentIndex++;
+  renderQuestion();
+});
+refs.restartBtn.addEventListener('click', startMainTest);
+refs.reviewBtn.addEventListener('click', startReviewTest);
+refs.newTestBtn.addEventListener('click', startMainTest);
+refs.moduleFilter.addEventListener('change', updatePoolCount);
+refs.typeFilter.addEventListener('change', updatePoolCount);
 
-  if(currentIndex < currentQuestions.length){
-
-    renderQuestion();
-
-  }else{
-
-    showResults();
-  }
-}
-
-function showResults(){
-
-  quizScreen.classList.add("hidden");
-
-  resultScreen.classList.remove("hidden");
-
-  const total =
-    currentQuestions.length;
-
-  const percentage =
-    Math.round((correctAnswers / total) * 100);
-
-  finalScore.textContent =
-    `${correctAnswers} / ${total}`;
-
-  finalPercentage.textContent =
-    `${percentage}%`;
-
-  if(percentage >= PASS_PERCENTAGE){
-
-    resultTitle.textContent =
-      "🏆 Excellent Work!";
-
-    resultTitle.className =
-      "result-title success";
-
-  }else{
-
-    resultTitle.textContent =
-      "❌ Keep Practising!";
-
-    resultTitle.className =
-      "result-title fail";
-  }
-
-  if(mistakes.length > 0 && !reviewMode){
-
-    mistakesSection.classList.remove("hidden");
-
-    mistakesList.innerHTML = "";
-
-    mistakes.forEach(word => {
-
-      const li =
-        document.createElement("li");
-
-      li.textContent =
-        `${word.es} → ${word.en}`;
-
-      mistakesList.appendChild(li);
-    });
-
-  }else{
-
-    mistakesSection.classList.add("hidden");
-  }
-}
-
-function updateStats(){
-
-  correctCount.textContent =
-    correctAnswers;
-
-  wrongCount.textContent =
-    wrongAnswers;
-
-  modeBadge.textContent =
-    reviewMode
-      ? "Review Mode"
-      : "Main Test";
-}
-
-function showQuizScreen(){
-
-  resultScreen.classList.add("hidden");
-
-  quizScreen.classList.remove("hidden");
-}
-
-// =====================================
-// EVENTS
-// =====================================
-
-nextBtn.addEventListener(
-  "click",
-  nextQuestion
-);
-
-restartBtn.addEventListener(
-  "click",
-  startMainTest
-);
-
-reviewBtn.addEventListener(
-  "click",
-  startReviewMode
-);
-
-// =====================================
-// START
-// =====================================
-
+updatePoolCount();
 startMainTest();
 
 </script>
 
 </body>
 </html>
-```
