@@ -3,380 +3,562 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dani - Irregular Verbs Trainer</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dani · Irregular Verbs 1–15</title>
 <style>
-* { box-sizing: border-box; }
-
+:root {
+  --blue:#1f6fb2;
+  --dark:#233345;
+  --pale:#eef3f8;
+  --green:#18854a;
+  --red:#bd3434;
+}
+* { box-sizing:border-box; }
 body {
-  margin: 0;
-  padding: 20px;
-  font-family: Segoe UI, Arial, sans-serif;
-  background: #eef3f8;
-  color: #2c3e50;
+  margin:0;
+  padding:22px;
+  font-family:Segoe UI,Arial,sans-serif;
+  background:var(--pale);
+  color:var(--dark);
 }
 .container {
-  max-width: 900px;
-  margin: auto;
-  padding: 30px;
-  background: white;
-  border-radius: 18px;
-  box-shadow: 0 5px 20px #0001;
+  max-width:900px;
+  margin:auto;
+  padding:28px;
+  background:#fff;
+  border-radius:18px;
+  box-shadow:0 5px 20px #0001;
 }
-h1 { color: #1f6fb2; margin-top: 0; }
-.subtitle { color: #64748b; }
+h1 {
+  color:var(--blue);
+  font-size:clamp(1.45rem,4vw,2rem);
+  margin:0 0 5px;
+}
+.sub { color:#53687b; margin:0 0 24px; }
 .top {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
 }
-.stats { display: flex; gap: 20px; font-weight: bold; }
-.good { color: #18854a; }
-.bad { color: #bd3434; }
+.chip {
+  border-radius:30px;
+  padding:8px 13px;
+  background:#e9f2fb;
+  color:#175a94;
+  font-weight:700;
+  font-size:.88rem;
+}
+.stats {
+  display:flex;
+  gap:20px;
+  font-weight:700;
+}
+.good { color:var(--green); }
+.bad { color:var(--red); }
 .progress {
-  height: 15px;
-  background: #dfe6ee;
-  border-radius: 20px;
-  overflow: hidden;
-  margin: 24px 0;
+  background:#dfe6ee;
+  height:13px;
+  border-radius:30px;
+  overflow:hidden;
+  margin:20px 0 26px;
 }
 .bar {
-  width: 0;
-  height: 100%;
-  background: #1f6fb2;
-  transition: width .2s;
+  background:var(--blue);
+  width:0;
+  height:100%;
+  transition:width .2s;
 }
 .question {
-  font-size: 1.45rem;
-  font-weight: bold;
-  margin: 25px 0;
+  font-size:1.45rem;
+  font-weight:750;
+  line-height:1.35;
+  margin:18px 0 24px;
+  min-height:74px;
+}
+.label {
+  font-size:.85rem;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  color:#64748b;
+  font-weight:700;
 }
 .options {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:13px;
 }
 button {
-  font: inherit;
-  cursor: pointer;
-  padding: 17px;
-  border-radius: 10px;
-  font-weight: bold;
+  font:inherit;
+  border-radius:11px;
+  border:0;
+  cursor:pointer;
+  padding:15px 18px;
+  min-height:62px;
+  font-weight:650;
 }
 .option {
-  background: white;
-  color: #1f6fb2;
-  border: 2px solid #1f6fb2;
-  min-height: 65px;
+  border:2px solid var(--blue);
+  background:#fff;
+  color:var(--blue);
 }
-.option:hover:not(:disabled) { background: #edf6ff; }
-.option:disabled { cursor: default; }
+.option:hover:not(:disabled) {
+  background:#eef6fd;
+}
+.option:disabled { cursor:default; }
 .option.correct {
-  background: #18854a;
-  color: white;
-  border-color: #18854a;
+  background:var(--green);
+  border-color:var(--green);
+  color:white;
 }
 .option.incorrect {
-  background: #bd3434;
-  color: white;
-  border-color: #bd3434;
+  background:var(--red);
+  border-color:var(--red);
+  color:white;
 }
 .action {
-  display: block;
-  width: 100%;
-  margin-top: 24px;
-  border: none;
-  background: #2c3e50;
-  color: white;
+  background:var(--dark);
+  color:white;
+  width:100%;
+  margin-top:23px;
 }
+.action:hover { background:#34506b; }
+.hidden { display:none!important; }
 .feedback {
-  margin-top: 20px;
-  padding: 16px;
-  background: #edf3fa;
-  border-radius: 10px;
+  margin-top:16px;
+  padding:13px 16px;
+  background:#f3f7fb;
+  border-radius:9px;
+  line-height:1.5;
 }
-.hidden { display: none; }
-li { margin-bottom: 12px; }
+.feedback strong { color:var(--dark); }
+.score {
+  font-size:2rem;
+  font-weight:800;
+  margin:15px 0;
+}
+.error-table {
+  width:100%;
+  border-collapse:collapse;
+  margin:12px 0;
+}
+.error-table th,
+.error-table td {
+  border-bottom:1px solid #dfe6ee;
+  text-align:left;
+  padding:10px 9px;
+  white-space:nowrap;
+}
+.error-table th {
+  background:#e9f2fb;
+  color:#175a94;
+}
+.note {
+  color:#657385;
+  font-size:.88rem;
+  margin:22px 0 0;
+}
 @media(max-width:600px) {
-  .container { padding: 18px; }
-  .options { grid-template-columns: 1fr; }
-  .question { font-size: 1.2rem; }
+  body { padding:10px; }
+  .container { padding:19px; }
+  .options { grid-template-columns:1fr; }
+  .question { font-size:1.22rem; }
+  .option { min-height:58px; }
 }
 </style>
 </head>
-
 <body>
-<div class="container">
 
-<h1>🇬🇧 Irregular Verbs Trainer</h1>
-<p class="subtitle">Dani · 2.º ESO · Verbos 1 al 15</p>
+<main class="container">
+<header>
+  <h1>🇬🇧 Irregular Verbs Trainer</h1>
+  <p class="sub">
+    Dani · 2.º ESO · Solo verbos 1–15 del listado
+  </p>
+</header>
 
 <section id="quiz">
   <div class="top">
-    <strong id="mode">Test principal</strong>
-    <span>Pregunta <b id="index">1</b> / <b id="total">40</b></span>
+    <span class="chip" id="mode">Test principal</span>
+    <span>
+      <b id="index">1</b> /
+      <b id="total">40</b>
+    </span>
     <div class="stats">
-      <span class="good">✅ <span id="right">0</span></span>
-      <span class="bad">❌ <span id="wrong">0</span></span>
+      <span class="good">
+        ✓ <span id="right">0</span>
+      </span>
+      <span class="bad">
+        ✗ <span id="wrong">0</span>
+      </span>
     </div>
   </div>
 
-  <div class="progress"><div class="bar" id="bar"></div></div>
+  <div class="progress">
+    <div class="bar" id="bar"></div>
+  </div>
+
+  <div class="label" id="kind">Past Simple</div>
   <div class="question" id="question"></div>
   <div class="options" id="options"></div>
-  <div id="feedback" class="feedback hidden"></div>
-  <button id="next" class="action hidden">Siguiente pregunta →</button>
+  <div class="feedback hidden" id="feedback"></div>
+
+  <button id="next" class="action hidden">
+    Siguiente pregunta →
+  </button>
 </section>
 
 <section id="results" class="hidden">
-  <h2 id="result-title"></h2>
-  <h2 id="score"></h2>
-  <p id="percentage"></p>
-  <div id="review-section" class="hidden">
-    <h3>Verbos para repasar</h3>
-    <ul id="mistakes"></ul>
-    <button id="review" class="action">Repasar errores</button>
+  <h2 id="resultTitle"></h2>
+  <p class="score" id="score"></p>
+  <p id="assessment"></p>
+
+  <div id="mistakesBox" class="hidden">
+    <h3>Errores para repasar</h3>
+
+    <div style="overflow-x:auto">
+      <table class="error-table" id="mistakes">
+        <thead>
+          <tr>
+            <th>Infinitivo</th>
+            <th>Past Simple</th>
+            <th>Participio</th>
+            <th>Español</th>
+          </tr>
+        </thead>
+        <tbody id="mistakesBody"></tbody>
+      </table>
+    </div>
+
+    <button class="action" id="review">
+      Repasar solo los errores
+    </button>
   </div>
-  <button id="restart" class="action">Nuevo test de 40 preguntas</button>
+
+  <button class="action" id="restart">
+    Nuevo test aleatorio de 40 preguntas
+  </button>
 </section>
 
-<details style="margin-top:30px">
-  <summary><strong>Consultar los 15 verbos</strong></summary>
-  <div id="verb-list" style="overflow-x:auto"></div>
-</details>
-
-</div>
+<p class="note">
+  Cada test mezcla traducción, infinitivo,
+  Past Simple y Past Participle.
+  Las 40 preguntas no se repiten dentro del mismo test.
+  Cuatro opciones por pregunta.
+</p>
+</main>
 
 <script>
+'use strict';
+
+// ===================================
+// VERBOS IRREGULARES 1 AL 15
+// ===================================
+
 const VERBS = [
-  ["be", "was/were", "been", "ser/estar"],
-  ["become", "became", "become", "convertirse en"],
-  ["begin", "began", "begun", "empezar"],
-  ["break", "broke", "broken", "romper"],
-  ["bring", "brought", "brought", "traer"],
-  ["build", "built", "built", "construir"],
-  ["burn", "burnt/burned", "burnt/burned", "quemar"],
-  ["buy", "bought", "bought", "comprar"],
-  ["catch", "caught", "caught", "coger"],
-  ["choose", "chose", "chosen", "elegir"],
-  ["come", "came", "come", "venir"],
-  ["cost", "cost", "cost", "costar"],
-  ["cut", "cut", "cut", "cortar"],
-  ["do", "did", "done", "hacer"],
-  ["draw", "drew", "drawn", "dibujar"]
+  {base:'be',past:'was / were',part:'been',es:'ser / estar'},
+  {base:'become',past:'became',part:'become',es:'convertirse en'},
+  {base:'begin',past:'began',part:'begun',es:'empezar'},
+  {base:'break',past:'broke',part:'broken',es:'romper'},
+  {base:'bring',past:'brought',part:'brought',es:'traer'},
+  {base:'build',past:'built',part:'built',es:'construir'},
+  {base:'burn',past:'burnt / burned',part:'burnt / burned',es:'quemar'},
+  {base:'buy',past:'bought',part:'bought',es:'comprar'},
+  {base:'catch',past:'caught',part:'caught',es:'coger'},
+  {base:'choose',past:'chose',part:'chosen',es:'elegir'},
+  {base:'come',past:'came',part:'come',es:'venir'},
+  {base:'cost',past:'cost',part:'cost',es:'costar'},
+  {base:'cut',past:'cut',part:'cut',es:'cortar'},
+  {base:'do',past:'did',part:'done',es:'hacer'},
+  {base:'draw',past:'drew',part:'drawn',es:'dibujar'}
 ];
 
-const LIMIT = 40;
-const PASS = 85;
-const $ = id => document.getElementById(id);
+// ===================================
+// TIPOS DE PREGUNTAS
+// ===================================
 
-let questions = [];
-let index = 0;
-let right = 0;
-let wrong = 0;
-let mistakes = [];
-let reviewMode = false;
+const TYPES = [
+  {
+    key:'past',
+    label:'Past Simple',
+    question:v=>`¿Cuál es el Past Simple de “${v.base}”?`,
+    answer:v=>v.past
+  },
+  {
+    key:'part',
+    label:'Past Participle',
+    question:v=>`¿Cuál es el Past Participle de “${v.base}”?`,
+    answer:v=>v.part
+  },
+  {
+    key:'es',
+    label:'Traducción al español',
+    question:v=>`¿Qué significa “${v.base}”?`,
+    answer:v=>v.es
+  },
+  {
+    key:'base',
+    label:'Infinitivo',
+    question:v=>`¿Cómo se dice “${v.es}” en inglés (infinitivo)?`,
+    answer:v=>v.base
+  },
+  {
+    key:'past',
+    label:'Identifica el verbo',
+    question:v=>`¿Cuál es el pasado de “${v.es}”?`,
+    answer:v=>v.past
+  }
+];
 
-function shuffle(items) {
-  const a = [...items];
+// ===================================
+// UTILIDADES Y ESTADO
+// ===================================
+
+const el = id => document.getElementById(id);
+
+function shuffle(a) {
+  a = [...a];
+
   for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    let j = Math.floor(Math.random() * (i + 1));
     [a[i], a[j]] = [a[j], a[i]];
   }
+
   return a;
 }
 
-function makeQuestion(verb, type) {
-  const [base, past, participle, spanish] = verb;
-
-  const types = [
-    {
-      question: `¿Qué significa "${base}"?`,
-      answer: spanish,
-      field: 3
-    },
-    {
-      question: `¿Cuál es el infinitivo de "${spanish}"?`,
-      answer: base,
-      field: 0
-    },
-    {
-      question: `¿Cuál es el Past Simple de "${base}"?`,
-      answer: past,
-      field: 1
-    },
-    {
-      question: `¿Cuál es el Past Participle de "${base}"?`,
-      answer: participle,
-      field: 2
-    }
-  ];
-
-  const selected = types[type];
-  const alternatives = shuffle(
-    [...new Set(VERBS.map(v => v[selected.field]))]
-      .filter(a => a !== selected.answer)
-  ).slice(0, 3);
-
-  return {
+const BANK = VERBS.flatMap((verb,vi) =>
+  TYPES.map((type,ti) => ({
+    id:`${vi}-${ti}`,
     verb,
-    type,
-    question: selected.question,
-    answer: selected.answer,
-    options: shuffle([selected.answer, ...alternatives])
-  };
-}
+    type
+  }))
+);
 
-function startTest() {
-  const combinations = [];
-  VERBS.forEach(v => {
-    for (let type = 0; type < 4; type++) {
-      combinations.push({verb: v, type});
-    }
-  });
+let questions = [];
+let idx = 0;
+let right = 0;
+let wrong = 0;
+let errors = [];
+let reviewMode = false;
+let answered = false;
 
-  questions = shuffle(combinations)
-    .slice(0, LIMIT)
-    .map(q => makeQuestion(q.verb, q.type));
+// ===================================
+// INICIAR TEST
+// ===================================
 
-  reviewMode = false;
-  reset();
-}
-
-function startReview() {
-  questions = shuffle(mistakes)
-    .map(q => makeQuestion(q.verb, q.type));
-  reviewMode = true;
-  reset();
-}
-
-function reset() {
-  index = 0;
+function start(isReview = false) {
+  reviewMode = isReview;
+  idx = 0;
   right = 0;
   wrong = 0;
-  if (!reviewMode) mistakes = [];
+  answered = false;
 
-  $("quiz").classList.remove("hidden");
-  $("results").classList.add("hidden");
-  $("total").textContent = questions.length;
-  $("mode").textContent = reviewMode ? "Repaso de errores" : "Test principal";
+  if (isReview) {
+    questions = shuffle(errors);
+    errors = [];
+  } else {
+    questions = shuffle(BANK).slice(0,40);
+    errors = [];
+  }
+
+  el('quiz').classList.remove('hidden');
+  el('results').classList.add('hidden');
+
+  el('mode').textContent =
+    isReview ? 'Repaso de errores' : 'Test principal';
+
+  el('total').textContent = questions.length;
+
   render();
 }
 
-function render() {
-  const q = questions[index];
-  $("index").textContent = index + 1;
-  $("right").textContent = right;
-  $("wrong").textContent = wrong;
-  $("bar").style.width = `${index / questions.length * 100}%`;
-  $("question").textContent = q.question;
-  $("feedback").classList.add("hidden");
-  $("next").classList.add("hidden");
-  $("options").innerHTML = "";
+// ===================================
+// MOSTRAR PREGUNTA
+// ===================================
 
-  q.options.forEach(option => {
-    const btn = document.createElement("button");
-    btn.className = "option";
-    btn.textContent = option;
-    btn.onclick = () => answer(option);
-    $("options").appendChild(btn);
-  });
+function render() {
+  answered = false;
+
+  el('next').classList.add('hidden');
+  el('feedback').classList.add('hidden');
+  el('index').textContent = idx + 1;
+  el('right').textContent = right;
+  el('wrong').textContent = wrong;
+
+  el('bar').style.width =
+    `${idx / questions.length * 100}%`;
+
+  let q = questions[idx];
+  let answer = q.type.answer(q.verb);
+
+  el('kind').textContent = q.type.label;
+  el('question').textContent = q.type.question(q.verb);
+
+  let pool = [
+    ...new Set(
+      VERBS.map(v => q.type.answer(v))
+        .filter(a => a !== answer)
+    )
+  ];
+
+  let opts = shuffle([
+    answer,
+    ...shuffle(pool).slice(0,3)
+  ]);
+
+  const parent = el('options');
+  parent.replaceChildren();
+
+  for (const value of opts) {
+    let b = document.createElement('button');
+    b.className = 'option';
+    b.textContent = value;
+
+    b.onclick = () => choose(b,value,answer,q);
+
+    parent.appendChild(b);
+  }
 }
 
-function answer(selected) {
-  const q = questions[index];
-  const correct = selected === q.answer;
+// ===================================
+// CORREGIR RESPUESTA
+// ===================================
 
-  if (correct) {
+function choose(button,value,answer,q) {
+  if (answered) return;
+
+  answered = true;
+  const ok = value === answer;
+
+  if (ok) {
     right++;
   } else {
     wrong++;
-    mistakes.push(q);
+    errors.push(q);
   }
 
-  document.querySelectorAll(".option").forEach(btn => {
-    btn.disabled = true;
-    if (btn.textContent === q.answer) {
-      btn.classList.add("correct");
-    } else if (btn.textContent === selected) {
-      btn.classList.add("incorrect");
-    }
-  });
+  for (let b of el('options').children) {
+    b.disabled = true;
 
-  $("right").textContent = right;
-  $("wrong").textContent = wrong;
-  $("bar").style.width = `${(index + 1) / questions.length * 100}%`;
+    if (b.textContent === answer) {
+      b.classList.add('correct');
+    }
+  }
+
+  if (!ok) {
+    button.classList.add('incorrect');
+  }
+
+  el('right').textContent = right;
+  el('wrong').textContent = wrong;
 
   const v = q.verb;
-  $("feedback").textContent =
-    `${correct ? "✅ ¡Correcto!" : "❌ Respuesta correcta: " + q.answer}
-    | ${v[0]} - ${v[1]} - ${v[2]} - ${v[3]}`;
+  const feedback = el('feedback');
+  feedback.classList.remove('hidden');
+  feedback.replaceChildren();
 
-  $("feedback").classList.remove("hidden");
-  $("next").classList.remove("hidden");
+  const title = document.createElement('strong');
+  title.textContent = ok
+    ? '¡Correcto!'
+    : 'La respuesta correcta es: ' + answer;
+
+  const detail = document.createElement('div');
+  detail.textContent =
+    `${v.base} · ${v.past} · ${v.part} · ${v.es}`;
+
+  feedback.append(title,detail);
+
+  el('bar').style.width =
+    `${(idx + 1) / questions.length * 100}%`;
+
+  el('next').textContent =
+    idx === questions.length - 1
+      ? 'Ver resultados →'
+      : 'Siguiente pregunta →';
+
+  el('next').classList.remove('hidden');
 }
 
-function nextQuestion() {
-  index++;
-  if (index < questions.length) render();
-  else showResults();
-}
+// ===================================
+// RESULTADOS Y TABLA DE ERRORES
+// ===================================
 
-function showResults() {
-  $("quiz").classList.add("hidden");
-  $("results").classList.remove("hidden");
+function results() {
+  el('quiz').classList.add('hidden');
+  el('results').classList.remove('hidden');
 
-  const percent = Math.round(right / questions.length * 100);
-  $("result-title").textContent =
-    percent >= PASS ? "🏆 ¡Excelente trabajo!" : "📚 ¡Sigue practicando!";
-  $("score").textContent = `${right} / ${questions.length}`;
-  $("percentage").textContent = `Aciertos: ${percent}%`;
+  const pct = Math.round(
+    right / questions.length * 100
+  );
 
-  const reviewSection = $("review-section");
-  reviewSection.classList.toggle("hidden", mistakes.length === 0);
+  el('resultTitle').textContent =
+    pct >= 85
+      ? '🏆 ¡Muy bien, Dani!'
+      : '📚 ¡Sigue practicando, Dani!';
 
-  $("mistakes").innerHTML = "";
-  mistakes.forEach(q => {
-    const li = document.createElement("li");
-    li.textContent =
-      `${q.question} → ${q.answer} (${q.verb.join(" / ")})`;
-    $("mistakes").appendChild(li);
-  });
-}
+  el('score').textContent =
+    `${right} / ${questions.length} · ${pct}%`;
 
-function buildTable() {
-  const table = document.createElement("table");
-  table.style.cssText =
-    "width:100%;border-collapse:collapse;margin-top:15px;font-size:.9rem";
+  el('assessment').textContent =
+    pct >= 85
+      ? 'Objetivo del 85 % superado.'
+      : 'Objetivo: 85 % de aciertos.';
 
-  const rows = [
-    ["Infinitivo", "Past Simple", "Participio", "Español"],
-    ...VERBS
+  // La tabla solo aparece si hay errores.
+  el('mistakesBox').classList.toggle(
+    'hidden',
+    !errors.length
+  );
+
+  const box = el('mistakesBody');
+  box.replaceChildren();
+
+  // Evitar repetir verbos en la tabla.
+  const unique = [
+    ...new Map(
+      errors.map(q => [q.verb.base,q.verb])
+    ).values()
   ];
 
-  rows.forEach((r, i) => {
-    const tr = document.createElement("tr");
-    r.forEach(value => {
-      const cell = document.createElement(i === 0 ? "th" : "td");
-      cell.textContent = value;
-      cell.style.cssText =
-        "padding:9px;border:1px solid #dfe6ee;text-align:left";
-      if (i === 0) cell.style.background = "#e9f2fb";
-      tr.appendChild(cell);
+  unique.forEach(v => {
+    const tr = document.createElement('tr');
+
+    [v.base,v.past,v.part,v.es].forEach(value => {
+      const td = document.createElement('td');
+      td.textContent = value;
+      tr.appendChild(td);
     });
-    table.appendChild(tr);
+
+    box.appendChild(tr);
   });
-  $("verb-list").appendChild(table);
 }
 
-$("next").onclick = nextQuestion;
-$("restart").onclick = startTest;
-$("review").onclick = startReview;
+// ===================================
+// BOTONES
+// ===================================
 
-buildTable();
-startTest();
+el('next').onclick = () => {
+  idx++;
+
+  if (idx < questions.length) {
+    render();
+  } else {
+    results();
+  }
+};
+
+el('restart').onclick = () => start();
+
+el('review').onclick = () => start(true);
+
+// ===================================
+// INICIO AUTOMÁTICO
+// ===================================
+
+start();
+
 </script>
 </body>
 </html>
