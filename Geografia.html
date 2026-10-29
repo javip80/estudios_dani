@@ -1,369 +1,714 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Test: Geografía - Temas 9 y 10</title>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Repaso del islam - 2.º ESO</title>
 <style>
-*{ box-sizing:border-box; }
-body{
-    margin:0; padding:20px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background:#e8f5e9; color:#333;
+:root {
+  --azul: #087c83;
+  --oscuro: #183740;
+  --fondo: #f3f7f7;
+  --verde: #176341;
+  --rojo: #963047;
 }
-.container{
-    max-width:900px; margin:auto;
-    background:white; border-radius:16px;
-    padding:30px; box-shadow:0 8px 24px rgba(0,0,0,0.1);
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--oscuro);
+  font-family: system-ui, Arial, sans-serif;
+  line-height: 1.5;
 }
-h1{ margin-top:0; color:#2e7d32; font-size: 1.8rem;}
-.top-bar{
-    display:flex; justify-content:space-between; align-items:center;
-    gap:10px; flex-wrap:wrap; margin-bottom:20px;
+header {
+  padding: 22px 15px;
+  background: linear-gradient(110deg, #123f49, #087c83);
+  text-align: center;
+  color: white;
 }
-.stats{ display:flex; gap:20px; font-weight:bold; font-size:1.1rem; }
-.correct{ color:#27ae60; }
-.wrong{ color:#c0392b; }
-.progress-wrapper{
-    width:100%; background:#c8e6c9; border-radius:999px;
-    overflow:hidden; height:20px; margin:20px 0;
+header h1 { margin: 0; font-size: 28px; }
+header p { margin: 4px 0 0; font-size: 14px; }
+main {
+  max-width: 780px;
+  margin: 22px auto;
+  padding: 0 14px;
 }
-.progress-bar{
-    height:100%; width:0%; background:#2e7d32; transition:0.4s ease-out;
+.panel {
+  background: white;
+  border: 1px solid #d6e4e2;
+  border-radius: 16px;
+  padding: 25px;
+  box-shadow: 0 6px 22px #12485010;
 }
-.question{
-    font-size:1.3rem; font-weight:bold; margin:25px 0; min-height:80px; line-height:1.4;
+[hidden] { display: none !important; }
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 14px;
 }
-.options{
-    display:grid; grid-template-columns:1fr 1fr; gap:15px;
+.pill {
+  background: #e7f3f2;
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-weight: bold;
+  font-size: 13px;
 }
-button{
-    border:none; border-radius:12px; padding:18px;
-    cursor:pointer; font-size:1.1rem; transition:all 0.2s;
+.bar {
+  background: #e2eeec;
+  height: 9px;
+  border-radius: 20px;
+  margin: 15px 0 23px;
+  overflow: hidden;
 }
-.option-btn{
-    background:white; border:2px solid #2e7d32; color:#2e7d32;
-    min-height:85px; font-weight:600; display:flex; flex-direction:column; justify-content:center; align-items:center;
-    text-align: center;
+#progress {
+  height: 100%;
+  width: 0;
+  background: var(--azul);
+  transition: width .2s;
 }
-.option-btn:hover:not(:disabled){
-    background:#2e7d32; color:white; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(46, 125, 50, 0.2);
+.question {
+  font-size: 23px;
+  font-weight: 800;
+  margin: 15px 0 24px;
+  line-height: 1.35;
 }
-.option-btn:disabled{ cursor:default; transform:none; }
-.correct-answer{
-    background:#27ae60 !important; border-color:#27ae60 !important; color:white !important;
+.options {
+  display: grid;
+  gap: 11px;
 }
-.wrong-answer{
-    background:#c0392b !important; border-color:#c0392b !important; color:white !important;
+.option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  width: 100%;
+  min-height: 55px;
+  background: white;
+  border: 2px solid #d7e5e3;
+  border-radius: 11px;
+  color: var(--oscuro);
+  font: 600 16px system-ui, Arial;
+  text-align: left;
+  cursor: pointer;
 }
-.hint{
-    display:block; margin-top:8px; font-size:0.9rem; opacity:0.95; font-style: italic; font-weight:normal;
+.option:hover:not(:disabled) {
+  background: #f0faf8;
+  border-color: var(--azul);
 }
-.next-btn, .restart-btn, .review-btn{
-    margin-top:30px; width:100%; background:#1b5e20;
-    color:white; font-weight:bold; font-size:1.2rem;
+.option:disabled { cursor: default; opacity: 1; }
+.option.correct {
+  background: #e7f6ed;
+  border-color: #24955e;
+  color: #125338;
 }
-.next-btn:hover, .restart-btn:hover, .review-btn:hover{ background:#003300; }
-.hidden{ display:none; }
-.result-title{ font-size:2.5rem; margin-bottom:10px; }
-.success{ color:#27ae60; }
-.fail{ color:#c0392b; }
-.error-list{
-    text-align:left; margin-top:20px; background:#f8f9fa;
-    padding:20px; border-radius:12px; border-left: 5px solid #c0392b;
+.option.incorrect {
+  background: #fcecee;
+  border-color: #d06579;
+  color: #85263a;
 }
-.error-list li{ margin-bottom:12px; font-size: 1.1rem; line-height: 1.4; }
-.mode-badge{
-    background:#2e7d32; color:white; padding:8px 16px;
-    border-radius:999px; font-size:1rem; font-weight:bold; text-transform:uppercase; letter-spacing:1px;
+.letter {
+  display: grid;
+  place-items: center;
+  flex: 0 0 30px;
+  height: 30px;
+  background: #e7f0ee;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: bold;
 }
-@media(max-width:650px){
-    .options{ grid-template-columns:1fr; }
-    .question{ font-size:1.2rem; }
-    .top-bar{ flex-direction:column; align-items:flex-start; }
+.feedback {
+  margin-top: 17px;
+  padding: 13px;
+  border-radius: 10px;
+  font-weight: bold;
+}
+.good { background: #e3f5ea; color: var(--verde); }
+.bad { background: #fcebed; color: var(--rojo); }
+.actions { margin-top: 22px; display: flex; gap: 10px; flex-wrap: wrap; }
+.action {
+  padding: 13px 18px;
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+  font: bold 16px system-ui, Arial;
+}
+.primary { background: var(--azul); color: white; }
+.secondary { background: #e9f2f0; color: var(--oscuro); }
+.result {
+  font-size: 36px;
+  font-weight: 850;
+  margin: 12px 0;
+}
+.stats { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0; }
+.stats span {
+  background: #edf5f3;
+  padding: 10px;
+  border-radius: 9px;
+  font-weight: bold;
+}
+.error-card {
+  border: 1px solid #d8e6e3;
+  border-radius: 11px;
+  padding: 15px;
+  margin: 13px 0;
+}
+.error-card h3 { margin: 10px 0; }
+.wrong { color: var(--rojo); }
+.right { color: var(--verde); }
+footer {
+  text-align: center;
+  color: #58757b;
+  font-size: 13px;
+  margin-top: 20px;
+}
+@media(max-width: 520px) {
+  .panel { padding: 17px; }
+  .question { font-size: 21px; }
+  .actions .action { width: 100%; }
 }
 </style>
 </head>
-
 <body>
-<div class="container">
-    <div id="quiz-screen">
-        <div class="top-bar">
-            <h1>🌍 Test: Geografía (Temas 9 y 10)</h1>
-            <div class="mode-badge" id="mode-badge">TEST PRINCIPAL</div>
-        </div>
 
-        <div class="top-bar">
-            <div>Pregunta <strong><span id="question-number">1</span> / <span id="question-total">50</span></strong></div>
-            <div class="stats">
-                <span class="correct">✅ <span id="correct-count">0</span></span>
-                <span class="wrong">❌ <span id="wrong-count">0</span></span>
-            </div>
-        </div>
+<header>
+  <h1>El islam y su expansión</h1>
+  <p>Geografía e Historia · 2.º ESO</p>
+</header>
 
-        <div class="progress-wrapper">
-            <div class="progress-bar" id="progress-bar"></div>
-        </div>
+<main>
+<section id="quiz" class="panel">
+  <div class="top">
+    <span id="section" class="pill"></span>
+    <span id="counter"></span>
+  </div>
 
-        <div class="question" id="question-text">Cargando...</div>
-        <div class="options" id="options-container"></div>
-        <button class="next-btn hidden" id="next-btn">Siguiente Pregunta →</button>
-    </div>
+  <div class="bar"><div id="progress"></div></div>
 
-    <div id="result-screen" class="hidden">
-        <h2 class="result-title" id="result-title"></h2>
-        <p style="font-size:1.5rem">Aciertos: <strong id="final-score"></strong></p>
-        <p style="font-size:1.5rem">Porcentaje: <strong id="final-percentage"></strong></p>
+  <div id="question" class="question"></div>
+  <div id="options" class="options"></div>
+  <div id="feedback" class="feedback" hidden></div>
 
-        <div id="mistakes-section" class="hidden">
-            <h3>Conceptos a repasar:</h3>
-            <ul class="error-list" id="mistakes-list"></ul>
-            <button class="review-btn" id="review-btn">Practicar Errores</button>
-        </div>
-        <button class="restart-btn" id="restart-btn">Generar Nuevo Test de 50 Preguntas</button>
-    </div>
-</div>
+  <div class="actions">
+    <button id="next" class="action primary" hidden>
+      Siguiente pregunta
+    </button>
+  </div>
+</section>
+
+<section id="results" class="panel" hidden>
+  <h2>Resultado del repaso</h2>
+  <div id="score" class="result"></div>
+  <p id="message"></p>
+  <div id="stats" class="stats"></div>
+  <div id="mistakes"></div>
+
+  <div class="actions">
+    <button id="retry" class="action primary" hidden>
+      Repetir solo las falladas
+    </button>
+    <button id="restart" class="action secondary">
+      Repetir el test completo
+    </button>
+  </div>
+</section>
+
+<footer>
+  Basado en los ejercicios 1 al 7 de la hoja de repaso.
+</footer>
+</main>
 
 <script>
-// =====================================
-// BASE DE DATOS EXACTA (50 PREGUNTAS: 25 del Tema 9 + 25 del Tema 10)
-// =====================================
-const questionPool = [
-    // ----------------------------------------------------
-    // TEMA 9: EL TIEMPO Y EL CLIMA (25 Preguntas)
-    // ----------------------------------------------------
-    { q: "¿Qué es la atmósfera?", correct: "Una capa gaseosa que envuelve la Tierra y hace que la vida sea posible.", options: ["Una capa gaseosa que envuelve la Tierra y hace que la vida sea posible.", "La capa sólida de la Tierra.", "El conjunto de seres vivos de nuestro planeta.", "La capa de agua que recubre los continentes."], hint: "Está formada por gases." },
-    { q: "¿Qué gases forman la atmósfera?", correct: "Oxígeno, nitrógeno y dióxido de carbono.", options: ["Oxígeno, nitrógeno y dióxido de carbono.", "Hierro, níquel y silicio.", "Magnesio, calcio y helio.", "Agua, ozono y oxígeno."], hint: "El primero es esencial para que podamos respirar." },
-    { q: "¿Cuál es la capa más externa de la atmósfera (de 500 a 10.000 Km)?", correct: "La exosfera.", options: ["La exosfera.", "La troposfera.", "La termosfera.", "La mesosfera."], hint: "Su nombre empieza por 'Exo'." },
-    { q: "¿En qué capa se instalan los satélites y estaciones espaciales?", correct: "En la termosfera.", options: ["En la termosfera.", "En la estratosfera.", "En la mesosfera.", "En la troposfera."], hint: "Se encuentra entre los 80 y 500 Km." },
-    { q: "¿En qué capa se desintegran los asteroides al impactar?", correct: "En la mesosfera.", options: ["En la mesosfera.", "En la exosfera.", "En la troposfera.", "En la estratosfera."], hint: "Es la capa del medio (de 50 a 80 Km)." },
-    { q: "¿En qué capa se encuentra la capa de ozono?", correct: "En la estratosfera.", options: ["En la estratosfera.", "En la troposfera.", "En la exosfera.", "En la termosfera."], hint: "Se encuentra entre los 12 y 50 Km." },
-    { q: "¿En qué capa vivimos y se dan los fenómenos meteorológicos?", correct: "En la troposfera.", options: ["En la troposfera.", "En la estratosfera.", "En la termosfera.", "En la mesosfera."], hint: "Es la que se inicia en el nivel del mar." },
-    { q: "¿De qué nos protegen la atmósfera y la capa de ozono?", correct: "De los rayos ultravioleta.", options: ["De los rayos ultravioleta.", "De los terremotos.", "De las lluvias torrenciales.", "Del frío del núcleo de la Tierra."], hint: "Son los rayos perjudiciales del Sol." },
-    { q: "¿Qué es el tiempo atmosférico?", correct: "El estado de la atmósfera en un lugar concreto y en un periodo corto (tres días).", options: ["El estado de la atmósfera en un lugar concreto y en un periodo corto (tres días).", "El comportamiento de la atmósfera en un periodo largo (meses o años).", "La temperatura media de todo el año.", "El nivel de lluvias de un país."], hint: "Es específico y a corto plazo." },
-    { q: "¿Qué es el clima?", correct: "El comportamiento de la atmósfera en un espacio extenso y en un periodo largo.", options: ["El comportamiento de la atmósfera en un espacio extenso y en un periodo largo.", "El estado de la atmósfera en un día concreto.", "La diferencia entre temperatura máxima y mínima.", "El estudio de la presión atmosférica."], hint: "Se mide a largo plazo (meses o años)." },
-    { q: "¿Qué ciencias estudian el tiempo y el clima respectivamente?", correct: "La meteorología (tiempo) y la climatología (clima).", options: ["La meteorología (tiempo) y la climatología (clima).", "La sismología y la geología.", "La biología y la meteorología.", "La astronomía y la climatología."], hint: "El que da el tiempo en la tele es el meteorólogo." },
-    { q: "En un climograma, ¿qué indican la línea roja y las barras azules?", correct: "La línea roja indica la temperatura y las barras azules las precipitaciones.", options: ["La línea roja indica la temperatura y las barras azules las precipitaciones.", "La roja son las precipitaciones y las azules la temperatura.", "La roja es el viento y las azules la humedad.", "La roja es el tiempo y las azules el clima."], hint: "Rojo=Calor, Azul=Agua." },
-    { q: "¿Qué es la latitud como factor climático?", correct: "La distancia de un punto de la Tierra con respecto al ecuador.", options: ["La distancia de un punto de la Tierra con respecto al ecuador.", "La altura a la que nos encontramos.", "La distancia que hay hasta el mar.", "El grosor de la atmósfera."], hint: "El ecuador es el 'cinturón' de la Tierra." },
-    { q: "¿Por qué a menor altitud hay mayor temperatura?", correct: "Porque el suelo hace de retenedor térmico.", options: ["Porque el suelo hace de retenedor térmico.", "Porque los rayos del sol impactan más.", "Porque hay menos oxígeno.", "Porque el viento no sopla."], hint: "El suelo absorbe el calor y lo guarda." },
-    { q: "¿Por qué la cercanía al mar suaviza las temperaturas?", correct: "Porque el agua hace de termostato.", options: ["Porque el agua hace de termostato.", "Porque las nubes tapan el sol en la costa.", "Porque hay corrientes de aire frío.", "Porque la presión es más baja."], hint: "El mar evita cambios muy bruscos." },
-    { q: "¿Qué tres tipos de temperatura existen?", correct: "Absoluta (máxima/mínima), amplitud térmica y media.", options: ["Absoluta (máxima/mínima), amplitud térmica y media.", "Polar, ecuatorial y templada.", "Continental, desértica y forestal.", "Diurna, nocturna y semanal."], hint: "Una es el pico, otra la diferencia y otra el promedio." },
-    { q: "¿Qué es la amplitud térmica?", correct: "La diferencia entre la temperatura máxima y la mínima.", options: ["La diferencia entre la temperatura máxima y la mínima.", "La temperatura más alta alcanzada en el año.", "El calor que retiene el mar.", "La presión del viento."], hint: "Es el resultado de una resta." },
-    { q: "¿Qué instrumento usamos para medir la humedad?", correct: "El higrómetro.", options: ["El higrómetro.", "El pluviómetro.", "El barómetro.", "El anemómetro."], hint: "Empieza por 'Higro'." },
-    { q: "¿En qué formas se manifiesta la precipitación?", correct: "Agua, aguanieve, nieve o granizo.", options: ["Agua, aguanieve, nieve o granizo.", "Lluvia, humedad y rocío.", "Vapor, hielo o plasma.", "Tifón, brisa o huracán."], hint: "Depende de la temperatura al caer al suelo." },
-    { q: "¿Qué instrumento mide las precipitaciones?", correct: "El pluviómetro.", options: ["El pluviómetro.", "El barómetro.", "El higrómetro.", "La veleta."], hint: "Pluvio = Lluvia." },
-    { q: "¿Qué son los anticiclones o altas presiones?", correct: "Presiones por encima de 1013 milibares que repelen a las nubes.", options: ["Presiones por encima de 1013 milibares que repelen a las nubes.", "Presiones por debajo de 1013 milibares que atraen a las nubes.", "Vientos huracanados.", "Tormentas eléctricas fuertes."], hint: "Traen buen tiempo al expulsar las nubes." },
-    { q: "¿Qué son las borrascas o bajas presiones?", correct: "Presiones por debajo de 1013 milibares que atraen a las nubes.", options: ["Presiones por debajo de 1013 milibares que atraen a las nubes.", "Presiones por encima de 1013 milibares que repelen nubes.", "Corrientes marinas frías.", "Climas áridos de estepa."], hint: "Al atraer las nubes, suele llover." },
-    { q: "¿Con qué instrumento se mide la presión atmosférica?", correct: "Con el barómetro.", options: ["Con el barómetro.", "Con el pluviómetro.", "Con el anemómetro.", "Con el sismógrafo."], hint: "Mide la presión en milibares." },
-    { q: "¿Qué miden el anemómetro y la veleta?", correct: "El anemómetro la velocidad del viento y la veleta su dirección.", options: ["El anemómetro la velocidad del viento y la veleta su dirección.", "El anemómetro la humedad y la veleta la lluvia.", "El anemómetro la presión y la veleta la temperatura.", "Los dos miden la cantidad de lluvia caída."], hint: "Uno da vueltas con cazoletas y el otro es una flecha." },
-    { q: "¿Qué tres tipos de vientos existen?", correct: "Planetarios, estacionales y locales.", options: ["Planetarios, estacionales y locales.", "Suaves, moderados y fuertes.", "Continental, polar y tropical.", "Norte, sur y este."], hint: "Unos abarcan la Tierra entera, otros solo estaciones." },
+"use strict";
 
-    // ----------------------------------------------------
-    // TEMA 10: LOS PAISAJES Y CONJUNTOS BIOCLIMÁTICOS (25 Preguntas)
-    // ----------------------------------------------------
-    { q: "¿Qué es el paisaje según tus apuntes?", correct: "El aspecto que adopta el territorio como resultado de la interacción de elementos naturales y humanos.", options: ["El aspecto que adopta el territorio como resultado de la interacción de elementos naturales y humanos.", "Solo la vegetación y montañas de un lugar.", "El clima y el tiempo de una región.", "Una pintura de la naturaleza."], hint: "Es el aspecto visual del territorio." },
-    { q: "¿Por qué es fundamental la protección del paisaje?", correct: "Porque es nuestra obligación legarlo a futuras generaciones y tiene un papel ecológico y económico.", options: ["Porque es nuestra obligación legarlo a futuras generaciones y tiene un papel ecológico y económico.", "Para poder talar los árboles libremente.", "Porque atrae a los anticiclones.", "Porque evita la lluvia ácida."], hint: "Nos da ingresos por turismo." },
-    { q: "¿Qué dos tipos principales de paisajes podemos establecer?", correct: "Natural y humanizado.", options: ["Natural y humanizado.", "Rural y urbano.", "Montañoso y llano.", "Desértico y forestal."], hint: "Uno no está tocado, el otro sí." },
-    { q: "¿Qué es un paisaje natural?", correct: "Es aquel que no ha sido modificado por el ser humano y es fruto de factores físicos y biológicos.", options: ["Es aquel que no ha sido modificado por el ser humano y es fruto de factores físicos y biológicos.", "Es el resultado de la intervención humana a lo largo del tiempo.", "Es un paisaje lleno de edificios rurales.", "Es únicamente el fondo de los océanos."], hint: "El ser humano no lo ha alterado." },
-    { q: "¿Qué factores físicos y biológicos forman el paisaje natural?", correct: "Relieve, hidrografía, suelos, clima (físicos) y vegetación y fauna (biológicos).", options: ["Relieve, hidrografía, suelos, clima (físicos) y vegetación y fauna (biológicos).", "Agricultura, ganadería y pesca.", "Lluvia, viento y anticiclones.", "Los tres tipos de vientos planetarios."], hint: "Son los elementos de la naturaleza pura." },
-    { q: "¿Qué es el paisaje humanizado?", correct: "Es el resultado de la intervención del ser humano a lo largo del tiempo.", options: ["Es el resultado de la intervención del ser humano a lo largo del tiempo.", "Es el aspecto virgen de la Tierra.", "Es aquel formado por la mezcla de relieve y clima.", "Es el conjunto de animales de la sabana."], hint: "Tiene carreteras, casas, cultivos..." },
-    { q: "¿Qué dos tipos de paisaje humanizado encontramos?", correct: "El paisaje rural (menor intervención) y el urbano.", options: ["El paisaje rural (menor intervención) y el urbano.", "El natural y el artificial.", "El forestal y el no forestal.", "El frío y el cálido."], hint: "Uno es el campo y otro la ciudad." },
-    { q: "Según el sistema Köppen, ¿qué tres elementos establecen los conjuntos bioclimáticos?", correct: "La temperatura, las precipitaciones y factores como latitud y distancia al mar.", options: ["La temperatura, las precipitaciones y factores como latitud y distancia al mar.", "La altura de los edificios y la contaminación.", "La humedad, los ríos y los lagos.", "Los vientos, las borrascas y la presión."], hint: "Son los mismos datos que salen en el climograma." },
-    { q: "¿Cuáles son los 3 grandes conjuntos bioclimáticos del sistema Köppen?", correct: "Bioclimas forestales, no forestales y no zonales.", options: ["Bioclimas forestales, no forestales y no zonales.", "Cálidos, templados y fríos.", "Desérticos, esteparios y de tundra.", "Naturales, rurales y urbanos."], hint: "Su nombre depende de si tienen bosques o no." },
-    { q: "¿Qué característica principal tienen los bioclimas forestales?", correct: "Tienen un gran nivel de vegetación y biodiversidad.", options: ["Tienen un gran nivel de vegetación y biodiversidad.", "Carecen de vegetación por el frío.", "Solo existen en la cima de las montañas.", "Tienen temperaturas bajo cero siempre."], hint: "Están llenos de árboles y animales." },
-    { q: "¿Cuáles son los tres grupos dentro de los bioclimas forestales?", correct: "Cálido, templado y frío.", options: ["Cálido, templado y frío.", "Montano, alpino y nival.", "Desértico, estepa y tundra.", "Ecuatorial, mediterráneo y continental."], hint: "Son las tres grandes zonas de temperatura." },
-    { q: "¿Cuáles son las tres variantes del bioclima forestal cálido?", correct: "Ecuatorial, de sabana y monzónico.", options: ["Ecuatorial, de sabana y monzónico.", "Chino, mediterráneo y oceánico.", "Continental, desértico y polar.", "Jungla, bosque perenne y tundra."], hint: "Típicos de países como Brasil o Tailandia." },
-    { q: "¿Cuáles son las tres variantes del bioclima forestal templado?", correct: "El chino, el mediterráneo y el oceánico.", options: ["El chino, el mediterráneo y el oceánico.", "Ecuatorial, de sabana y monzónico.", "Tundra, hielo perpetuo y estepa.", "Piso colino, montano y alpino."], hint: "Dos de ellos se dan en la Península Ibérica." },
-    { q: "¿Cuál es la única variante del bioclima forestal frío?", correct: "El clima continental.", options: ["El clima continental.", "El clima oceánico.", "El clima polar.", "El clima de alta montaña."], hint: "Es el clima de Rusia o Canadá (sus bosques son de pinos)." },
-    { q: "¿Por qué los bioclimas no forestales carecen de vegetación?", correct: "Por sus condiciones extremas de exceso de calor o de frío.", options: ["Por sus condiciones extremas de exceso de calor o de frío.", "Por la tala excesiva de árboles.", "Porque no llueve nunca en ninguna parte del planeta.", "Porque están situados a 4500 metros de altura."], hint: "Las plantas no aguantan bien los extremos." },
-    { q: "¿Cuáles son los dos grandes tipos de bioclimas no forestales?", correct: "El árido y el de exceso de frío.", options: ["El árido y el de exceso de frío.", "El forestal y el no zonal.", "El rural y el urbano.", "El ecuatorial y el monzónico."], hint: "Uno quema y el otro hiela." },
-    { q: "En el bioclima árido, ¿cómo es la temperatura?", correct: "Muy elevada durante el día y muy baja por la noche (gran amplitud térmica).", options: ["Muy elevada durante el día y muy baja por la noche (gran amplitud térmica).", "Siempre bajo cero.", "Suave todo el año, gracias al mar.", "Moderada sin cambios bruscos."], hint: "Por el día te asas y por la noche te congelas." },
-    { q: "¿Qué tipo de vegetación tiene el bioclima árido?", correct: "Vegetación xerófila, adaptada al calor y la sequía (cactus, aloe vera...).", options: ["Vegetación xerófila, adaptada al calor y la sequía (cactus, aloe vera...).", "Bosques de coníferas como el pino.", "Árboles de hoja caduca.", "Musgos y líquenes bajo la nieve."], hint: "Apenas necesitan agua." },
-    { q: "¿Cuáles son las dos variantes del bioclima árido?", correct: "El desértico y el de estepa.", options: ["El desértico y el de estepa.", "La tundra y el hielo perpetuo.", "El mediterráneo y el chino.", "La solana y la umbría."], hint: "Suelen estar llenos de arena." },
-    { q: "En el bioclima de exceso de frío, ¿cómo son sus precipitaciones?", correct: "Son muy escasas y siempre en forma de nieve.", options: ["Son muy escasas y siempre en forma de nieve.", "Son lluvias torrenciales constantes.", "No existe ningún tipo de precipitación.", "Son abundantes y en forma líquida."], hint: "La temperatura está bajo cero casi siempre." },
-    { q: "¿Cuáles son las dos variantes del bioclima de exceso de frío?", correct: "La tundra y el hielo perpetuo.", options: ["La tundra y el hielo perpetuo.", "El desértico y la estepa.", "El ecuatorial y la sabana.", "El piso montano y alpino."], hint: "En uno apenas hay musgo, en el otro todo es blanco." },
-    { q: "¿Cuál es el único bioclima no zonal que existe?", correct: "El clima de montaña.", options: ["El clima de montaña.", "El clima oceánico.", "El clima árido.", "El paisaje urbano."], hint: "Puede aparecer en cualquier país si el terreno es muy alto." },
-    { q: "En el clima de montaña, ¿qué diferencia hay entre la solana y la umbría?", correct: "La solana es la parte donde da el sol y la umbría donde no da el sol.", options: ["La solana es la parte donde da el sol y la umbría donde no da el sol.", "Solana es bosque y umbría es pradera.", "Solana es nieve y umbría es roca.", "Solana es río y umbría es montaña."], hint: "Sus propios nombres indican si hay luz u oscuridad." },
-    { q: "¿Cómo se divide la vegetación en el clima de montaña?", correct: "Se va reduciendo por la altura y está dividida en pisos.", options: ["Se va reduciendo por la altura y está dividida en pisos.", "Aumenta la vegetación cuanto más subimos.", "Siempre hay la misma cantidad de árboles.", "No hay vegetación en ningún punto de la montaña."], hint: "Sube como si fueran las plantas de un edificio (colino, montano...)." },
-    { q: "En la vegetación de montaña, ¿qué caracteriza al piso nival (más de 4500 metros)?", correct: "No hay vegetación y suele estar siempre nevado.", options: ["No hay vegetación y suele estar siempre nevado.", "Hay grandes bosques de pinos.", "Es donde se encuentran los campos de cultivo.", "Aparecen pequeños arbustos."], hint: "Es la cima de las montañas más altas del mundo." }
+/*
+Cada pregunta contiene:
+[apartado, pregunta, correcta, incorrecta1,
+ incorrecta2, incorrecta3]
+*/
+
+const BANK = [
+
+/* EJERCICIO 1 - VOCABULARIO */
+
+["1 · Vocabulario",
+"¿Qué significa islam?",
+"Sumisión a la voluntad de Dios",
+"Nombre de una ciudad de Arabia",
+"Gobierno de los califas",
+"Título de los jueces"],
+
+["1 · Vocabulario",
+"¿Qué es el Corán?",
+"El libro sagrado de los musulmanes",
+"La capital del califato ortodoxo",
+"El nombre de la peregrinación",
+"Un territorio conquistado"],
+
+["1 · Vocabulario",
+"¿Quiénes son los musulmanes?",
+"Las personas que practican el islam",
+"Los sucesores de los turcos",
+"Los habitantes de Damasco únicamente",
+"Los gobernantes del califato omeya"],
+
+
+/* EJERCICIO 2 - CINCO PRECEPTOS */
+
+["2 · Cinco preceptos",
+"¿Cuáles son los cinco preceptos religiosos del islam?",
+"Profesión de fe, oración, limosna, ayuno y peregrinación",
+"Oración, comercio, conquista, peregrinación y tributos",
+"Profesión de fe, guerra, coronación, ayuno y comercio",
+"Limosna, impuestos, estudios, conquistas y viajes"],
+
+["2 · Cinco preceptos",
+"¿Cuál de estas prácticas es uno de los cinco preceptos?",
+"Profesión de fe",
+"Elegir un califa",
+"Conquistar una provincia",
+"Trasladar la capital"],
+
+["2 · Cinco preceptos",
+"¿Qué precepto consiste en rezar diariamente?",
+"La oración",
+"La limosna",
+"La peregrinación",
+"El ayuno"],
+
+["2 · Cinco preceptos",
+"¿Qué precepto consiste en ayudar a los necesitados?",
+"La limosna",
+"La hégira",
+"La profesión de fe",
+"La peregrinación"],
+
+["2 · Cinco preceptos",
+"¿En qué mes se realiza el ayuno religioso?",
+"Ramadán",
+"Diciembre",
+"Agosto",
+"Febrero"],
+
+["2 · Cinco preceptos",
+"¿A qué ciudad deben peregrinar los musulmanes al menos una vez en su vida?",
+"La Meca",
+"Bagdad",
+"Damasco",
+"Medina"],
+
+["2 · Cinco preceptos",
+"¿Cuál NO forma parte de los cinco preceptos?",
+"Cambiar de capital cada año",
+"La limosna",
+"El ayuno",
+"La oración"],
+
+
+/* EJERCICIO 3 - VERDADERO O FALSO */
+
+["3 · Verdadero o falso",
+"El islam nació en la península de Arabia.",
+"Verdadero",
+"Falso, nació en Egipto",
+"Falso, nació en Mesopotamia",
+"Falso, nació en la península ibérica"],
+
+["3 · Verdadero o falso",
+"Mahoma huyó de La Meca a Medina en el año 632.",
+"Falso, ocurrió en el año 622",
+"Verdadero, ocurrió en 632",
+"Falso, ocurrió en 750",
+"Falso, ocurrió en 1055"],
+
+["3 · Verdadero o falso",
+"El año 622 fue el punto de partida del calendario islámico.",
+"Verdadero",
+"Falso, comenzó en 570",
+"Falso, comenzó en 661",
+"Falso, comenzó en 1055"],
+
+["3 · Verdadero o falso",
+"La expansión del imperio musulmán se hizo en cinco etapas.",
+"Falso, se distinguen tres grandes etapas",
+"Verdadero, fueron cinco",
+"Falso, solo hubo una etapa",
+"Falso, fueron siete etapas"],
+
+["3 · Verdadero o falso",
+"Los turcos compartieron el califato en 1055.",
+"Falso, los turcos conquistaron el califato",
+"Verdadero, lo compartieron",
+"Falso, comenzó el califato omeya",
+"Falso, comenzó el califato ortodoxo"],
+
+
+/* EJERCICIO 4 - CAPITALES */
+
+["4 · Califatos y capitales",
+"¿Cuál fue la capital del califato ortodoxo?",
+"Medina",
+"Damasco",
+"Bagdad",
+"La Meca"],
+
+["4 · Califatos y capitales",
+"¿Cuál fue la capital del califato omeya?",
+"Damasco",
+"Bagdad",
+"Medina",
+"La Meca"],
+
+["4 · Califatos y capitales",
+"¿Cuál fue la capital del califato abasí?",
+"Bagdad",
+"Medina",
+"Damasco",
+"La Meca"],
+
+
+/* EJERCICIO 5 - FECHAS */
+
+["5 · Fechas",
+"¿En qué año nació Mahoma?",
+"570",
+"622",
+"632",
+"661"],
+
+["5 · Fechas",
+"¿En qué año ocurrió la hégira?",
+"622",
+"570",
+"632",
+"750"],
+
+["5 · Fechas",
+"¿En qué año conquistaron los turcos el califato?",
+"1055",
+"750",
+"661",
+"632"],
+
+["5 · Fechas",
+"¿En qué año comenzó el califato omeya?",
+"661",
+"632",
+"750",
+"1055"],
+
+["5 · Fechas",
+"¿En qué año comenzó el califato abasí?",
+"750",
+"570",
+"622",
+"661"],
+
+["5 · Fechas",
+"¿En qué año comenzó el califato ortodoxo?",
+"632",
+"622",
+"661",
+"750"],
+
+
+/* EJERCICIO 6 - MAPA DE CONQUISTAS */
+
+["6 · Mapa de conquistas",
+"¿En qué período se conquistó Siria?",
+"Califato ortodoxo",
+"Califato omeya",
+"Califato abasí",
+"Antes de la hégira"],
+
+["6 · Mapa de conquistas",
+"¿En qué período se conquistó el valle del Indo?",
+"Califato omeya",
+"Califato ortodoxo",
+"Califato abasí",
+"Antes de la hégira"],
+
+["6 · Mapa de conquistas",
+"¿En qué período se conquistó Egipto?",
+"Califato ortodoxo",
+"Califato omeya",
+"Califato abasí",
+"Antes de la hégira"],
+
+["6 · Mapa de conquistas",
+"¿En qué período se conquistó Creta?",
+"Califato abasí",
+"Califato ortodoxo",
+"Califato omeya",
+"Antes de la hégira"],
+
+["6 · Mapa de conquistas",
+"¿En qué período se conquistó Sicilia?",
+"Califato abasí",
+"Califato omeya",
+"Califato ortodoxo",
+"Antes de la hégira"],
+
+["6 · Mapa de conquistas",
+"¿En qué período se conquistó Mesopotamia?",
+"Califato ortodoxo",
+"Califato omeya",
+"Califato abasí",
+"Antes de la hégira"],
+
+
+/* EJERCICIO 7 - COMPLETAR FRASES */
+
+["7 · Completar frases",
+"Completa: Las etapas del imperio musulmán fueron tres...",
+"Califato ortodoxo, omeya y abasí",
+"Califato omeya, abasí y ortodoxo",
+"Califato abasí, omeya y ortodoxo",
+"Califato omeya, romano y bizantino"],
+
+["7 · Completar frases",
+"En la primera etapa, a los sucesores de ... se los elegía entre sus familiares y amigos.",
+"Mahoma",
+"Los turcos",
+"Los omeyas",
+"Los abasíes"],
+
+["7 · Completar frases",
+"En la segunda etapa, gobernó la dinastía de los...",
+"Omeyas",
+"Abasíes",
+"Turcos",
+"Ortodoxos"],
+
+["7 · Completar frases",
+"En la tercera etapa, gobernó la dinastía...",
+"Abasí",
+"Omeya",
+"Ortodoxa",
+"Turca"]
+
 ];
 
-// =====================================
-// ESTADOS Y VARIABLES
-// =====================================
-let currentQuestions = [];
-let currentIndex = 0;
-let correctAnswers = 0;
-let wrongAnswers = 0;
-let mistakes = [];
-let reviewMode = false;
-const QUESTIONS_PER_TEST = 50;
 
-// Elementos DOM
-const questionText = document.getElementById("question-text");
-const optionsContainer = document.getElementById("options-container");
-const nextBtn = document.getElementById("next-btn");
-const correctCount = document.getElementById("correct-count");
-const wrongCount = document.getElementById("wrong-count");
-const questionNumber = document.getElementById("question-number");
-const questionTotal = document.getElementById("question-total");
-const progressBar = document.getElementById("progress-bar");
-const quizScreen = document.getElementById("quiz-screen");
-const resultScreen = document.getElementById("result-screen");
-const resultTitle = document.getElementById("result-title");
-const finalScore = document.getElementById("final-score");
-const finalPercentage = document.getElementById("final-percentage");
-const mistakesSection = document.getElementById("mistakes-section");
-const mistakesList = document.getElementById("mistakes-list");
-const reviewBtn = document.getElementById("review-btn");
-const restartBtn = document.getElementById("restart-btn");
-const modeBadge = document.getElementById("mode-badge");
+/* FUNCIONES DEL TEST */
 
-// =====================================
-// UTILIDADES
-// =====================================
-function shuffle(array){
-    const arr = [...array];
-    for(let i = arr.length - 1; i > 0; i--){
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
+const $ = id => document.getElementById(id);
+
+function shuffle(array) {
+  const a = [...array];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+let questions = [];
+let position = 0;
+let responses = [];
+let locked = false;
+
+function show(id) {
+  $("quiz").hidden = id !== "quiz";
+  $("results").hidden = id !== "results";
+  window.scrollTo(0, 0);
+}
+
+function start(rows = BANK) {
+  questions = shuffle(rows).map(r => ({
+    section: r[0],
+    text: r[1],
+    correct: r[2],
+    choices: shuffle(r.slice(2))
+  }));
+  position = 0;
+  responses = [];
+  show("quiz");
+  render();
+}
+
+function render() {
+  locked = false;
+  const q = questions[position];
+
+  $("section").textContent = q.section;
+  $("counter").textContent =
+    `Pregunta ${position + 1} de ${questions.length}`;
+
+  $("progress").style.width =
+    (position / questions.length * 100) + "%";
+
+  $("question").textContent = q.text;
+  $("feedback").hidden = true;
+  $("next").hidden = true;
+  $("options").replaceChildren();
+
+  q.choices.forEach((value, i) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "option";
+
+    const letter = document.createElement("span");
+    letter.className = "letter";
+    letter.textContent = "ABCD"[i];
+
+    const text = document.createElement("span");
+    text.textContent = value;
+
+    btn.append(letter, text);
+    btn.addEventListener("click", () => answer(value));
+
+    $("options").append(btn);
+  });
+}
+
+function answer(value) {
+  if (locked) return;
+  locked = true;
+
+  const q = questions[position];
+  const ok = value === q.correct;
+
+  responses.push({
+    q: q,
+    selected: value,
+    ok: ok
+  });
+
+  for (const button of $("options").children) {
+    const option = button.lastElementChild.textContent;
+    button.disabled = true;
+
+    if (option === q.correct) {
+      button.classList.add("correct");
     }
-    return arr;
+    if (option === value && !ok) {
+      button.classList.add("incorrect");
+    }
+  }
+
+  $("feedback").className =
+    "feedback " + (ok ? "good" : "bad");
+
+  $("feedback").textContent = ok
+    ? "✓ ¡Correcto!"
+    : "✗ Respuesta correcta: " + q.correct;
+
+  $("feedback").hidden = false;
+
+  $("progress").style.width =
+    ((position + 1) / questions.length * 100) + "%";
+
+  $("next").textContent =
+    position === questions.length - 1
+      ? "Ver resultado"
+      : "Siguiente pregunta";
+
+  $("next").hidden = false;
 }
 
-// =====================================
-// LÓGICA DEL TEST
-// =====================================
-function startMainTest(){
-    currentIndex = 0; correctAnswers = 0; wrongAnswers = 0; mistakes = [];
-    currentQuestions = shuffle(questionPool).slice(0, QUESTIONS_PER_TEST);
-    reviewMode = false;
-    
-    questionTotal.textContent = currentQuestions.length;
-    showQuizScreen();
-    renderQuestion();
-}
+function finish() {
+  show("results");
 
-function startReviewMode(){
-    currentIndex = 0; correctAnswers = 0; wrongAnswers = 0;
-    currentQuestions = shuffle(mistakes);
-    reviewMode = true;
-    
-    questionTotal.textContent = currentQuestions.length;
-    showQuizScreen();
-    renderQuestion();
-}
+  const correct = responses.filter(r => r.ok).length;
+  const wrong = responses.filter(r => !r.ok);
+  const pct = Math.round(correct / responses.length * 100);
 
-function renderQuestion(){
-    nextBtn.classList.add("hidden");
-    updateStats();
+  const nota = (correct / responses.length * 10)
+    .toFixed(1)
+    .replace(".", ",");
 
-    const item = currentQuestions[currentIndex];
-    questionText.textContent = item.q;
-    questionNumber.textContent = currentIndex + 1;
-    progressBar.style.width = `${((currentIndex) / currentQuestions.length) * 100}%`;
+  $("score").textContent =
+    `${correct} / ${responses.length} · ${nota} / 10`;
 
-    const shuffledOptions = shuffle(item.options);
-    optionsContainer.innerHTML = "";
+  $("message").textContent =
+    pct === 100
+      ? "¡Enhorabuena! Todo correcto."
+      : pct >= 80
+      ? "Muy bien. Revisa los errores."
+      : pct >= 60
+      ? "Buen trabajo. Conviene repasar los fallos."
+      : "Repasa la hoja y vuelve a intentarlo.";
 
-    shuffledOptions.forEach(option => {
-        const btn = document.createElement("button");
-        btn.className = "option-btn";
-        btn.innerHTML = `<span>${option}</span>`;
+  $("stats").replaceChildren();
 
-        btn.addEventListener("click", () => {
-            const buttons = document.querySelectorAll(".option-btn");
-            buttons.forEach(b => {
-                b.disabled = true;
-                if(b.textContent === item.correct){
-                    b.classList.add("correct-answer");
-                }
-            });
+  [
+    `✓ Aciertos: ${correct}`,
+    `✗ Errores: ${wrong.length}`,
+    `Porcentaje: ${pct}%`
+  ].forEach(text => {
+    const span = document.createElement("span");
+    span.textContent = text;
+    $("stats").append(span);
+  });
 
-            if(option === item.correct){
-                correctAnswers++;
-            } else {
-                wrongAnswers++;
-                btn.classList.add("wrong-answer");
+  $("mistakes").replaceChildren();
 
-                const hintSpan = document.createElement("span");
-                hintSpan.className = "hint";
-                hintSpan.innerHTML = `💡 <strong>Pista:</strong> ${item.hint}`;
-                
-                buttons.forEach(b => {
-                    if(b.textContent === item.correct){
-                        b.appendChild(hintSpan);
-                    }
-                });
+  if (wrong.length) {
+    const h = document.createElement("h2");
+    h.textContent = "Repaso de los errores";
+    $("mistakes").append(h);
 
-                if(!mistakes.includes(item)){
-                    mistakes.push(item);
-                }
-            }
-            updateStats();
-            nextBtn.classList.remove("hidden");
-        });
-        optionsContainer.appendChild(btn);
+    wrong.forEach((r, i) => {
+      const card = document.createElement("div");
+      card.className = "error-card";
+
+      const title = document.createElement("h3");
+      title.textContent = `${i + 1}. ${r.q.text}`;
+
+      const selected = document.createElement("p");
+      selected.className = "wrong";
+      selected.textContent =
+        "Tu respuesta: " + r.selected;
+
+      const right = document.createElement("p");
+      right.className = "right";
+      right.textContent =
+        "Respuesta correcta: " + r.q.correct;
+
+      card.append(title, selected, right);
+      $("mistakes").append(card);
     });
+
+  } else {
+    const p = document.createElement("p");
+    p.textContent = "No hay errores que repasar.";
+    $("mistakes").append(p);
+  }
+
+  $("retry").hidden = wrong.length === 0;
+
+  $("retry").onclick = () => {
+    const failedRows = wrong.map(r => [
+      r.q.section,
+      r.q.text,
+      r.q.correct,
+      ...r.q.choices.filter(c => c !== r.q.correct)
+    ]);
+
+    start(failedRows);
+  };
 }
 
-function nextQuestion(){
-    currentIndex++;
-    if(currentIndex < currentQuestions.length){
-        renderQuestion();
-    } else {
-        showResults();
-    }
-}
+$("next").addEventListener("click", () => {
+  if (!locked) return;
 
-function showResults(){
-    quizScreen.classList.add("hidden");
-    resultScreen.classList.remove("hidden");
+  if (position === questions.length - 1) {
+    finish();
+  } else {
+    position++;
+    render();
+  }
+});
 
-    const total = currentQuestions.length;
-    const percentage = Math.round((correctAnswers / total) * 100);
+$("restart").addEventListener("click", () => start());
 
-    finalScore.textContent = `${correctAnswers} / ${total}`;
-    finalPercentage.textContent = `${percentage}%`;
+// INICIO AUTOMÁTICO SIN MENÚ
+start();
 
-    if(percentage >= 85){
-        resultTitle.textContent = "🏆 ¡Impresionante, Dani!";
-        resultTitle.className = "result-title success";
-    } else {
-        resultTitle.textContent = "❌ ¡No te rindas, repasa tus fallos!";
-        resultTitle.className = "result-title fail";
-    }
-
-    if(mistakes.length > 0 && !reviewMode){
-        mistakesSection.classList.remove("hidden");
-        mistakesList.innerHTML = "";
-        mistakes.forEach(questionObj => {
-            const li = document.createElement("li");
-            li.innerHTML = `<strong>${questionObj.q}</strong><br>Respuesta correcta: <span class="correct">${questionObj.correct}</span>`;
-            mistakesList.appendChild(li);
-        });
-    } else {
-        mistakesSection.classList.add("hidden");
-    }
-}
-
-function updateStats(){
-    correctCount.textContent = correctAnswers;
-    wrongCount.textContent = wrongAnswers;
-    modeBadge.textContent = reviewMode ? "MODO REPASO DE ERRORES" : `TEST PRINCIPAL (${QUESTIONS_PER_TEST} PREGUNTAS)`;
-}
-
-function showQuizScreen(){
-    resultScreen.classList.add("hidden");
-    quizScreen.classList.remove("hidden");
-}
-
-nextBtn.addEventListener("click", nextQuestion);
-restartBtn.addEventListener("click", startMainTest);
-reviewBtn.addEventListener("click", startReviewMode);
-
-startMainTest();
 </script>
 </body>
 </html>
