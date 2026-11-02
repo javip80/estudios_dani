@@ -4,183 +4,252 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dani · Irregular Verbs 1–15</title>
+<title>Dani - Irregular Verbs Trainer</title>
+
 <style>
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
+
 body {
   margin: 0;
-  padding: 18px;
+  padding: 20px;
   background: #eef3f8;
   color: #233345;
   font-family: Segoe UI, Arial, sans-serif;
 }
-main {
-  max-width: 900px;
+
+.container {
+  max-width: 950px;
   margin: auto;
+  background: white;
   padding: 28px;
-  background: #fff;
   border-radius: 18px;
   box-shadow: 0 5px 20px #0001;
 }
-h1 {
-  margin: 0;
+
+h1 { color: #1f6fb2; margin-top: 0; }
+.subtitle { color: #64748b; }
+
+.hidden { display: none !important; }
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 25px;
+}
+
+.menu-btn {
+  background: #f5f9fd;
+  border: 2px solid #c6dced;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: left;
+  cursor: pointer;
+  color: #233345;
+}
+
+.menu-btn:hover {
+  border-color: #1f6fb2;
+  background: #eaf4fc;
+}
+
+.menu-btn strong {
+  display: block;
+  font-size: 1.12rem;
   color: #1f6fb2;
+  margin-bottom: 8px;
 }
-.sub {
-  color: #64748b;
+
+.menu-btn span {
+  display: block;
+  margin: 4px 0;
+  font-size: .9rem;
 }
+
+.menu-btn.all {
+  background: #eaf4fc;
+  border-color: #1f6fb2;
+}
+
 .top {
   display: flex;
   justify-content: space-between;
-  align-items: center;
   flex-wrap: wrap;
   gap: 12px;
+  align-items: center;
 }
+
 .stats {
   display: flex;
-  gap: 18px;
+  gap: 20px;
   font-weight: bold;
 }
-.green { color: #18854a; }
-.red { color: #bd3434; }
+
+.good { color: #18854a; }
+.bad { color: #bd3434; }
+
 .progress {
-  height: 14px;
+  height: 15px;
   background: #dfe6ee;
   border-radius: 20px;
   overflow: hidden;
-  margin: 23px 0;
+  margin: 24px 0;
 }
+
 .bar {
   height: 100%;
   width: 0;
   background: #1f6fb2;
   transition: width .2s;
 }
+
 .question {
   font-size: 1.45rem;
   font-weight: bold;
-  margin: 20px 0 24px;
-  min-height: 55px;
+  margin: 25px 0;
+  min-height: 70px;
 }
+
 .options {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 14px;
 }
+
 button {
   font: inherit;
   font-weight: 650;
   cursor: pointer;
   padding: 16px;
   border-radius: 10px;
-  min-height: 62px;
 }
+
 .option {
+  min-height: 65px;
   background: white;
   border: 2px solid #1f6fb2;
   color: #1f6fb2;
 }
+
 .option:hover:not(:disabled) {
   background: #edf6ff;
 }
+
 .option.correct {
   background: #18854a;
   color: white;
   border-color: #18854a;
 }
+
 .option.wrong {
   background: #bd3434;
   color: white;
   border-color: #bd3434;
 }
-.option:disabled {
-  cursor: default;
-}
+
+.option:disabled { cursor: default; }
+
 .action {
   display: block;
   width: 100%;
   margin-top: 20px;
-  border: 0;
   background: #233345;
   color: white;
+  border: none;
 }
-.hidden {
-  display: none !important;
-}
+
+.action:hover { background: #34506b; }
+
 .feedback {
-  margin-top: 16px;
-  padding: 14px;
   background: #f0f5fa;
   border-radius: 10px;
+  padding: 15px;
+  margin-top: 20px;
   line-height: 1.6;
 }
+
 table {
-  border-collapse: collapse;
   width: 100%;
+  border-collapse: collapse;
   margin: 15px 0;
 }
+
 th, td {
+  text-align: left;
   padding: 10px;
   border-bottom: 1px solid #dae2e9;
-  text-align: left;
   white-space: nowrap;
 }
-th {
-  background: #e9f2fb;
-}
-@media(max-width:600px) {
-  main { padding: 18px; }
-  .options { grid-template-columns: 1fr; }
+
+th { background: #e9f2fb; }
+
+@media(max-width:650px) {
+  body { padding: 10px; }
+  .container { padding: 18px; }
+  .menu-grid, .options {
+    grid-template-columns: 1fr;
+  }
   .question { font-size: 1.2rem; }
 }
 </style>
 </head>
 
 <body>
-<main>
+<main class="container">
 
 <h1>🇬🇧 Irregular Verbs Trainer</h1>
-<p class="sub">
-  Dani · 2.º ESO · Verbos irregulares 1–15
-</p>
+<p class="subtitle">Dani · 2.º ESO</p>
 
-<section id="quiz">
+<!-- MENÚ INICIAL -->
+<section id="menu">
+  <h2>Selecciona los verbos que quieres practicar</h2>
+
+  <div class="menu-grid" id="menuGrid"></div>
+
+  <p class="subtitle">
+    Cada test contiene 40 preguntas aleatorias
+    con cuatro respuestas posibles.
+  </p>
+</section>
+
+<!-- TEST -->
+<section id="quiz" class="hidden">
+
   <div class="top">
-    <strong id="mode">Test principal</strong>
+    <strong id="mode"></strong>
 
     <span>
-      Pregunta <b id="number">1</b> /
+      Pregunta
+      <b id="number">1</b> /
       <b id="total">40</b>
     </span>
 
-    <span class="stats">
-      <span class="green">
-        ✓ <span id="right">0</span>
-      </span>
-      <span class="red">
-        ✗ <span id="wrong">0</span>
-      </span>
-    </span>
+    <div class="stats">
+      <span class="good">✓ <span id="right">0</span></span>
+      <span class="bad">✗ <span id="wrong">0</span></span>
+    </div>
   </div>
 
   <div class="progress">
-    <div id="bar" class="bar"></div>
+    <div class="bar" id="bar"></div>
   </div>
 
-  <p id="question" class="question"></p>
-  <div id="options" class="options"></div>
+  <div class="question" id="question"></div>
 
-  <div id="feedback"
-       class="feedback hidden"
-       aria-live="polite"></div>
+  <div class="options" id="options"></div>
+
+  <div class="feedback hidden" id="feedback"></div>
 
   <button id="next" class="action hidden">
     Siguiente pregunta →
   </button>
+
+  <button id="backMenu" class="action">
+    Volver al menú
+  </button>
 </section>
 
+<!-- RESULTADOS -->
 <section id="results" class="hidden">
 
   <h2 id="headline"></h2>
@@ -196,7 +265,7 @@ th {
           <tr>
             <th>Infinitivo</th>
             <th>Past Simple</th>
-            <th>Participio</th>
+            <th>Past Participle</th>
             <th>Español</th>
           </tr>
         </thead>
@@ -210,64 +279,157 @@ th {
   </div>
 
   <button id="restart" class="action">
-    Nuevo test de 40 preguntas
+    Nuevo test del mismo bloque
   </button>
 
+  <button id="menuButton" class="action">
+    Volver al menú principal
+  </button>
 </section>
 
 </main>
 
 <script>
-'use strict';
+"use strict";
 
 // =====================================
-// VERBOS IRREGULARES DEL 1 AL 15
+// 72 VERBOS IRREGULARES
+// Orden original de la profesora
 // =====================================
 
-const VERBS = [
-  ['be','was / were','been','ser / estar'],
-  ['become','became','become','convertirse en'],
-  ['begin','began','begun','empezar'],
-  ['break','broke','broken','romper'],
-  ['bring','brought','brought','traer'],
-  ['build','built','built','construir'],
-  ['burn','burnt / burned','burnt / burned','quemar'],
-  ['buy','bought','bought','comprar'],
-  ['catch','caught','caught','coger'],
-  ['choose','chose','chosen','elegir'],
-  ['come','came','come','venir'],
-  ['cost','cost','cost','costar'],
-  ['cut','cut','cut','cortar'],
-  ['do','did','done','hacer'],
-  ['draw','drew','drawn','dibujar']
-].map(([base,past,part,es]) => ({
-  base, past, part, es
+const RAW = [
+  ["be","was / were","been","ser / estar"],
+  ["become","became","become","convertirse en"],
+  ["begin","began","begun","empezar"],
+  ["break","broke","broken","romper"],
+  ["bring","brought","brought","traer"],
+  ["build","built","built","construir"],
+  ["burn","burnt / burned","burnt / burned","quemar"],
+  ["buy","bought","bought","comprar"],
+  ["catch","caught","caught","coger"],
+  ["choose","chose","chosen","elegir"],
+  ["come","came","come","venir"],
+  ["cost","cost","cost","costar"],
+  ["cut","cut","cut","cortar"],
+  ["do","did","done","hacer"],
+  ["draw","drew","drawn","dibujar"],
+
+  ["dream","dreamt / dreamed","dreamt / dreamed","soñar"],
+  ["drink","drank","drunk","beber"],
+  ["drive","drove","driven","conducir"],
+  ["eat","ate","eaten","comer"],
+  ["fall","fell","fallen","caer(se)"],
+  ["feel","felt","felt","sentir(se)"],
+  ["fight","fought","fought","luchar / pelear"],
+  ["find","found","found","encontrar"],
+  ["fly","flew","flown","volar"],
+  ["forget","forgot","forgotten","olvidar"],
+  ["forgive","forgave","forgiven","perdonar"],
+  ["get","got","got","conseguir"],
+  ["give","gave","given","dar"],
+  ["go","went","gone","ir"],
+  ["have","had","had","tener"],
+
+  ["hear","heard","heard","oír"],
+  ["hide","hid","hidden","esconder"],
+  ["hit","hit","hit","golpear"],
+  ["hold","held","held","sujetar"],
+  ["hurt","hurt","hurt","dañar / hacer daño"],
+  ["keep","kept","kept","guardar / mantener"],
+  ["know","knew","known","saber"],
+  ["learn","learnt / learned","learnt / learned","aprender"],
+  ["leave","left","left","abandonar / irse"],
+  ["let","let","let","dejar"],
+  ["lose","lost","lost","perder"],
+  ["make","made","made","hacer"],
+  ["meet","met","met","conocer / quedar con"],
+  ["pay","paid","paid","pagar"],
+  ["put","put","put","poner"],
+
+  ["read","read","read","leer"],
+  ["ride","rode","ridden","montar en"],
+  ["ring","rang","rung","sonar"],
+  ["run","ran","run","correr"],
+  ["say","said","said","decir"],
+  ["see","saw","seen","ver"],
+  ["sell","sold","sold","vender"],
+  ["send","sent","sent","enviar"],
+  ["shut","shut","shut","cerrar"],
+  ["sing","sang","sung","cantar"],
+  ["sit","sat","sat","sentarse"],
+  ["sleep","slept","slept","dormir"],
+  ["speak","spoke","spoken","hablar"],
+  ["spend","spent","spent","gastar"],
+  ["stand","stood","stood","permanecer"],
+
+  ["steal","stole","stolen","robar"],
+  ["swim","swam","swum","nadar"],
+  ["take","took","taken","coger"],
+  ["teach","taught","taught","enseñar"],
+  ["tell","told","told","contar"],
+  ["think","thought","thought","pensar"],
+  ["throw","threw","thrown","lanzar"],
+  ["understand","understood","understood","entender"],
+  ["wake up","woke up","woken up","despertar(se)"],
+  ["wear","wore","worn","llevar puesto"],
+  ["win","won","won","ganar"],
+  ["write","wrote","written","escribir"]
+];
+
+const VERBS = RAW.map(([base,past,part,es],i) => ({
+  id:i+1,
+  base,
+  past,
+  part,
+  es
 }));
 
 // =====================================
-// TIPOS DE PREGUNTAS
+// BLOQUES Y FECHAS
 // =====================================
 
-const TYPES = [
+const GROUPS = [
   {
-    key: 'past',
-    prompt: v =>
-      `¿Cuál es el Past Simple de «${v.base}»?`
+    label:"Verbos 1–15",
+    from:1,
+    to:15,
+    date:"Miércoles 28/10",
+    description:"be → draw"
   },
   {
-    key: 'part',
-    prompt: v =>
-      `¿Cuál es el Past Participle de «${v.base}»?`
+    label:"Verbos 16–30",
+    from:16,
+    to:30,
+    date:"Martes 3/11",
+    description:"dream → have"
   },
   {
-    key: 'base',
-    prompt: v =>
-      `¿Cuál es el infinitivo de «${v.es}»?`
+    label:"Verbos 31–45",
+    from:31,
+    to:45,
+    date:"Viernes 6/11",
+    description:"hear → put"
   },
   {
-    key: 'es',
-    prompt: v =>
-      `¿Qué significa «${v.base}»?`
+    label:"Verbos 46–60",
+    from:46,
+    to:60,
+    date:"Martes 10/11",
+    description:"read → stand"
+  },
+  {
+    label:"Verbos 61–72",
+    from:61,
+    to:72,
+    date:"Viernes 13/11",
+    description:"steal → write"
+  },
+  {
+    label:"Todos los verbos",
+    from:1,
+    to:72,
+    date:"Repaso general",
+    description:"Los 72 verbos"
   }
 ];
 
@@ -276,23 +438,47 @@ const $ = id => document.getElementById(id);
 function shuffle(items) {
   const a = [...items];
 
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
+  for(let i=a.length-1;i>0;i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
   }
 
   return a;
 }
 
-// Banco: 15 verbos x 4 tipos de pregunta.
-const BANK = VERBS.flatMap((verb, i) =>
-  TYPES.map((type, j) => ({
-    verb,
-    type,
-    id: `${i}-${j}`
-  }))
-);
+// =====================================
+// TIPOS DE PREGUNTAS
+// =====================================
 
+const TYPES = [
+  {
+    key:"past",
+    prompt:v=>
+      `¿Cuál es el Past Simple de «${v.base}»?`
+  },
+  {
+    key:"part",
+    prompt:v=>
+      `¿Cuál es el Past Participle de «${v.base}»?`
+  },
+  {
+    key:"base",
+    prompt:v=>
+      `¿Cuál es el infinitivo de «${v.es}»?`
+  },
+  {
+    key:"es",
+    prompt:v=>
+      `¿Qué significa «${v.base}»?`
+  }
+];
+
+// =====================================
+// ESTADO
+// =====================================
+
+let activeGroup = null;
+let activeVerbs = [];
 let questions = [];
 let index = 0;
 let correct = 0;
@@ -302,43 +488,115 @@ let answered = false;
 let reviewMode = false;
 
 // =====================================
-// GENERACIÓN DE LAS CUATRO OPCIONES
+// MENÚ INICIAL
+// =====================================
+
+function buildMenu() {
+  const grid = $("menuGrid");
+  grid.replaceChildren();
+
+  GROUPS.forEach((group,i) => {
+    const button = document.createElement("button");
+    button.className =
+      "menu-btn" + (i===5 ? " all" : "");
+
+    button.innerHTML = `
+      <strong>${group.label}</strong>
+      <span>${group.description}</span>
+      <span>📅 ${group.date}</span>
+    `;
+
+    button.onclick = () => selectGroup(i);
+
+    grid.appendChild(button);
+  });
+}
+
+function showMenu() {
+  $("menu").classList.remove("hidden");
+  $("quiz").classList.add("hidden");
+  $("results").classList.add("hidden");
+}
+
+function selectGroup(i) {
+  activeGroup = GROUPS[i];
+
+  activeVerbs = VERBS.filter(v =>
+    v.id >= activeGroup.from &&
+    v.id <= activeGroup.to
+  );
+
+  startTest();
+}
+
+// =====================================
+// GENERAR PREGUNTAS
+// =====================================
+
+function createBank() {
+  const bank = [];
+
+  activeVerbs.forEach(v => {
+    TYPES.forEach(type => {
+      // Evitar preguntas ambiguas si dos
+      // verbos comparten traducción.
+      if(type.key==="base") {
+        const sameMeaning = activeVerbs.filter(
+          other => other.es===v.es
+        );
+        if(sameMeaning.length>1) return;
+      }
+
+      bank.push({
+        verb:v,
+        type,
+        id:`${v.id}-${type.key}`
+      });
+    });
+  });
+
+  return bank;
+}
+
+// =====================================
+// OPCIONES DE RESPUESTA
 // =====================================
 
 function optionSet(q) {
-  const {verb, type} = q;
-  const answer = verb[type.key];
+  const v = q.verb;
+  const field = q.type.key;
+  const answer = v[field];
 
-  let distractors;
+  let distractors = [];
 
-  if (type.key === 'es') {
+  if(field==="es") {
 
-    // Traducciones: cuatro opciones en español.
+    // Traducción: respuestas en español.
     distractors = shuffle(
-      VERBS
-        .filter(v => v !== verb)
-        .map(v => v.es)
+      activeVerbs
+        .filter(other=>other.id!==v.id)
+        .map(other=>other.es)
     );
 
   } else {
 
-    // PRIORIDAD 1:
-    // Todas las otras formas del MISMO verbo.
+    // Primero, las otras formas del
+    // mismo verbo, con máxima prioridad.
     const sameVerb = [
-      verb.base,
-      verb.past,
-      verb.part
-    ].filter(x => x !== answer);
+      v.base,
+      v.past,
+      v.part
+    ].filter(value=>value!==answer);
 
-    // PRIORIDAD 2:
-    // Si faltan alternativas, usar otros verbos.
+    // Si faltan alternativas,
+    // añadir formas de otros verbos.
     const otherVerbs = shuffle(
-      VERBS
-        .filter(v => v !== verb)
-        .flatMap(v => [
-          v.base,
-          v.past,
-          v.part
+      activeVerbs
+        .filter(other=>other.id!==v.id)
+        .flatMap(other=>[
+          other.base,
+          other.past,
+          other.part
         ])
     );
 
@@ -348,16 +606,13 @@ function optionSet(q) {
     ];
   }
 
-  // Quitar repeticiones.
   const unique = [
     ...new Set(distractors)
-  ].filter(x => x !== answer);
+  ].filter(x=>x!==answer);
 
-  // Respuesta correcta + 3 alternativas.
-  // Mezclar sus posiciones.
   return shuffle([
     answer,
-    ...unique.slice(0, 3)
+    ...unique.slice(0,3)
   ]);
 }
 
@@ -365,26 +620,37 @@ function optionSet(q) {
 // INICIAR TEST
 // =====================================
 
-function start(review = false) {
+function startTest(review=false) {
   reviewMode = review;
 
-  questions = review
-    ? shuffle(errors)
-    : shuffle(BANK).slice(0, 40);
+  if(review) {
+    questions = shuffle(errors);
+  } else {
+    const bank = createBank();
+
+    // Se permiten nuevos tipos de
+    // preguntas si el banco fuera menor
+    // de 40, pero nunca repetimos la
+    // misma pregunta en una sesión.
+    questions = shuffle(bank).slice(0,40);
+  }
 
   errors = [];
   index = 0;
   correct = 0;
   incorrect = 0;
+  answered = false;
 
-  $('mode').textContent = review
-    ? 'Repaso de errores'
-    : 'Test principal';
+  $("menu").classList.add("hidden");
+  $("results").classList.add("hidden");
+  $("quiz").classList.remove("hidden");
 
-  $('total').textContent = questions.length;
+  $("mode").textContent =
+    activeGroup.label +
+    (review ? " · Repaso" : "");
 
-  $('quiz').classList.remove('hidden');
-  $('results').classList.add('hidden');
+  $("total").textContent =
+    questions.length;
 
   render();
 }
@@ -397,33 +663,32 @@ function render() {
   answered = false;
 
   const q = questions[index];
-
-  $('number').textContent = index + 1;
-  $('right').textContent = correct;
-  $('wrong').textContent = incorrect;
-
-  $('bar').style.width =
-    `${index / questions.length * 100}%`;
-
-  $('question').textContent =
-    q.type.prompt(q.verb);
-
-  $('next').classList.add('hidden');
-  $('feedback').classList.add('hidden');
-  $('options').replaceChildren();
-
   const answer = q.verb[q.type.key];
 
-  optionSet(q).forEach(value => {
-    const b = document.createElement('button');
+  $("number").textContent = index+1;
+  $("right").textContent = correct;
+  $("wrong").textContent = incorrect;
 
-    b.className = 'option';
-    b.textContent = value;
+  $("bar").style.width =
+    `${index/questions.length*100}%`;
 
-    b.onclick = () =>
-      choose(b, value, answer, q);
+  $("question").textContent =
+    q.type.prompt(q.verb);
 
-    $('options').appendChild(b);
+  $("options").replaceChildren();
+  $("feedback").classList.add("hidden");
+  $("next").classList.add("hidden");
+
+  optionSet(q).forEach(value=>{
+    const button = document.createElement("button");
+
+    button.className = "option";
+    button.textContent = value;
+
+    button.onclick = () =>
+      choose(button,value,answer,q);
+
+    $("options").appendChild(button);
   });
 }
 
@@ -431,53 +696,53 @@ function render() {
 // CORREGIR RESPUESTA
 // =====================================
 
-function choose(button, value, answer, q) {
-  if (answered) return;
+function choose(button,value,answer,q) {
+  if(answered) return;
 
   answered = true;
 
-  if (value === answer) {
+  if(value===answer) {
     correct++;
   } else {
     incorrect++;
     errors.push(q);
   }
 
-  for (const b of $('options').children) {
+  for(const b of $("options").children) {
     b.disabled = true;
 
-    if (b.textContent === answer) {
-      b.classList.add('correct');
+    if(b.textContent===answer) {
+      b.classList.add("correct");
     }
   }
 
-  if (value !== answer) {
-    button.classList.add('wrong');
+  if(value!==answer) {
+    button.classList.add("wrong");
   }
 
-  $('right').textContent = correct;
-  $('wrong').textContent = incorrect;
+  $("right").textContent = correct;
+  $("wrong").textContent = incorrect;
 
-  $('bar').style.width =
-    `${(index + 1) / questions.length * 100}%`;
+  $("bar").style.width =
+    `${(index+1)/questions.length*100}%`;
 
   const v = q.verb;
 
-  $('feedback').textContent =
-    (value === answer
-      ? '✅ ¡Correcto!'
-      : '❌ Respuesta correcta: ' + answer
+  $("feedback").textContent =
+    (value===answer
+      ? "✅ ¡Correcto!"
+      : "❌ Respuesta correcta: "+answer
     ) +
     ` · ${v.base} — ${v.past} — ${v.part} — ${v.es}`;
 
-  $('feedback').classList.remove('hidden');
+  $("feedback").classList.remove("hidden");
 
-  $('next').textContent =
-    index === questions.length - 1
-      ? 'Ver resultados →'
-      : 'Siguiente pregunta →';
+  $("next").textContent =
+    index===questions.length-1
+      ? "Ver resultados →"
+      : "Siguiente pregunta →";
 
-  $('next').classList.remove('hidden');
+  $("next").classList.remove("hidden");
 }
 
 // =====================================
@@ -485,52 +750,50 @@ function choose(button, value, answer, q) {
 // =====================================
 
 function showResults() {
-  $('quiz').classList.add('hidden');
-  $('results').classList.remove('hidden');
+  $("quiz").classList.add("hidden");
+  $("results").classList.remove("hidden");
 
   const percentage = Math.round(
-    100 * correct / questions.length
+    correct/questions.length*100
   );
 
-  $('headline').textContent =
-    percentage >= 85
-      ? '🏆 ¡Muy bien, Dani!'
-      : '📚 ¡Sigue practicando, Dani!';
+  $("headline").textContent =
+    percentage>=85
+      ? "🏆 ¡Muy bien, Dani!"
+      : "📚 ¡Sigue practicando, Dani!";
 
-  $('score').textContent =
+  $("score").textContent =
     `${correct} / ${questions.length} · ${percentage}%`;
 
-  $('assessment').textContent =
-    percentage >= 85
-      ? 'Objetivo del 85 % superado.'
-      : 'Objetivo: alcanzar el 85 %.';
+  $("assessment").textContent =
+    percentage>=85
+      ? "Objetivo del 85 % superado."
+      : "Objetivo: alcanzar el 85 %.";
 
-  // Mostrar la tabla SOLO si hay errores.
-  $('mistakesBox').classList.toggle(
-    'hidden',
-    errors.length === 0
+  $("mistakesBox").classList.toggle(
+    "hidden",
+    errors.length===0
   );
 
-  $('mistakesBody').replaceChildren();
+  $("mistakesBody").replaceChildren();
 
-  // Mostrar cada verbo fallado una sola vez.
+  // Un verbo aparece una sola vez.
   const unique = [
     ...new Map(
-      errors.map(q => [q.verb.base, q.verb])
+      errors.map(q=>[q.verb.id,q.verb])
     ).values()
   ];
 
-  unique.forEach(v => {
-    const row = document.createElement('tr');
+  unique.forEach(v=>{
+    const row = document.createElement("tr");
 
-    [v.base, v.past, v.part, v.es].forEach(value => {
-      const cell = document.createElement('td');
-
+    [v.base,v.past,v.part,v.es].forEach(value=>{
+      const cell = document.createElement("td");
       cell.textContent = value;
       row.appendChild(cell);
     });
 
-    $('mistakesBody').appendChild(row);
+    $("mistakesBody").appendChild(row);
   });
 }
 
@@ -538,24 +801,27 @@ function showResults() {
 // BOTONES
 // =====================================
 
-$('next').onclick = () => {
+$("next").onclick = ()=>{
   index++;
 
-  if (index < questions.length) {
+  if(index<questions.length) {
     render();
   } else {
     showResults();
   }
 };
 
-$('restart').onclick = () => start(false);
-$('review').onclick = () => start(true);
+$("restart").onclick = ()=>startTest(false);
+$("review").onclick = ()=>startTest(true);
+$("backMenu").onclick = showMenu;
+$("menuButton").onclick = showMenu;
 
 // =====================================
-// INICIO AUTOMÁTICO
+// INICIO
 // =====================================
 
-start();
+buildMenu();
+showMenu();
 
 </script>
 </body>
